@@ -48,8 +48,7 @@ all: MOOGSILENT ;
 	@echo -----------------------------------------------------------------
 
 MOOGSILENT:  $(OBJECTS);
-	$(FC) $(OBJECTS) -o MOOGSILENT -L$(X11LIB) -lX11 \
-        -L$(SMLIB) -lplotsub -ldevices -lutils
+	$(FC) $(OBJECTS) -o MOOGSILENT 
 
 $(OBJECTS): $(COMMON)
 
