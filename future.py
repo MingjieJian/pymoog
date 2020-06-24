@@ -1,0 +1,237 @@
+def create_sub_linelist(linelist_all, wav_start, wav_end, sub_ll_name, type='vald'):
+    if type != 'vald':
+        raise Exception('Only vald linelist is supported!')
+    sub_linelist = linelist_all[(linelist_all['wavelength']>wav_start) & (linelist_all['wavelength']<wav_end)]
+    sub_linelist.reset_index(drop=True, inplace=True)
+    with open(sub_ll_name, 'w') as file:
+        file.write('VALD sub-linelist for LDR of YJ-band \n')
+        for i in range(len(sub_linelist)):
+            if np.isnan(sub_linelist.iloc[i].values[-1]):
+                file.write('{:10.4f}{:10.5f}{:10.4f}{:10.3f}{:10.3f}\n'.format(*sub_linelist.iloc[i].values[:-1]))
+            else:
+                file.write('{:10.4f}{:10.5f}{:10.4f}{:10.3f}{:10.3f}{:10.3f}\n'.format(*sub_linelist.iloc[i].values))
+
+def calculate_CDG(teff, logg, feh_list, target_wav, line_list, del_wav=2.5):
+    '''
+    Calculate the curve of depth growth.
+
+    Parameters
+    ----------
+    teff : float or int
+
+    Returns
+    ---------
+    lg_d : a numpy array
+        An array of line depth in the specified [Fe/H] values.
+    '''
+
+    lg_d = []
+
+    for feh in feh_list:
+        name, situ = KURUCZ_APOGEE_download(teff, logg, feh)
+        kname, situ = KURUCZ_APOGEE_convert(name)
+        create_para_file(kname, line_list,
+                                      start_wav=target_wav-del_wav,
+                                      end_wav=target_wav+del_wav,
+                                      smooth_width=0.4)
+        moog_run()
+        wav, flux = read_spectra()
+        lg_d.append(np.log10(ldr.model_depth_measure([wav, flux], target_wav)))
+    return np.array(lg_d)
+
+def calculate_LDR_r(teff_range, logg, feh, target_wav, line_list, del_wav=2.5):
+    lg_d = []
+
+    for teff in teff_range:
+        name, situ = KURUCZ_APOGEE_download(teff, logg, feh, abun_change=abun_change)
+        kname, situ = KURUCZ_APOGEE_convert(name, abun_change=abun_change)
+        create_para_file(kname, line_list,
+                                      start_wav=target_wav-del_wav,
+                                      end_wav=target_wav+del_wav,
+                                      smooth_width=0.35)
+        moog_run()
+        wav, flux = read_spectra()
+        lg_d.append(np.log10(ldr.model_depth_measure([wav, flux], target_wav)))
+    return np.array(lg_d)
+
+def measure_depth_moog(teff, logg, feh, target_wav, line_list, del_wav=2.5, abun_change=None, resolution=28000):
+
+    name, situ = KURUCZ_APOGEE_download(teff, logg, feh)
+    kname, situ = KURUCZ_APOGEE_convert(name, abun_change=abun_change)
+    create_para_file(kname, line_list,
+                     start_wav=target_wav-del_wav,
+                     end_wav=target_wav+del_wav,
+                     smooth_width=target_wav/resolution)
+    moog_run()
+    wav, flux = read_spectra()
+    depth = ldr.model_depth_measure([wav, flux], target_wav)
+    return depth
+
+# The functions to calculate the contribution functions.
+# Note that the atmosphere and lines have to be set to 2 and 4.
+
+def extract_kappa_l(file_name, line_id='all'):
+    # Extract the line opacities
+
+    # Open the file
+    file = open(file_name)
+    out1 = file.readlines()
+
+    # Extract the "LINE OPACITIES" part
+    for i in range(len(out1)):
+        if 'LINE OPACITIES' in out1[i]:
+            start_index = i
+        if 'SPECTRUM DEPTHS' in out1[i]:
+            end_index = i
+    line_opacity_content = out1[start_index:end_index]
+
+    # Convert the line opacities into arrays
+    line_opacity_content = line_opacity_content[2:]
+
+    record_switch = 0
+    line_opacity_array = []
+    for line in line_opacity_content:
+        if record_switch == 0:
+            record_str = ''
+        elif record_switch == 1:
+            record_str = record_str + line
+        if 'LINE' in line:
+            record_switch = 1
+        elif line == '\n':
+            record_switch = 0
+            line_opacity_array = line_opacity_array + [private.np.array(record_str.split(), dtype='float')]
+
+    if line_id == 'all':
+        return line_opacity_array
+    else:
+        return line_opacity_array[line_id-1]
+
+def extract_kappa_c(file_name):
+    # Read the continuum opacity
+
+    # Open the file
+    file = open(file_name)
+    out1 = file.readlines()
+
+    # Extract the "LINE OPACITIES" part
+    for i in range(len(out1)):
+        if 'log opacities due to H, He, e-' in out1[i]:
+            start_index = i
+        if 'log opacities due to "metal" edges' in out1[i]:
+            end_index = i
+    con_opacity_content = out1[start_index+1:end_index]
+
+    file_temp = open('temp', 'w')
+    file_temp.writelines(con_opacity_content)
+    file_temp.close()
+    kappa_c = private.pd.read_table('temp', sep=' +', engine='python')
+    private.os.remove('temp')
+
+    return kappa_c
+
+def extract_atmosphere(file_name):
+    # Open the file
+    file = open(file_name)
+    out1 = file.readlines()
+
+    # Extract the "LINE OPACITIES" part
+    for i in range(len(out1)):
+        if 'INPUT ATMOSPHERE QUANTITIES' in out1[i]:
+            start_index = i
+        if 'INPUT ABUNDANCES: (log10 number' in out1[i]:
+            end_index = i
+    atmosphere_content = out1[start_index+1:end_index]
+    for i in range(len(atmosphere_content)):
+        atmosphere_content[i] = atmosphere_content[i].replace('D', 'E')
+    file_temp = open('temp', 'w')
+    file_temp.writelines(atmosphere_content)
+    file_temp.close()
+
+    atmosphere = private.pd.read_table('temp', sep=' +', engine='python')
+    private.os.remove('temp')
+
+    return atmosphere
+
+def extract_kappa_ref(file_name):
+    # Open the file
+    file = open(file_name)
+    out1 = file.readlines()
+
+    # Extract the "LINE OPACITIES" part
+    for i in range(len(out1)):
+        if 'KAPREF ARRAY' in out1[i]:
+            start_index = i
+        if 'For these computations, some abu' in out1[i]:
+            end_index = i
+    line_opacity_content = out1[start_index+1:end_index]
+
+    record_str = ''
+    for line in line_opacity_content:
+        record_str = record_str + line
+    record_str = record_str.replace('D', 'E')
+    kappa_ref = private.np.array(record_str.split(), dtype='float')
+
+    return kappa_ref
+
+def calculate_tau(tau_ref, kappa_c, kappa_l, kappa_ref):
+    '''
+    A function to calculate tau_c and tau_l.
+
+    Parameters
+    ----------
+    z : numpy array
+        The geometrical depth of atmosphere grid. The unit should be cm.
+
+    kappa_df : pandas dataframe
+        Output of the PANDORA "LINE (X/Y)" kappa table.
+
+    Returns
+    -------
+    tau_c : numpy array
+        An array of tau_c
+    tau_l : numpy array
+        An array of tau_l
+    '''
+    dtau_ref = pandora.calculate_dz(tau_ref)
+
+    tau_c = []
+    tau_l = []
+    for i in range(len(dtau_ref)):
+        tau_c_i = private.np.sum(kappa_c[:i+1] / kappa_ref[:i+1] * dtau_ref[:i+1])
+        tau_c.append(tau_c_i)
+        tau_l_i = private.np.sum(kappa_l[:i+1] / kappa_ref[:i+1] * dtau_ref[:i+1])
+        tau_l.append(tau_l_i)
+    tau_c = private.np.array(tau_c)
+    tau_l = private.np.array(tau_l)
+
+    return tau_c, tau_l
+
+
+def cal_contri_func(file_name):
+    kappa_l = extract_kappa_l(file_name, line_id=1)
+    kappa_c = extract_kappa_c(file_name)
+    kappa_ref = extract_kappa_ref(file_name)
+    atmosphere = extract_atmosphere(file_name)
+
+    tau_ref = atmosphere['tauref'].values
+    tau_c, tau_l = calculate_tau(tau_ref, 10**kappa_c['kaplam'].values, kappa_l, kappa_ref)
+
+    # Calculate source function from temperature
+    S = private.blackbody_lambda(15207.53, kappa_c['T(i)']).value
+    kappa_c = 10**kappa_c['kaplam'].values
+    CF_I_c = S * private.np.exp(-tau_c) * atmosphere['tauref'] * private.np.log(10) * kappa_c / kappa_ref
+    dlog_tau_ref = pandora.calculate_dz(np.log10(tau_ref))
+    Ic_tau_ref = []
+    for i in range(len(dlog_tau_ref)-1):
+        Ic_tau_ref.append(private.np.sum(CF_I_c[i:] * dlog_tau_ref[i:]))
+    Ic_tau_ref.append(0)
+    Ic_tau_ref = private.np.array(Ic_tau_ref)
+    CF_Dlp = Ic_tau_ref * private.np.exp(-tau_l) * tau_ref * private.np.log(10) * kappa_l / kappa_ref
+    CF_Ilp = S * private.np.exp(-tau_l-tau_c) * private.np.log(10) * tau_ref * kappa_l / kappa_ref
+    CF_Dl = CF_Dlp - CF_Ilp
+    CF_Ilc = S * private.np.exp(-tau_l-tau_c) * private.np.log(10) * tau_ref * kappa_c / kappa_ref
+    CF_Il = (1 + kappa_l/kappa_c) * S * private.np.exp(-tau_l-tau_c) * private.np.log(10) * tau_ref * kappa_c / kappa_ref
+
+    CF_dict = {'tau_ref':tau_ref, 'CF_I_c':CF_I_c, 'CF_Dlp':CF_Dlp, 'CF_Ilp':CF_Ilp, 'CF_Dl':CF_Dl,
+               'CF_Ilc':CF_Ilc, 'CF_Il':CF_Il}
+    return CF_dict
