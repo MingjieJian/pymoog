@@ -80,6 +80,11 @@ def KURUCZ_APOGEE_download(teff, logg, m_h, c_m=0, alpha_m=0, to_path='./'):
 
     outf.close()
 
+    k_model_path, cv = KURUCZ_APOGEE_convert(file_name)
+
+    return k_model_path,cv
+
+
 def KURUCZ_APOGEE_convert(file_path, vmicro=2.0, abun_change=None):
     '''
     Convert the model file of ATLAS9-APOGEE in to MOOG format.
@@ -179,5 +184,5 @@ def KURUCZ_APOGEE_convert(file_path, vmicro=2.0, abun_change=None):
 
 
 if __name__=="__main__": 
-    KURUCZ_APOGEE_download(4250, 4.5, 0.1,to_path='./demo/');
-    KURUCZ_APOGEE_convert("./demo/amp01cp00op00t4250g45v20.mod")
+    k,s = KURUCZ_APOGEE_download(4250, 4.5, 0.1,to_path='./Model_Files/');
+    print(k,s)
