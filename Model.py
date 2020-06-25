@@ -1,6 +1,5 @@
 from PyAstronomy import pyasl
 import math
-model = pyasl.getKuruczModel(4250, 4.5, 0.1)
 
 def v2fn(value_list):
     '''
@@ -67,6 +66,7 @@ def KURUCZ_APOGEE_download(teff, logg, m_h, c_m=0, alpha_m=0, to_path='./'):
     vlist = v2fn(vlist) + [to_path]
     file_name = '{5}am{0}c{1}o{2}t{3}g{4}v20.mod'.format(*vlist)
 
+    #The model is invoked here
     model = pyasl.getKuruczModel(teff,logg,m_h)
 
     outf = open(file_name,"w")
@@ -77,5 +77,5 @@ def KURUCZ_APOGEE_download(teff, logg, m_h, c_m=0, alpha_m=0, to_path='./'):
 
     outf.close()
 
-
-KURUCZ_APOGEE_download(4250, 4.5, 0.1);
+if __name__=="__main__": 
+    KURUCZ_APOGEE_download(4250, 4.5, 0.1);
