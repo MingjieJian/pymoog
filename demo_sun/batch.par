@@ -1,0 +1,16 @@
+synth
+atmosphere         1
+lines              1
+standard_out       'MOOG.out1'
+summary_out        'MOOG.out2'
+smoothed_out       'MOOG.out3'
+model_in           './kmp00cp00op00t5750g45v20.mod'
+lines_in           'vald_sub'
+terminal           'x11'
+synlimits
+  10530  10630  0.02  7
+plot        3
+plotpars    1
+  0.0  0.0  0.0  0.0 
+  0.0  0.0  0.0  0.0 
+  'g'  0.1  0.0  0.0  0.0  0.0
