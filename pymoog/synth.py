@@ -188,7 +188,7 @@ class synth:
         # Create parameter file.
         self.create_para_file(self.model_file, self.line_list, start_wav=self.start_wav, end_wav=self.end_wav, )    
         
-    def create_para_file(self, k_model_path, linelist_path, start_wav=15167.0, end_wav=16767.0, del_wav=0.02, smooth='g', smooth_width=0.75, atmosphere=1, lines=1):
+    def create_para_file(self, k_model_path, linelist_path, start_wav=15167.0, end_wav=16767.0, del_wav=0.02, smooth='g', atmosphere=1, lines=1):
         '''
         Function for creating the parameter file of batch.par
         '''
@@ -197,6 +197,7 @@ class synth:
         #                         begin wavelength, end wavelength, wavelength step;
         #                         smoothing function, Gaussian FWHM, vsini, limb darkening coefficient,
         #                         Macrotrubulent FWHM, Lorentzian FWHM
+        smooth_width = np.mean([self.start_wav / self.resolution, self.end_wav / self.resolution])
         smooth_para = [smooth, smooth_width, 0.0, 0.0, 0.0, 0.0]
         #MOOG_para_file = open('batch.par', 'w')
         MOOG_contant = ["synth\n",
@@ -245,13 +246,13 @@ class synth:
             MOOG_output = []
             for i in MOOG_run:
                 if len(i) > 12:
-                    ansi_escape = re.compile('\x1b\[...H')
+                    ansi_escape = re.compile(r'\x1b\[...H')
                     temp = ansi_escape.sub('', i)
-                    ansi_escape = re.compile('\x1b\[....H')
+                    ansi_escape = re.compile(r'\x1b\[....H')
                     temp = ansi_escape.sub('', temp)
-                    ansi_escape = re.compile('\x1b\[H')
+                    ansi_escape = re.compile(r'\x1b\[H')
                     temp = ansi_escape.sub('', temp)
-                    ansi_escape = re.compile('\x1b\[2J')
+                    ansi_escape = re.compile(r'\x1b\[2J')
                     MOOG_output.append(ansi_escape.sub('', temp))
             for i in MOOG_output:
                 print(i)
