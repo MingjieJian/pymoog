@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>synth &mdash; pymoog 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="line_data" href="line_data.html" />
+    <link rel="prev" title="pymoog" href="pymoog.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> pymoog
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pymoog.html">pymoog</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">synth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="line_data.html">line_data</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymoog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="pymoog.html">pymoog</a> &raquo;</li>
+        
+      <li>synth</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/synth.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="synth">
+<h1>synth<a class="headerlink" href="#synth" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="synth.synth">
+<em class="property">class </em><code class="sig-prename descclassname">synth.</code><code class="sig-name descname">synth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">teff</span></em>, <em class="sig-param"><span class="n">logg</span></em>, <em class="sig-param"><span class="n">m_h</span></em>, <em class="sig-param"><span class="n">start_wav</span></em>, <em class="sig-param"><span class="n">end_wav</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">del_wav</span><span class="o">=</span><span class="default_value">0.02</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">'g'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="synth.synth.KURUCZ_convert">
+<code class="sig-name descname">KURUCZ_convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vmicro</span><span class="o">=</span><span class="default_value">2.0</span></em>, <em class="sig-param"><span class="n">abun_change</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">converted_model_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.KURUCZ_convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the model file of ATLAS9-APOGEE in to MOOG format.</p>
+<dl class="simple">
+<dt>model_path<span class="classifier">str, optional</span></dt><dd><p>The path of donloaded model file.</p>
+</dd>
+<dt>v_micro<span class="classifier">float, default 2.0</span></dt><dd><p>Microturbulance velocity of the spectra.</p>
+</dd>
+<dt>abun_change<span class="classifier">list of pairs [int, float]</span></dt><dd><p>Abundance change, have to be a list of pairs of atomic number and [X/Fe] values.</p>
+</dd>
+<dt>converted_model_path<span class="classifier">str, optional</span></dt><dd><p>The name of converted model. Default will be saved into MOOG working folder.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="synth.synth.KURUCZ_download">
+<code class="sig-name descname">KURUCZ_download</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.KURUCZ_download" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the Kurucz ATLAS9 model using pyasl.</p>
+<dl class="simple">
+<dt>teff<span class="classifier">int</span></dt><dd><p>The effective temperature of the model</p>
+</dd>
+<dt>logg<span class="classifier">float</span></dt><dd><p>logg value of the model</p>
+</dd>
+<dt>m_h<span class="classifier">float</span></dt><dd><p>[M/H] value (overall metallicity) of the model</p>
+</dd>
+<dt>save_name<span class="classifier">str</span></dt><dd><p>The path to save the model file (including the name).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>self.model_path<span class="classifier">str</span></dt><dd><p>The path and name of saved model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="synth.synth.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">teff</span></em>, <em class="sig-param"><span class="n">logg</span></em>, <em class="sig-param"><span class="n">m_h</span></em>, <em class="sig-param"><span class="n">start_wav</span></em>, <em class="sig-param"><span class="n">end_wav</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">del_wav</span><span class="o">=</span><span class="default_value">0.02</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">'g'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initiate a synth Instance and read the parameters.</p>
+<dl class="simple">
+<dt>teff<span class="classifier">int</span></dt><dd><p>The effective temperature of the model</p>
+</dd>
+<dt>logg<span class="classifier">float</span></dt><dd><p>logg value of the model</p>
+</dd>
+<dt>m_h<span class="classifier">float</span></dt><dd><p>[M/H] value (overall metallicity) of the model</p>
+</dd>
+<dt>start_wav<span class="classifier">float</span></dt><dd><p>The start wavelength of synthetic spenctra</p>
+</dd>
+<dt>end_wav<span class="classifier">float</span></dt><dd><p>The end wavelength of synthetic spenctra</p>
+</dd>
+<dt>resolution<span class="classifier">float</span></dt><dd><p>Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="synth.synth.create_para_file">
+<code class="sig-name descname">create_para_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">del_wav</span><span class="o">=</span><span class="default_value">0.02</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">'g'</span></em>, <em class="sig-param"><span class="n">atmosphere</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">lines</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.create_para_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for creating the parameter file of batch.par</p>
+<dl class="simple">
+<dt>del_wav<span class="classifier">float, optional</span></dt><dd><p>The sampling distance of synthetic spectra. Default 0.02.</p>
+</dd>
+<dt>smooth<span class="classifier">str, optional</span></dt><dd><p>Line profile to be used to smooth the synthetic spectra, same as decribed in MOOG documention. Default Gaussian.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="synth.synth.prepare_file">
+<code class="sig-name descname">prepare_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">line_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loggf_cut</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.prepare_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare the model, linelist and control files for MOOG.
+Can either provide stellar parameters and wavelengths or provide file names.
+If fine name(s) provided, the files will be copied to working directory for calculation.</p>
+<dl class="simple">
+<dt>model_file<span class="classifier">str, optional</span></dt><dd><p>The name of the model file. If not specified will download Kurucz model.</p>
+</dd>
+<dt>line_list<span class="classifier">str</span></dt><dd><p>The name of the linelist file. If not specified will use built-in VALD linelist.</p>
+</dd>
+<dt>logf_cut<span class="classifier">float, optional</span></dt><dd><p>The cut in loggf; if specified will only include the lines with loggf &gt;= loggf_cut.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="synth.synth.read_spectra">
+<code class="sig-name descname">read_spectra</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'smooth'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.read_spectra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the output spectra of MOOG.</p>
+<dl class="simple">
+<dt>type<span class="classifier">str, default ‘smooth’</span></dt><dd><p>Decide the type of spectra to be read. ‘smooth’ will read the smoothed spectra (MOOG.out3), and ‘standard’ will read the un-smoothed one (MOOG.out2).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>wav<span class="classifier">a numpy array</span></dt><dd><p>An array of wavelength</p>
+</dd>
+<dt>flux<span class="classifier">a numpy array</span></dt><dd><p>An array of flux</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="synth.synth.run_moog">
+<code class="sig-name descname">run_moog</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.run_moog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run MOOG and print the reuslt if required.</p>
+<dl class="simple">
+<dt>output<span class="classifier">boolen, default False</span></dt><dd><p>If set to True, then print the out put of MOOG.</p>
+</dd>
+</dl>
+<p>None. Three files MOOG.out1, MOOG.out2 and MOOG.out3 will be save in the pymoog working path.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="line_data.html" class="btn btn-neutral float-right" title="line_data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pymoog.html" class="btn btn-neutral float-left" title="pymoog" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Mingjie Jian, Pranav Satheesh and Kruthi Krishna
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
