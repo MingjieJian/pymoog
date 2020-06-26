@@ -15,7 +15,9 @@ There is also [a stand-alone version](https://github.com/MingjieJian/moog_nosm) 
 
 - `clone` this repository and `cd` into the corresponding folder;
 - `pip install .`
+- `pip install -r requirements.txt`
 
 ## Tutorial
 
+Once you are done with the installation, you can use the `pymoog` package now on your code!
 Please refer to [this notebook](docs/Tutorial.ipynb).
