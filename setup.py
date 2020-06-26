@@ -1,5 +1,6 @@
 import subprocess
 import os
+import setuptools
 
 # Define MOOGMODELING_path. This path will store the code of moog and any other temporary files in the calculation.
 MOOGMODELING_path = '{}/.pymoog/'.format(os.environ['HOME'])
@@ -32,3 +33,31 @@ if not(os.path.isfile(MOOGMODELING_path+'moog_nosm/moog_nosm_FEB2017/MOOG')) or 
     raise ValueError("MOOG is not installed correctly!")
 else:
     print('Successfully installed MOOG!')
+    
+    
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+setuptools.setup(
+      name='pymoog',
+      version='0.0.1',
+      description='The python wrapper to run LTE spectra synthesis code MOOG.',
+      long_description=long_description,
+      long_description_content_type="text/markdown",
+      url='https://github.com/MingjieJian/ir_ldr',
+      author='Mingjie Jian, Pranav Satheesh and Kruthi Krishna',
+      author_email='ssaajianmingjie@gmail.com',
+      classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Framework :: IPython",
+        "Operating System :: OS Independent",
+        "Development Status :: 3 - Alpha",
+        "Topic :: Scientific/Engineering :: Astronomy"
+      ],
+      packages=setuptools.find_packages(),
+      install_requires=[
+          'numpy>=1.17.0',
+      ],
+      include_package_data=True,
+      zip_safe=False)
