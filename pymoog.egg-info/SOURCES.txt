@@ -1,0 +1,13 @@
+MANIFEST.in
+README.md
+setup.py
+pymoog/__init__.py
+pymoog/_combine_linelist.py
+pymoog/line_data.py
+pymoog/synth.py
+pymoog.egg-info/PKG-INFO
+pymoog.egg-info/SOURCES.txt
+pymoog.egg-info/dependency_links.txt
+pymoog.egg-info/not-zip-safe
+pymoog.egg-info/requires.txt
+pymoog.egg-info/top_level.txt

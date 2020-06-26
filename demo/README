@@ -1,6 +1,0 @@
-batch.par is the contron file; 
-kmp05cp00op00t6000g40v20.mod is the atmosphere model file;
-vald_sub is te line list;
-these are the inputs.
-
-MOOG.out1, MOOG.out2 and MOOG.out3 are the outputs from MOOG.
