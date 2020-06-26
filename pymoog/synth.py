@@ -11,7 +11,21 @@ MOOGrun_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
 class synth:
     def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, del_wav=0.02, smooth='g'):
         '''
-        Initiate a SpecSyntheiszer and read the parameters.
+        Initiate a synth Instance and read the parameters.
+        Parameters
+        ----------
+        teff : int
+            The effective temperature of the model
+        logg : float
+            logg value of the model
+        m_h : float
+            [M/H] value (overall metallicity) of the model
+        start_wav : float
+            The start wavelength of synthetic spenctra
+        end_wav : float
+            The end wavelength of synthetic spenctra
+        resolution : float
+            Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.
         '''
         self.teff = teff
         self.logg = logg
@@ -32,12 +46,12 @@ class synth:
             logg value of the model
         m_h : float
             [M/H] value (overall metallicity) of the model
-        to_path : str
-            The path to save the model file.
+        save_name : str
+            The path to save the model file (including the name).
 
         Returns
         ----------
-        to_name : str
+        self.model_path : str
             The path and name of saved model.
 
         '''
@@ -65,19 +79,14 @@ class synth:
 
         Parameters
         ----------
-        model_path : str
+        model_path : str, optional
             The path of donloaded model file.
         v_micro : float, default 2.0
             Microturbulance velocity of the spectra.
         abun_change : list of pairs [int, float]
             Abundance change, have to be a list of pairs of atomic number and [X/Fe] values.
-
-        Returns
-        ----------
-        k_model_path : str
-            The path of converted file.
-        cv_situation : boolen
-            Convert situation, True if file exist, False if falied.
+        converted_model_path : str, optional
+            The name of converted model. Default will be saved into MOOG working folder.
         '''
 
         if model_path == None:
@@ -160,11 +169,20 @@ class synth:
         # cv_situation = os.path.isfile(c_model_path)
         # return c_model_file, cv_situation  
         
-    def prepare_file(self, model_file=None, line_list=None, loggf_cut=-1):
+    def prepare_file(self, model_file=None, line_list=None, loggf_cut=None):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
         If fine name(s) provided, the files will be copied to working directory for calculation.  
+        
+        Parameters
+        ----------
+        model_file : str, optional
+            The name of the model file. If not specified will download Kurucz model. 
+        line_list : str
+            The name of the linelist file. If not specified will use built-in VALD linelist.
+        logf_cut : float, optional
+            The cut in loggf; if specified will only include the lines with loggf >= loggf_cut.
         '''
         if model_file == None:
             # Model file is not specified, will download Kurucz model according to stellar parameters.
@@ -180,7 +198,7 @@ class synth:
         if line_list == None:
             # Linelist file is not specified, will use built-in VALD linelist according to wavelength specification.
             vald = line_data.read_linelist('files/linelist/vald_', loggf_cut=loggf_cut)
-            line_data.save_linelist(vald, MOOGrun_path + 'vald_sub')
+            line_data.save_linelist(vald, MOOGrun_path + 'vald_sub', wav_start=self.start_wav, wav_end=self.end_wav)
             self.line_list = 'vald_sub'
         else:
             # Linelist file is specified; record linelist file name and copy to working directory.
@@ -193,6 +211,13 @@ class synth:
     def create_para_file(self, del_wav=0.02, smooth='g', atmosphere=1, lines=1):
         '''
         Function for creating the parameter file of batch.par
+        
+        Parameters
+        ----------
+        del_wav : float, optional
+            The sampling distance of synthetic spectra. Default 0.02.
+        smooth : str, optional
+            Line profile to be used to smooth the synthetic spectra, same as decribed in MOOG documention. Default Gaussian. 
         '''
         MOOG_para_file = open(MOOGrun_path + '/batch.par', 'w')
         # Parameter list of MOOG: standard output file (1), summary output file (2), smoothed output file (3),
@@ -221,9 +246,6 @@ class synth:
                     ]
         MOOG_para_file.writelines(MOOG_contant)
         MOOG_para_file.close()
-        
-    
-
     
     def run_moog(self, output=False):
         '''
