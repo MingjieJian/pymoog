@@ -7,9 +7,9 @@ The synthetic spectra from optical to near infrared region of the model stars in
 This package can be run in Linux or Mac system.
 
 ![](demo_sun/spectra.png)
-** Part of the infrared observed (from [BASS2000](http://bass2000.obspm.fr/solar_spect.php)) and synthetic solar spectra by MOOG **
+*Part of the infrared observed (from [BASS2000](http://bass2000.obspm.fr/solar_spect.php)) and synthetic solar spectra by MOOG*
 
-There is also [a standard-alone version](https://github.com/MingjieJian/moog_nosm) of the MOOG used here.
+There is also [a stand-alone version](https://github.com/MingjieJian/moog_nosm) of the MOOG used here.
 
 ## Installation
 
@@ -18,4 +18,4 @@ There is also [a standard-alone version](https://github.com/MingjieJian/moog_nos
 
 ## Tutorial
 
-Please refer to this notebook.
+Please refer to [this notebook](docs/Tutorial.ipynb).

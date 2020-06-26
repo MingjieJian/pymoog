@@ -5,12 +5,17 @@ import mendeleev as md
 import re
 import sys
 import subprocess
+import pkg_resources
+import os
 
-# Convert the element column to element specics
+MOOG_file_path = '{}/.pymoog/files/'.format(os.environ['HOME'])
+
+## Convert the element column to element specics
 
 element2index_dict = {'TiO':[22,8], 'CH':[6,1], 'OH':[8,1], 'MgH':[12,1], 'SiH':[14,1], 'C2':[6,6], 'CN':[6,7], 'CO':[6,8]}
-atoms = pd.read_csv('./files/atoms.csv')
+atoms = pd.read_csv(MOOG_file_path + '/atoms.csv')
 atoms_dict = dict(zip(atoms['symbol'], atoms['mass_number']))
+diss_energy = pd.read_csv(MOOG_file_path + '/dissociation_energy_list.csv')
 
 def get_isotope_list(string):
     '''
@@ -97,8 +102,6 @@ def get_diss_energy(ele_index):
     ele_index : str or float
         The element index in MOOG format.
     '''
-    
-    diss_energy = pd.read_csv('./files/dissociation_energy_list.csv')
     diss_energy['diss_energy(eV)'] = diss_energy['dissociation_energy (kJ/mol)'] / 96.485
     diss_energy_pd = diss_energy
     ele_index = np.floor(float(ele_index))
@@ -160,9 +163,11 @@ def read_linelist(linelist_path, loggf_cut=None):
             colspecs=[(0,11), (11,21), (21,31), (31,41), (41,51), (51,61)],
             names=['wavelength', 'id', 'EP', 'loggf', 'C6', 'D0'],
             skiprows=1)
+    # MOOG seems will crash if there is line with EP larger than 50eV, so they are removed.
+    linelist = linelist[(linelist['EP'] <= 50)]
     if loggf_cut != None:
-        # MOOG seems will crash if there is line with EP larger than 50eV, so they are removed.
-        linelist = linelist[(linelist['loggf'] >= loggf_cut) & (linelist['EP'] <= 50)]
+        linelist = linelist[(linelist['loggf'] >= loggf_cut)]
+        print('fsdfadsf')
         linelist.reset_index(drop=True, inplace=True)
     return linelist
     
