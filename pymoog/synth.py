@@ -3,6 +3,7 @@ from PyAstronomy import pyasl
 import subprocess
 import numpy as np
 import re
+import line_data
 
 MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_FEB2017/'.format(os.environ['HOME'])
 MOOGrun_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
@@ -159,7 +160,7 @@ class synth:
         # cv_situation = os.path.isfile(c_model_path)
         # return c_model_file, cv_situation  
         
-    def prepare_file(self, model_file=None, line_list=None):
+    def prepare_file(self, model_file=None, line_list=None, loggf_cut=-1):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
@@ -178,7 +179,8 @@ class synth:
             
         if line_list == None:
             # Linelist file is not specified, will use built-in VALD linelist according to wavelength specification.
-            
+            vald = line_data.read_linelist('files/linelist/vald_', loggf_cut=loggf_cut)
+            line_data.save_linelist(vald, MOOGrun_path + 'vald_sub')
             self.line_list = 'vald_sub'
         else:
             # Linelist file is specified; record linelist file name and copy to working directory.
@@ -186,9 +188,9 @@ class synth:
             self.line_list = line_list.split('/')[-1]
             
         # Create parameter file.
-        self.create_para_file(self.model_file, self.line_list, start_wav=self.start_wav, end_wav=self.end_wav, )    
+        self.create_para_file()    
         
-    def create_para_file(self, k_model_path, linelist_path, start_wav=15167.0, end_wav=16767.0, del_wav=0.02, smooth='g', atmosphere=1, lines=1):
+    def create_para_file(self, del_wav=0.02, smooth='g', atmosphere=1, lines=1):
         '''
         Function for creating the parameter file of batch.par
         '''
@@ -206,11 +208,11 @@ class synth:
                         "standard_out       '{}'\n".format('MOOG.out1'),
                         "summary_out        '{}'\n".format('MOOG.out2'),
                         "smoothed_out       '{}'\n".format('MOOG.out3'),
-                        "model_in           '{}'\n".format(k_model_path),
-                        "lines_in           '{}'\n".format(linelist_path),
+                        "model_in           '{}'\n".format(self.model_file),
+                        "lines_in           '{}'\n".format(self.line_list),
                         "terminal           'x11'\n",
                         "synlimits\n",
-                        "  {}  {}  {}  5.0\n".format(start_wav, end_wav, del_wav),
+                        "  {}  {}  {}  2.5\n".format(self.start_wav, self.end_wav, del_wav),
                         "plot        3\n",
                         "plotpars    1\n",
                         "  0.0  0.0  0.0  0.0 \n",
