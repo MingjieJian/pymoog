@@ -8,6 +8,7 @@ from pymoog import line_data
 
 MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_FEB2017/'.format(os.environ['HOME'])
 MOOGrun_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
+MOOG_file_path = '{}/.pymoog/files/'.format(os.environ['HOME'])
 
 class synth:
     def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, del_wav=0.02, smooth='g'):
@@ -199,7 +200,7 @@ class synth:
             
         if line_list == None:
             # Linelist file is not specified, will use built-in VALD linelist according to wavelength specification.
-            vald = line_data.read_linelist('files/linelist/vald', loggf_cut=loggf_cut)
+            vald = line_data.read_linelist(MOOG_file_path + '/linelist/vald', loggf_cut=loggf_cut)
             line_data.save_linelist(vald, MOOGrun_path + 'vald_sub', wav_start=self.start_wav, wav_end=self.end_wav)
             self.line_list = 'vald_sub'
         else:

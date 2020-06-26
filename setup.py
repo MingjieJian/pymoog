@@ -12,6 +12,12 @@ if not(os.path.isdir(MOOGMODELING_path)):
 # Create the folder for calculation
 if not(os.path.isdir(MOOGMODELING_path + 'rundir')):
     os.mkdir(MOOGMODELING_path + 'rundir')
+    
+# Copy the files folder into working directory
+if not(os.path.isdir(MOOGMODELING_path + 'files')):
+    os.mkdir(MOOGMODELING_path + 'files')
+rm_status = subprocess.run(['rm', '-r', MOOGMODELING_path + 'files/'], stdout=subprocess.PIPE)
+cp_status = subprocess.run(['cp', '-r', 'pymoog/files', MOOGMODELING_path + 'files'], stdout=subprocess.PIPE)
 
 # Copy the moog_nosm folder to MOOGMODELING_path; if the folder already exist it will be removed first.
 if os.path.isdir(MOOGMODELING_path + 'moog_nosm'):

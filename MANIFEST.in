@@ -1,4 +1,3 @@
-include moog_nosm
+include MANIFEST.in
 include demo_sun
-include pymoog/files
-include pymoog/files/linelist
+recursive-include pymoog/files
