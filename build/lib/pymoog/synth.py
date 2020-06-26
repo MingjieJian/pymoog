@@ -4,7 +4,7 @@ from PyAstronomy import pyasl
 import subprocess
 import numpy as np
 import re
-from pymoog import line_data
+import line_data
 
 MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_FEB2017/'.format(os.environ['HOME'])
 MOOGrun_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
@@ -13,7 +13,6 @@ class synth:
     def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, del_wav=0.02, smooth='g'):
         '''
         Initiate a synth Instance and read the parameters.
-        
         Parameters
         ----------
         teff : int

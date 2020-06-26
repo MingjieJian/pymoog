@@ -5,14 +5,11 @@ import mendeleev as md
 import re
 import sys
 import subprocess
-import pkg_resources
-
-package_path = pkg_resources.resource_filename('pymoog', '')
 
 # Convert the element column to element specics
 
 element2index_dict = {'TiO':[22,8], 'CH':[6,1], 'OH':[8,1], 'MgH':[12,1], 'SiH':[14,1], 'C2':[6,6], 'CN':[6,7], 'CO':[6,8]}
-atoms = pd.read_csv(package_path + '/files/atoms.csv')
+atoms = pd.read_csv('./files/atoms.csv')
 atoms_dict = dict(zip(atoms['symbol'], atoms['mass_number']))
 
 def get_isotope_list(string):
