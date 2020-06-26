@@ -41,8 +41,7 @@ def get_isotope_list(string):
 
 def element2index(string_all):
     '''
-    Convert element string to index in VALD format.
-    Example:  TiO 1, ... (48)TiO -> 822.01648; Fe 1, ... Fe -> 26.0
+    Convert element string to index in VALD format. Example: TiO 1, ... (48)TiO -> 822.01648; Fe 1, ... Fe -> 26.0
     
     Parameters
     ----------
@@ -97,6 +96,7 @@ def element2index(string_all):
 def get_diss_energy(ele_index):
     '''
     Get dissociation for an molecular particle from ele_index.
+    
     Parameters
     ----------
     ele_index : str or float
