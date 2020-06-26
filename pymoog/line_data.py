@@ -1,8 +1,10 @@
+#!/usr/bin/python
 import numpy as np
 import pandas as pd
 import mendeleev as md
 import re
 import sys
+import subprocess
 
 # Convert the element column to element specics
 
@@ -70,7 +72,7 @@ def element2index(string_all):
                 add_list = [ele_name[i]]
             element_string_list = element_string_list + add_list
 
-        ion_stage = int(ion_stage)
+        ion_stage = int(ion_stage) - 1
         element_indices = []
         for ele in element_string_list:
             element_indices.append(md.element(ele).atomic_number)
@@ -159,7 +161,8 @@ def read_linelist(linelist_path, loggf_cut=None):
             names=['wavelength', 'id', 'EP', 'loggf', 'C6', 'D0'],
             skiprows=1)
     if loggf_cut != None:
-        linelist = linelist[linelist['loggf'] >= loggf_cut]
+        # MOOG seems will crash if there is line with EP larger than 50eV, so they are removed.
+        linelist = linelist[(linelist['loggf'] >= loggf_cut) & (linelist['EP'] <= 50)]
         linelist.reset_index(drop=True, inplace=True)
     return linelist
     
@@ -186,6 +189,18 @@ def vald2moog_format(init_linelist_name, out_linelist_name, head=None, loggf_cut
         except ValueError:
             footer_index = 0
  
+    # Delete all the '.
+    file = open(init_linelist_name)
+    file_content = file.readlines()
+    for i in range(len(file_content)):
+        file_content[i] = file_content[i].replace("'", '')
+    file.close()
+    file = open(init_linelist_name, 'w')
+    file.writelines(file_content)
+    file.close()
+    
+    # subprocess.run(['sed', "s/'//g", init_linelist_name, '>', 'temp'])
+    # subprocess.run(['mv', "temp", init_linelist_name])    
     vald_init = pd.read_csv(init_linelist_name,skiprows=2, skipfooter=footer_index, usecols=range(9), engine = 'python' ,
                                 names=['element', 'wavelength', 'EP', 'loggf', 'rad_damp', 'Stark_damp', 'Walls_damp', 'Lande_factor', 'Comment'])
     

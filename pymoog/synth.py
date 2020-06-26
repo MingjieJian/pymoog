@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import os
 from PyAstronomy import pyasl
 import subprocess
@@ -197,7 +198,7 @@ class synth:
             
         if line_list == None:
             # Linelist file is not specified, will use built-in VALD linelist according to wavelength specification.
-            vald = line_data.read_linelist('files/linelist/vald_', loggf_cut=loggf_cut)
+            vald = line_data.read_linelist('files/linelist/vald', loggf_cut=loggf_cut)
             line_data.save_linelist(vald, MOOGrun_path + 'vald_sub', wav_start=self.start_wav, wav_end=self.end_wav)
             self.line_list = 'vald_sub'
         else:
@@ -237,12 +238,12 @@ class synth:
                         "lines_in           '{}'\n".format(self.line_list),
                         "terminal           'x11'\n",
                         "synlimits\n",
-                        "  {}  {}  {}  2.5\n".format(self.start_wav, self.end_wav, del_wav),
+                        "  {}  {}  {}  4.0\n".format(self.start_wav, self.end_wav, del_wav),
                         "plot        3\n",
                         "plotpars    1\n",
                         "  0.0  0.0  0.0  0.0 \n",
                         "  0.0  0.0  0.0  0.0 \n",
-                        "  '{}'  {}  {}  {}  {}  {}\n".format(*smooth_para)
+                        "  '{}'  {:.3f}  {}  {}  {}  {}\n".format(*smooth_para)
                     ]
         MOOG_para_file.writelines(MOOG_contant)
         MOOG_para_file.close()
