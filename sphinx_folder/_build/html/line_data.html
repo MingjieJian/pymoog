@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>line_data &mdash; pymoog 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="synth" href="synth.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> pymoog
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pymoog.html">pymoog</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="synth.html">synth</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">line_data</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymoog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="pymoog.html">pymoog</a> &raquo;</li>
+        
+      <li>line_data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/line_data.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-line_data">
+<span id="line-data"></span><h1>line_data<a class="headerlink" href="#module-line_data" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="line_data.element2index">
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">element2index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string_all</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.element2index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert element string to index in VALD format.
+Example:  TiO 1, … (48)TiO -&gt; 822.01648; Fe 1, … Fe -&gt; 26.0</p>
+<dl class="simple">
+<dt>string_all<span class="classifier">str</span></dt><dd><p>The string in containing element index in VALD linelist. Combination of the first and last column.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="line_data.get_diss_energy">
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">get_diss_energy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ele_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.get_diss_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get dissociation for an molecular particle from ele_index.
+Parameters
+———-
+ele_index : str or float</p>
+<blockquote>
+<div><p>The element index in MOOG format.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="line_data.get_isotope_list">
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">get_isotope_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.get_isotope_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the isotope list of element from the last column of VALD line list.
+Example:  (48)TiO -&gt; [48, 16]</p>
+<dl class="simple">
+<dt>string<span class="classifier">str</span></dt><dd><p>The string in the format of “(d*)[A-Z][a-z]*”. This is the last part in VALD linelist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="line_data.read_linelist">
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">read_linelist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">linelist_path</span></em>, <em class="sig-param"><span class="n">loggf_cut</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.read_linelist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the post-processed linelist.</p>
+<dl class="simple">
+<dt>linelist_path<span class="classifier">str</span></dt><dd><p>The MOOG format line list</p>
+</dd>
+<dt>loggf_cut<span class="classifier">float, optional</span></dt><dd><p>Cut on loggf (only save for the lines with loggf &gt; loggf_cut)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="line_data.save_linelist">
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">save_linelist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">linelist_all</span></em>, <em class="sig-param"><span class="n">sub_ll_name</span></em>, <em class="sig-param"><span class="n">wav_start</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">wav_end</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'vald'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.save_linelist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the linelist in MOOG format into specified position.</p>
+<dl class="simple">
+<dt>linelist_all<span class="classifier">pandas.Dataframe</span></dt><dd><p>The Dataframe of linelist in MOOG format</p>
+</dd>
+<dt>sub_ll_name<span class="classifier">str</span></dt><dd><p>The name of the line list to be saved into.</p>
+</dd>
+<dt>wav_start<span class="classifier">float</span></dt><dd><p>Start wavelength of the line list.</p>
+</dd>
+<dt>end_start<span class="classifier">float</span></dt><dd><p>End wavelength of the line list.</p>
+</dd>
+<dt>type<span class="classifier">str, = ‘vald’</span></dt><dd><p>Type of the line list. Now only ‘vald’ is supported.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="line_data.vald2moog_format">
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">vald2moog_format</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">init_linelist_name</span></em>, <em class="sig-param"><span class="n">out_linelist_name</span></em>, <em class="sig-param"><span class="n">head</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loggf_cut</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.vald2moog_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform VALD linelist into MOOG format.</p>
+<dl class="simple">
+<dt>init_linelist_name<span class="classifier">str</span></dt><dd><p>The VALD format line list.</p>
+</dd>
+<dt>out_linelist_name<span class="classifier">str</span></dt><dd><p>Output line list name</p>
+</dd>
+<dt>head<span class="classifier">int, optional</span></dt><dd><p>If specified then only save the first <cite>head</cite> number of lines.</p>
+</dd>
+<dt>loggf_cut<span class="classifier">float, optional</span></dt><dd><p>Cut on loggf (only save for the lines with loggf &gt; loggf_cut)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="synth.html" class="btn btn-neutral float-left" title="synth" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Mingjie Jian, Pranav Satheesh and Kruthi Krishna
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

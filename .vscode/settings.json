@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "/home/pranav/miniconda3/envs/codeastro/bin/python"
+    "python.pythonPath": "/home/mingjie/software/anaconda3/envs/codeastro/bin/python",
+    "restructuredtext.confPath": "${workspaceFolder}/sphinx_folder"
 }
