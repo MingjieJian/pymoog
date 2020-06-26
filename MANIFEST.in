@@ -1,2 +1,4 @@
 include moog_nosm
 include demo_sun
+include pymoog/files
+include pymoog/files/linelist
