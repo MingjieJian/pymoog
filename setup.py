@@ -63,7 +63,11 @@ setuptools.setup(
       ],
       packages=setuptools.find_packages(),
       install_requires=[
-          'numpy>=1.17.0',
+          'numpy >= 1.18.0',
+          'pandas >= 1.0.0',
+          'PyAstronomy >= 0.15.0',
+          'matplotlib >= 3.1.0',
+          'mendeleev >= 0.6.0'
       ],
       include_package_data=True,
       zip_safe=False)
