@@ -13,7 +13,12 @@ atoms_dict = dict(zip(atoms['symbol'], atoms['mass_number']))
 def get_isotope_list(string):
     '''
     Get the isotope list of element from the last column of VALD line list.
-    (48)TiO -> [48, 16]
+    Example:  (48)TiO -> [48, 16]
+    
+    Parameters
+    ----------
+    string : str
+        The string in the format of "(\d*)[A-Z][a-z]*". This is the last part in VALD linelist.
     '''
     a = re.findall(r'\(\d*\)|[A-Z][a-z]*', string)
     isotope_list = []
@@ -28,6 +33,15 @@ def get_isotope_list(string):
     return isotope_list
 
 def element2index(string_all):
+    '''
+    Convert element string to index in VALD format.
+    Example:  TiO 1, ... (48)TiO -> 822.01648; Fe 1, ... Fe -> 26.0
+    
+    Parameters
+    ----------
+    string_all : str
+        The string in containing element index in VALD linelist. Combination of the first and last column.
+    '''   
     string, isotope_string = string_all.split(',')
     isotope_string = isotope_string[-12:]
     element_string, ion_stage = string.split(' ')
@@ -76,6 +90,10 @@ def element2index(string_all):
 def get_diss_energy(ele_index):
     '''
     Get dissociation for an molecular particle from ele_index.
+    Parameters
+    ----------
+    ele_index : str or float
+        The element index in MOOG format.
     '''
     
     diss_energy = pd.read_csv('./files/dissociation_energy_list.csv')
@@ -89,6 +107,22 @@ def get_diss_energy(ele_index):
         return np.nan
     
 def save_linelist(linelist_all, sub_ll_name, wav_start=None, wav_end=None, type='vald'):
+    '''
+    Save the linelist in MOOG format into specified position.
+    
+    Parameters
+    ----------
+    linelist_all : pandas.Dataframe
+        The Dataframe of linelist in MOOG format
+    sub_ll_name : str
+        The name of the line list to be saved into.
+    wav_start : float
+        Start wavelength of the line list.
+    end_start : float
+        End wavelength of the line list.
+    type : str, = 'vald'
+        Type of the line list. Now only 'vald' is supported.
+    '''
     if type != 'vald':
         raise Exception('Only vald linelist is supported!')
     
@@ -112,6 +146,13 @@ def save_linelist(linelist_all, sub_ll_name, wav_start=None, wav_end=None, type=
 def read_linelist(linelist_path, loggf_cut=None):
     '''
     Read the post-processed linelist.
+    
+    Parameters
+    ----------
+    linelist_path : str
+        The MOOG format line list
+    loggf_cut : float, optional
+        Cut on loggf (only save for the lines with loggf > loggf_cut)
     '''
     linelist = pd.read_fwf(linelist_path,
             colspecs=[(0,11), (11,21), (21,31), (31,41), (41,51), (51,61)],
@@ -124,7 +165,18 @@ def read_linelist(linelist_path, loggf_cut=None):
     
 def vald2moog_format(init_linelist_name, out_linelist_name, head=None, loggf_cut=None):
     '''
-    Transform VALD linelist into MOOG format for a given wavlength range.
+    Transform VALD linelist into MOOG format.
+    
+    Parameters
+    ----------
+    init_linelist_name : str
+        The VALD format line list.
+    out_linelist_name : str
+        Output line list name
+    head : int, optional
+        If specified then only save the first `head` number of lines.
+    loggf_cut : float, optional
+        Cut on loggf (only save for the lines with loggf > loggf_cut)
     '''
     # Find the footer index of VALD line pair
     with open(init_linelist_name) as file:
