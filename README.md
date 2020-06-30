@@ -41,7 +41,9 @@ then you need to install gfortran.
 
 #### For Linux 
 
-`sudo apt install gcc`
+```
+sudo apt install gcc
+```
 
 #### For Windows
 
