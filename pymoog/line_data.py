@@ -20,7 +20,8 @@ if os.environ.get('READTHEDOCS') != 'True':
 
 def get_isotope_list(string):
     '''
-    Get the isotope list of element from the last column of VALD line list.
+    Get the isotope list of element from the last column of VALD line list. 
+    
     Example:  (48)TiO -> [48, 16]
     
     Parameters
@@ -42,7 +43,9 @@ def get_isotope_list(string):
 
 def element2index(string_all):
     '''
-    Convert element string to index in VALD format. Example: TiO 1, ... (48)TiO -> 822.01648; Fe 1, ... Fe -> 26.0
+    Convert element string to index in VALD format. 
+    
+    Example: TiO 1, ... (48)TiO -> 822.01648; Fe 1, ... Fe -> 26.0.
     
     Parameters
     ----------
@@ -97,6 +100,8 @@ def element2index(string_all):
 def get_diss_energy(ele_index):
     '''
     Get dissociation for an molecular particle from ele_index.
+    
+    Only support those in VALD linelist.
     
     Parameters
     ----------
