@@ -164,10 +164,7 @@
 <p>Example: TiO 1, … (48)TiO -&gt; 822.01648; Fe 1, … Fe -&gt; 26.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>string_all</strong><span class="classifier">str</span></dt><dd><p>The string in containing element index in VALD linelist. Combination of the first and last column.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>string_all</strong> (<em>str</em>) – The string in containing element index in VALD linelist. Combination of the first and last column.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -179,10 +176,7 @@
 <p>Only support those in VALD linelist.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ele_index</strong><span class="classifier">str or float</span></dt><dd><p>The element index in MOOG format.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>ele_index</strong> (<em>str</em><em> or </em><em>float</em>) – The element index in MOOG format.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -194,10 +188,7 @@
 <p>Example:  (48)TiO -&gt; [48, 16]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>string</strong><span class="classifier">str</span></dt><dd><p>The string in the format of “(d*)[A-Z][a-z]*”. This is the last part in VALD linelist.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – The string in the format of “(d*)[A-Z][a-z]*”. This is the last part in VALD linelist.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -208,12 +199,10 @@
 <dd><p>Read the post-processed linelist.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>linelist_path</strong><span class="classifier">str</span></dt><dd><p>The MOOG format line list</p>
-</dd>
-<dt><strong>loggf_cut</strong><span class="classifier">float, optional</span></dt><dd><p>Cut on loggf (only save for the lines with loggf &gt; loggf_cut)</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>linelist_path</strong> (<em>str</em>) – The MOOG format line list</p></li>
+<li><p><strong>loggf_cut</strong> (<em>float</em><em>, </em><em>optional</em>) – Cut on loggf (only save for the lines with loggf &gt; loggf_cut)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -224,18 +213,13 @@
 <dd><p>Save the linelist in MOOG format into specified position.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>linelist_all</strong><span class="classifier">pandas.Dataframe</span></dt><dd><p>The Dataframe of linelist in MOOG format</p>
-</dd>
-<dt><strong>sub_ll_name</strong><span class="classifier">str</span></dt><dd><p>The name of the line list to be saved into.</p>
-</dd>
-<dt><strong>wav_start</strong><span class="classifier">float</span></dt><dd><p>Start wavelength of the line list.</p>
-</dd>
-<dt><strong>end_start</strong><span class="classifier">float</span></dt><dd><p>End wavelength of the line list.</p>
-</dd>
-<dt><strong>type</strong><span class="classifier">str, = ‘vald’</span></dt><dd><p>Type of the line list. Now only ‘vald’ is supported.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>linelist_all</strong> (<em>pandas.Dataframe</em>) – The Dataframe of linelist in MOOG format</p></li>
+<li><p><strong>sub_ll_name</strong> (<em>str</em>) – The name of the line list to be saved into.</p></li>
+<li><p><strong>wav_start</strong> (<em>float</em>) – Start wavelength of the line list.</p></li>
+<li><p><strong>end_start</strong> (<em>float</em>) – End wavelength of the line list.</p></li>
+<li><p><strong>type</strong> (<em>str</em><em>, </em><em>= 'vald'</em>) – Type of the line list. Now only ‘vald’ is supported.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -246,16 +230,12 @@
 <dd><p>Transform VALD linelist into MOOG format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>init_linelist_name</strong><span class="classifier">str</span></dt><dd><p>The VALD format line list.</p>
-</dd>
-<dt><strong>out_linelist_name</strong><span class="classifier">str</span></dt><dd><p>Output line list name</p>
-</dd>
-<dt><strong>head</strong><span class="classifier">int, optional</span></dt><dd><p>If specified then only save the first <cite>head</cite> number of lines.</p>
-</dd>
-<dt><strong>loggf_cut</strong><span class="classifier">float, optional</span></dt><dd><p>Cut on loggf (only save for the lines with loggf &gt; loggf_cut)</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>init_linelist_name</strong> (<em>str</em>) – The VALD format line list.</p></li>
+<li><p><strong>out_linelist_name</strong> (<em>str</em>) – Output line list name</p></li>
+<li><p><strong>head</strong> (<em>int</em><em>, </em><em>optional</em>) – If specified then only save the first <cite>head</cite> number of lines.</p></li>
+<li><p><strong>loggf_cut</strong> (<em>float</em><em>, </em><em>optional</em>) – Cut on loggf (only save for the lines with loggf &gt; loggf_cut)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
