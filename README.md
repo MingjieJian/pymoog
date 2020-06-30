@@ -39,19 +39,11 @@ command not found: gfortran
 
 then you need to install gfortran.
 
-#### For Linux 
+- Linux: `sudo apt install gcc`
 
-```
-sudo apt install gcc
-```
+-  Windows: please use [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/) and follow the instruction for Linux.
 
-#### For Windows
-
-Please use [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/) and follow the instruction for Linux.
-
-#### For Mac
-
-Please refer to [this post](https://discussions.apple.com/thread/8336714); the main point is using `brew` to install: `brew install gcc`.
+- Mac: please refer to [this post](https://discussions.apple.com/thread/8336714); the main point is using `brew` to install (`brew install gcc`).
 I have no experience on using Mac so I haven't test it. 
 
 ### <a name="install-pymoog"></a>Install pymog
