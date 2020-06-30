@@ -13,9 +13,10 @@ MOOG_file_path = '{}/.pymoog/files/'.format(os.environ['HOME'])
 ## Convert the element column to element specics
 
 element2index_dict = {'TiO':[22,8], 'CH':[6,1], 'OH':[8,1], 'MgH':[12,1], 'SiH':[14,1], 'C2':[6,6], 'CN':[6,7], 'CO':[6,8]}
-atoms = pd.read_csv(MOOG_file_path + '/atoms.csv')
-atoms_dict = dict(zip(atoms['symbol'], atoms['mass_number']))
-diss_energy = pd.read_csv(MOOG_file_path + '/dissociation_energy_list.csv')
+if os.environ.get('READTHEDOCS') != 'True':
+    atoms = pd.read_csv(MOOG_file_path + '/atoms.csv')
+    atoms_dict = dict(zip(atoms['symbol'], atoms['mass_number']))
+    diss_energy = pd.read_csv(MOOG_file_path + '/dissociation_energy_list.csv')
 
 def get_isotope_list(string):
     '''
