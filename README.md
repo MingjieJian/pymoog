@@ -1,5 +1,7 @@
 # pymoog
 
+[![Documentation Status](https://readthedocs.org/projects/pymoog/badge/?version=latest)](https://pymoog.readthedocs.io/en/latest/?badge=latest)
+
 > We present you a black-box.
 
 `pymoog` is a python3 wrapper for running the LTE spectrum synthesis part of the code [MOOG](https://www.as.utexas.edu/~chris/moog.html) by Chris Sneden.
@@ -9,15 +11,52 @@ This package can be run in Linux or Mac system.
 ![](demo_sun/spectra.png)
 *Part of the infrared observed (from [BASS2000](http://bass2000.obspm.fr/solar_spect.php)) and synthetic solar spectra by MOOG*
 
-There is also [a stand-alone version](https://github.com/MingjieJian/moog_nosm) of the MOOG used here.
+There is also [a stand-alone version](https://github.com/MingjieJian/moog_nosm) of the MOOG used in this package.
 
 ## Installation
 
-Please note that `gfortran` is required before installing `pymoog`.
+### Install gfortran compilar
+
+[gfortran](https://gcc.gnu.org/wiki/GFortran) is a free Fortran compiler as a part of GCC.
+Although it is possible to use other Fortran compiler to compile MOOG, using gfortran is (to my experience) the mose easy one and thus pymoog requires gcc to be installed before pip install. 
+
+- Check whether gfortran is installed in your computer
+
+Type `gfortran` in the terminal; if you get:
+
+```
+gfortran: fatal error: no input files
+compilation terminated.
+```
+
+then gfortran is already installed and please go to [Install pymoog](#install-pumoog). 
+
+If you get:
+
+```
+command not found: gfortran
+```
+
+then you need to install gfortran.
+
+#### For Linux 
+
+`sudo apt install gcc`
+
+#### For Windows
+
+Please use [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/) and follow the instruction for Linux.
+
+#### For Mac
+
+Please refer to [this post](https://discussions.apple.com/thread/8336714); the main point is using `brew` to install: `brew install gcc`.
+I have no experience on using Mac so I haven't test it. 
+
+### <a name="install-pymoog"></a>Install pymog
 
 - `clone` this repository and `cd` into the corresponding folder;
 - `pip install .`
-- `pip install -r requirements.txt`
+ 
 
 ## Tutorial
 
