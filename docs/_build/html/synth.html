@@ -161,176 +161,124 @@
 <dl class="py class">
 <dt id="synth.synth">
 <em class="property">class </em><code class="sig-prename descclassname">synth.</code><code class="sig-name descname">synth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">teff</span></em>, <em class="sig-param"><span class="n">logg</span></em>, <em class="sig-param"><span class="n">m_h</span></em>, <em class="sig-param"><span class="n">start_wav</span></em>, <em class="sig-param"><span class="n">end_wav</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">del_wav</span><span class="o">=</span><span class="default_value">0.02</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">'g'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth" title="Permalink to this definition">¶</a></dt>
-<dd><p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#synth.synth.KURUCZ_convert" title="synth.synth.KURUCZ_convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KURUCZ_convert</span></code></a>(self[, model_path, vmicro, …])</p></td>
-<td><p>Convert the model file of ATLAS9-APOGEE in to MOOG format.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#synth.synth.KURUCZ_download" title="synth.synth.KURUCZ_download"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KURUCZ_download</span></code></a>(self[, save_name])</p></td>
-<td><p>Download the Kurucz ATLAS9 model using pyasl.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#synth.synth.create_para_file" title="synth.synth.create_para_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_para_file</span></code></a>(self[, del_wav, smooth, …])</p></td>
-<td><p>Function for creating the parameter file of batch.par</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#synth.synth.prepare_file" title="synth.synth.prepare_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_file</span></code></a>(self[, model_file, line_list, …])</p></td>
-<td><p>Prepare the model, linelist and control files for MOOG.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#synth.synth.read_spectra" title="synth.synth.read_spectra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_spectra</span></code></a>(self[, type])</p></td>
-<td><p>Read the output spectra of MOOG.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#synth.synth.run_moog" title="synth.synth.run_moog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_moog</span></code></a>(self[, output])</p></td>
-<td><p>Run MOOG and print the reuslt if required.</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
+<dd><dl class="py method">
 <dt id="synth.synth.KURUCZ_convert">
-<code class="sig-name descname">KURUCZ_convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">model_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vmicro</span><span class="o">=</span><span class="default_value">2.0</span></em>, <em class="sig-param"><span class="n">abun_change</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">converted_model_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.KURUCZ_convert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">KURUCZ_convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vmicro</span><span class="o">=</span><span class="default_value">2.0</span></em>, <em class="sig-param"><span class="n">abun_change</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">converted_model_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.KURUCZ_convert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the model file of ATLAS9-APOGEE in to MOOG format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>model_path</strong><span class="classifier">str, optional</span></dt><dd><p>The path of donloaded model file.</p>
-</dd>
-<dt><strong>v_micro</strong><span class="classifier">float, default 2.0</span></dt><dd><p>Microturbulance velocity of the spectra.</p>
-</dd>
-<dt><strong>abun_change</strong><span class="classifier">list of pairs [int, float]</span></dt><dd><p>Abundance change, have to be a list of pairs of atomic number and [X/Fe] values.</p>
-</dd>
-<dt><strong>converted_model_path</strong><span class="classifier">str, optional</span></dt><dd><p>The name of converted model. Default will be saved into MOOG working folder.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path of donloaded model file.</p></li>
+<li><p><strong>v_micro</strong> (<em>float</em><em>, </em><em>default 2.0</em>) – Microturbulance velocity of the spectra.</p></li>
+<li><p><strong>abun_change</strong> (<em>list of pairs</em><em> [</em><em>int</em><em>, </em><em>float</em><em>]</em>) – Abundance change, have to be a list of pairs of atomic number and [X/Fe] values.</p></li>
+<li><p><strong>converted_model_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of converted model. Default will be saved into MOOG working folder.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="synth.synth.KURUCZ_download">
-<code class="sig-name descname">KURUCZ_download</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">save_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.KURUCZ_download" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">KURUCZ_download</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.KURUCZ_download" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download the Kurucz ATLAS9 model using pyasl.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>teff</strong><span class="classifier">int</span></dt><dd><p>The effective temperature of the model</p>
-</dd>
-<dt><strong>logg</strong><span class="classifier">float</span></dt><dd><p>logg value of the model</p>
-</dd>
-<dt><strong>m_h</strong><span class="classifier">float</span></dt><dd><p>[M/H] value (overall metallicity) of the model</p>
-</dd>
-<dt><strong>save_name</strong><span class="classifier">str</span></dt><dd><p>The path to save the model file (including the name).</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>teff</strong> (<em>int</em>) – The effective temperature of the model</p></li>
+<li><p><strong>logg</strong> (<em>float</em>) – logg value of the model</p></li>
+<li><p><strong>m_h</strong> (<em>float</em>) – [M/H] value (overall metallicity) of the model</p></li>
+<li><p><strong>save_name</strong> (<em>str</em>) – The path to save the model file (including the name).</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>self.model_path</strong><span class="classifier">str</span></dt><dd><p>The path and name of saved model.</p>
+<dd class="field-even"><p><strong>self.model_path</strong> – The path and name of saved model.</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="synth.synth.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">teff</span></em>, <em class="sig-param"><span class="n">logg</span></em>, <em class="sig-param"><span class="n">m_h</span></em>, <em class="sig-param"><span class="n">start_wav</span></em>, <em class="sig-param"><span class="n">end_wav</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">del_wav</span><span class="o">=</span><span class="default_value">0.02</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">'g'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">teff</span></em>, <em class="sig-param"><span class="n">logg</span></em>, <em class="sig-param"><span class="n">m_h</span></em>, <em class="sig-param"><span class="n">start_wav</span></em>, <em class="sig-param"><span class="n">end_wav</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">del_wav</span><span class="o">=</span><span class="default_value">0.02</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">'g'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initiate a synth Instance and read the parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>teff</strong><span class="classifier">int</span></dt><dd><p>The effective temperature of the model</p>
-</dd>
-<dt><strong>logg</strong><span class="classifier">float</span></dt><dd><p>logg value of the model</p>
-</dd>
-<dt><strong>m_h</strong><span class="classifier">float</span></dt><dd><p>[M/H] value (overall metallicity) of the model</p>
-</dd>
-<dt><strong>start_wav</strong><span class="classifier">float</span></dt><dd><p>The start wavelength of synthetic spenctra</p>
-</dd>
-<dt><strong>end_wav</strong><span class="classifier">float</span></dt><dd><p>The end wavelength of synthetic spenctra</p>
-</dd>
-<dt><strong>resolution</strong><span class="classifier">float</span></dt><dd><p>Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>teff</strong> (<em>int</em>) – The effective temperature of the model</p></li>
+<li><p><strong>logg</strong> (<em>float</em>) – logg value of the model</p></li>
+<li><p><strong>m_h</strong> (<em>float</em>) – [M/H] value (overall metallicity) of the model</p></li>
+<li><p><strong>start_wav</strong> (<em>float</em>) – The start wavelength of synthetic spenctra</p></li>
+<li><p><strong>end_wav</strong> (<em>float</em>) – The end wavelength of synthetic spenctra</p></li>
+<li><p><strong>resolution</strong> (<em>float</em>) – Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="synth.synth.create_para_file">
-<code class="sig-name descname">create_para_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">del_wav</span><span class="o">=</span><span class="default_value">0.02</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">'g'</span></em>, <em class="sig-param"><span class="n">atmosphere</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">lines</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.create_para_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_para_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">del_wav</span><span class="o">=</span><span class="default_value">0.02</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">'g'</span></em>, <em class="sig-param"><span class="n">atmosphere</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">lines</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.create_para_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function for creating the parameter file of batch.par</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>del_wav</strong><span class="classifier">float, optional</span></dt><dd><p>The sampling distance of synthetic spectra. Default 0.02.</p>
-</dd>
-<dt><strong>smooth</strong><span class="classifier">str, optional</span></dt><dd><p>Line profile to be used to smooth the synthetic spectra, same as decribed in MOOG documention. Default Gaussian.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>del_wav</strong> (<em>float</em><em>, </em><em>optional</em>) – The sampling distance of synthetic spectra. Default 0.02.</p></li>
+<li><p><strong>smooth</strong> (<em>str</em><em>, </em><em>optional</em>) – Line profile to be used to smooth the synthetic spectra, same as decribed in MOOG documention. Default Gaussian.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="synth.synth.prepare_file">
-<code class="sig-name descname">prepare_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">model_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">line_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loggf_cut</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.prepare_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">prepare_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">line_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loggf_cut</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.prepare_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare the model, linelist and control files for MOOG.
 Can either provide stellar parameters and wavelengths or provide file names.
 If fine name(s) provided, the files will be copied to working directory for calculation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>model_file</strong><span class="classifier">str, optional</span></dt><dd><p>The name of the model file. If not specified will download Kurucz model.</p>
-</dd>
-<dt><strong>line_list</strong><span class="classifier">str</span></dt><dd><p>The name of the linelist file. If not specified will use built-in VALD linelist.</p>
-</dd>
-<dt><strong>logf_cut</strong><span class="classifier">float, optional</span></dt><dd><p>The cut in loggf; if specified will only include the lines with loggf &gt;= loggf_cut.</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_file</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the model file. If not specified will download Kurucz model.</p></li>
+<li><p><strong>line_list</strong> (<em>str</em>) – The name of the linelist file. If not specified will use built-in VALD linelist.</p></li>
+<li><p><strong>logf_cut</strong> (<em>float</em><em>, </em><em>optional</em>) – The cut in loggf; if specified will only include the lines with loggf &gt;= loggf_cut.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="synth.synth.read_spectra">
-<code class="sig-name descname">read_spectra</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'smooth'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.read_spectra" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read_spectra</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'smooth'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.read_spectra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the output spectra of MOOG.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>type</strong><span class="classifier">str, default ‘smooth’</span></dt><dd><p>Decide the type of spectra to be read. ‘smooth’ will read the smoothed spectra (MOOG.out3), and ‘standard’ will read the un-smoothed one (MOOG.out2).</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>type</strong> (<em>str</em><em>, </em><em>default 'smooth'</em>) – Decide the type of spectra to be read. ‘smooth’ will read the smoothed spectra (MOOG.out3), and ‘standard’ will read the un-smoothed one (MOOG.out2).</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>wav</strong><span class="classifier">a numpy array</span></dt><dd><p>An array of wavelength</p>
-</dd>
-<dt><strong>flux</strong><span class="classifier">a numpy array</span></dt><dd><p>An array of flux</p>
-</dd>
-</dl>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>wav</strong> (<em>a numpy array</em>) – An array of wavelength</p></li>
+<li><p><strong>flux</strong> (<em>a numpy array</em>) – An array of flux</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="synth.synth.run_moog">
-<code class="sig-name descname">run_moog</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.run_moog" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run_moog</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.run_moog" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run MOOG and print the reuslt if required.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>output</strong><span class="classifier">boolen, default False</span></dt><dd><p>If set to True, then print the out put of MOOG.</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>output</strong> (<em>boolen</em><em>, </em><em>default False</em>) – If set to True, then print the out put of MOOG.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>None. Three files MOOG.out1, MOOG.out2 and MOOG.out3 will be save in the pymoog working path.</dt><dd></dd>
-</dl>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None. Three files MOOG.out1, MOOG.out2 and MOOG.out3 will be save in the pymoog working path.</p>
 </dd>
 </dl>
 </dd></dl>
