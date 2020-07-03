@@ -1,0 +1,32 @@
+{
+  "name": "pymoog",
+  "version": "0.0.1",
+  "description": "[![Documentation Status](https://readthedocs.org/projects/pymoog/badge/?version=latest)](https://pymoog.readthedocs.io/en/latest/?badge=latest)",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "cz-conventional-changelog": "^3.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MingjieJian/pymoog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MingjieJian/pymoog/issues"
+  },
+  "homepage": "https://github.com/MingjieJian/pymoog#readme",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
