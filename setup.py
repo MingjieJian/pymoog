@@ -59,9 +59,10 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Framework :: IPython",
         "Operating System :: OS Independent",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 2 - Pre-Alpha",
         "Topic :: Scientific/Engineering :: Astronomy"
       ],
+      python_requires=">=3.5",
       packages=setuptools.find_packages(),
       install_requires=[
           'numpy >= 1.18.0',
