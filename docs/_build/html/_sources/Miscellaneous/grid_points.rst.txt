@@ -1,0 +1,25 @@
+Model grid points
+=================
+
+Kurucz model
+------------
+
+The metallicity is from -5 to 1.0 with a step of 0.5, except in -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3.
+logg grid is from 0 to 5 with a step of 0.5.
+Teff grid is from 3500 to 50000 with a step of 250, 500, 1000 or more.
+
+.. image:: ../img/grid_points_kurucz/m_h-5.0.png
+.. image:: ../img/grid_points_kurucz/m_h-4.5.png
+.. image:: ../img/grid_points_kurucz/m_h-4.0.png
+.. image:: ../img/grid_points_kurucz/m_h-3.5.png
+.. image:: ../img/grid_points_kurucz/m_h-3.0.png
+.. image:: ../img/grid_points_kurucz/m_h-2.5.png
+.. image:: ../img/grid_points_kurucz/m_h-2.0.png
+.. image:: ../img/grid_points_kurucz/m_h-1.5.png
+.. image:: ../img/grid_points_kurucz/m_h-0.5.png
+.. image:: ../img/grid_points_kurucz/m_h-0.3.png
+.. image:: ../img/grid_points_kurucz/m_h+0.0.png
+.. image:: ../img/grid_points_kurucz/m_h+0.1.png
+.. image:: ../img/grid_points_kurucz/m_h+0.2.png
+.. image:: ../img/grid_points_kurucz/m_h+0.5.png
+.. image:: ../img/grid_points_kurucz/m_h+1.0.png

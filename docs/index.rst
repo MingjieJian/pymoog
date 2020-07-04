@@ -11,6 +11,8 @@ Welcome to pymoog's documentation!
    :caption: Contents:
 
    pymoog
+   Miscellaneous <miscellaneous>
+
 
 Indices and tables
 ==================
