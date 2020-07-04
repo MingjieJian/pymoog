@@ -1,0 +1,7 @@
+Miscellaneous
+=============
+
+.. toctree::
+   :maxdepth: 1
+
+   Model grid points <grid_points>
