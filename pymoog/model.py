@@ -12,10 +12,11 @@ MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_FEB2017/'.format(os.environ['HOME'])
 MOOG_run_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
 MOOG_file_path = '{}/.pymoog/files/'.format(os.environ['HOME'])
 
-directory_path = os.path.dirname(os.path.abspath(__file__))
-grid_kurucz = pd.read_csv(directory_path + '/files/grid_points_kurucz.csv')
-grid_matrix = np.array(grid_kurucz[['Teff', 'logg', 'm_h']])
-tri = Delaunay(grid_matrix)
+if os.environ.get('READTHEDOCS') != 'True':
+    directory_path = os.path.dirname(os.path.abspath(__file__))
+    grid_kurucz = pd.read_csv(directory_path + '/files/grid_points_kurucz.csv')
+    grid_matrix = np.array(grid_kurucz[['Teff', 'logg', 'm_h']])
+    tri = Delaunay(grid_matrix)
     
 def read_Kurucz_model(model_path):
     '''
