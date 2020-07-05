@@ -2,8 +2,4 @@ synth
 =================
 
 .. autoclass:: synth.synth
-<<<<<<< HEAD
    :members: __init__, prepare_file, create_para_file, run_moog, read_spectra    
-=======
-   :members: __init__, KURUCZ_download, KURUCZ_convert, prepare_file, create_para_file, run_moog, read_spectra    
->>>>>>> master
