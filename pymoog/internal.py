@@ -8,6 +8,7 @@ import os
 from pymoog import model
 import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
+import line_data
 
 MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_FEB2017/'.format(os.environ['HOME'])
 MOOG_run_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
@@ -116,3 +117,15 @@ def plot_model_grid():
         plt.tight_layout()
         plt.savefig('../docs/img/grid_points_kurucz/m_h{:+.1f}.png'.format(m_h), dpi=250)
         plt.close()
+        
+def combine_linelist()
+    for ele in ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Fe']:
+        if ele == 'H':
+            vald = line_data.read_linelist('files/linelist/vald_H')
+        else:
+            vald = pd.concat([vald, line_data.read_linelist('files/linelist/vald_{}'.format(ele))])
+
+    vald.sort_values('wavelength', inplace=True)
+    vald.reset_index(drop=True, inplace=True)
+
+    line_data.save_linelist(vald, 'files/linelist/vald')

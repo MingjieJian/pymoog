@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>model &mdash; pymoog 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="line_data" href="line_data.html" />
+    <link rel="prev" title="synth" href="synth.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> pymoog
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pymoog.html">pymoog</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="synth.html">synth</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="line_data.html">line_data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="miscellaneous.html">Miscellaneous</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pymoog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="pymoog.html">pymoog</a> &raquo;</li>
+        
+      <li>model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/model.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-model">
+<span id="model"></span><h1>model<a class="headerlink" href="#module-model" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="model.read_Kurucz_model">
+<code class="sig-prename descclassname">model.</code><code class="sig-name descname">read_Kurucz_model</code><span class="sig-paren">(</span><em class="sig-param">model_path</em><span class="sig-paren">)</span><a class="headerlink" href="#model.read_Kurucz_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the Kurucz model and save it as np.array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>model_path</strong> (<em>str</em>) – The path of Kurucz model.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>abun</strong> (<em>np.array</em>) – The ‘ABUNDANCE CHANGE’ part of Kurucz model. The first column is element number and second column is the abundance change.</p></li>
+<li><p><strong>model_lines</strong> (<em>np.array</em>) – The array of Kurucz model.</p></li>
+<li><p><strong>pradk</strong> (<em>float</em>) – The pradk number in Kurucz model.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="model.interpolate_model">
+<code class="sig-prename descclassname">model.</code><code class="sig-name descname">interpolate_model</code><span class="sig-paren">(</span><em class="sig-param">teff</em>, <em class="sig-param">logg</em>, <em class="sig-param">m_h</em>, <em class="sig-param">to_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#model.interpolate_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the model in Kurucz format according to given stellar paraeters when necessary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>teff</strong> (<em>int</em>) – The effective temperature of the model</p></li>
+<li><p><strong>logg</strong> (<em>float</em>) – logg value of the model</p></li>
+<li><p><strong>m_h</strong> (<em>float</em>) – [M/H] value (overall metallicity) of the model</p></li>
+<li><p><strong>to_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path of Kurucz model. If not given then it will be in MOOG_run_path + ‘model.mod’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="model.save_interpo_model">
+<code class="sig-prename descclassname">model.</code><code class="sig-name descname">save_interpo_model</code><span class="sig-paren">(</span><em class="sig-param">teff</em>, <em class="sig-param">logg</em>, <em class="sig-param">m_h</em>, <em class="sig-param">abun</em>, <em class="sig-param">model_line</em>, <em class="sig-param">pradk</em>, <em class="sig-param">to_path</em><span class="sig-paren">)</span><a class="headerlink" href="#model.save_interpo_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the array of kurucz model (e.g., the output of <cite>read_Kurucz_model</cite>) into a file with Kurucz format. The given stellar parameters will be written into the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>teff</strong> (<em>int</em>) – The effective temperature of the model</p></li>
+<li><p><strong>logg</strong> (<em>float</em>) – logg value of the model</p></li>
+<li><p><strong>m_h</strong> (<em>float</em>) – [M/H] value (overall metallicity) of the model</p></li>
+<li><p><strong>abun</strong> (<em>np.array</em>) – The ‘ABUNDANCE CHANGE’ part with the same format in the output of read_Kurucz_model.</p></li>
+<li><p><strong>model_line</strong> (<em>np.array</em>) – The model_line part with the same format in the output of read_Kurucz_model.</p></li>
+<li><p><strong>pradk</strong> (<em>float</em>) – pradk value.</p></li>
+<li><p><strong>to_path</strong> (<em>str</em>) – The path to save the model.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="model.KURUCZ_convert">
+<code class="sig-prename descclassname">model.</code><code class="sig-name descname">KURUCZ_convert</code><span class="sig-paren">(</span><em class="sig-param">model_path=None</em>, <em class="sig-param">vmicro=2.0</em>, <em class="sig-param">abun_change=None</em>, <em class="sig-param">converted_model_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#model.KURUCZ_convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the model file from Kurucz format in to MOOG format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path of donloaded model file. If not given then it will be MOOG_run_path + ‘model.mod’</p></li>
+<li><p><strong>v_micro</strong> (<em>float</em><em>, </em><em>default 2.0</em>) – Microturbulance velocity of the spectra.</p></li>
+<li><p><strong>abun_change</strong> (<em>list of pairs</em><em> [</em><em>int</em><em>, </em><em>float</em><em>]</em>) – Abundance change, have to be a list of pairs of atomic number and [X/Fe] values.</p></li>
+<li><p><strong>converted_model_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of converted model. Default will be saved into MOOG working folder.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="line_data.html" class="btn btn-neutral float-right" title="line_data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="synth.html" class="btn btn-neutral float-left" title="synth" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Mingjie Jian, Pranav Satheesh and Kruthi Krishna
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
