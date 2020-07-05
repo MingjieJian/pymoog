@@ -30,7 +30,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -161,12 +161,12 @@
             
   <div class="section" id="synth">
 <h1>synth<a class="headerlink" href="#synth" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="synth.synth">
-<em class="property">class </em><code class="sig-prename descclassname">synth.</code><code class="sig-name descname">synth</code><span class="sig-paren">(</span><em class="sig-param">teff</em>, <em class="sig-param">logg</em>, <em class="sig-param">m_h</em>, <em class="sig-param">start_wav</em>, <em class="sig-param">end_wav</em>, <em class="sig-param">resolution</em>, <em class="sig-param">del_wav=0.02</em>, <em class="sig-param">smooth='g'</em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">synth.</code><code class="sig-name descname">synth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">teff</span></em>, <em class="sig-param"><span class="n">logg</span></em>, <em class="sig-param"><span class="n">m_h</span></em>, <em class="sig-param"><span class="n">start_wav</span></em>, <em class="sig-param"><span class="n">end_wav</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">del_wav</span><span class="o">=</span><span class="default_value">0.02</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">'g'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
 <dt id="synth.synth.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">teff</em>, <em class="sig-param">logg</em>, <em class="sig-param">m_h</em>, <em class="sig-param">start_wav</em>, <em class="sig-param">end_wav</em>, <em class="sig-param">resolution</em>, <em class="sig-param">del_wav=0.02</em>, <em class="sig-param">smooth='g'</em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">teff</span></em>, <em class="sig-param"><span class="n">logg</span></em>, <em class="sig-param"><span class="n">m_h</span></em>, <em class="sig-param"><span class="n">start_wav</span></em>, <em class="sig-param"><span class="n">end_wav</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">del_wav</span><span class="o">=</span><span class="default_value">0.02</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">'g'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initiate a synth Instance and read the parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -182,9 +182,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="synth.synth.create_para_file">
-<code class="sig-name descname">create_para_file</code><span class="sig-paren">(</span><em class="sig-param">del_wav=0.02</em>, <em class="sig-param">smooth='g'</em>, <em class="sig-param">atmosphere=1</em>, <em class="sig-param">lines=1</em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.create_para_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_para_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">del_wav</span><span class="o">=</span><span class="default_value">0.02</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">'g'</span></em>, <em class="sig-param"><span class="n">atmosphere</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">lines</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.create_para_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function for creating the parameter file of batch.par</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -196,9 +196,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="synth.synth.prepare_file">
-<code class="sig-name descname">prepare_file</code><span class="sig-paren">(</span><em class="sig-param">model_file=None</em>, <em class="sig-param">line_list=None</em>, <em class="sig-param">loggf_cut=None</em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.prepare_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">prepare_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">line_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loggf_cut</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.prepare_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepare the model, linelist and control files for MOOG.
 Can either provide stellar parameters and wavelengths or provide file names.
 If fine name(s) provided, the files will be copied to working directory for calculation.</p>
@@ -213,9 +213,9 @@ If fine name(s) provided, the files will be copied to working directory for calc
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="synth.synth.read_spectra">
-<code class="sig-name descname">read_spectra</code><span class="sig-paren">(</span><em class="sig-param">type='smooth'</em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.read_spectra" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read_spectra</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'smooth'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.read_spectra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the output spectra of MOOG.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -231,9 +231,9 @@ If fine name(s) provided, the files will be copied to working directory for calc
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="synth.synth.run_moog">
-<code class="sig-name descname">run_moog</code><span class="sig-paren">(</span><em class="sig-param">output=False</em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.run_moog" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run_moog</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#synth.synth.run_moog" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run MOOG and print the reuslt if required.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
