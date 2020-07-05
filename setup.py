@@ -59,16 +59,17 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Framework :: IPython",
         "Operating System :: OS Independent",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 2 - Pre-Alpha",
         "Topic :: Scientific/Engineering :: Astronomy"
       ],
+      python_requires=">=3.5",
       packages=setuptools.find_packages(),
       install_requires=[
           'numpy >= 1.18.0',
           'pandas >= 1.0.0',
-          'PyAstronomy >= 0.15.0',
           'matplotlib >= 3.1.0',
-          'mendeleev >= 0.6.0'
+          'mendeleev >= 0.6.0',
+          'scipy >= 1.4.0'
       ],
       include_package_data=True,
       zip_safe=False)

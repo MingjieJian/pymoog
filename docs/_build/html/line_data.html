@@ -30,13 +30,15 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="synth" href="synth.html" /> 
+    <link rel="next" title="Miscellaneous" href="miscellaneous.html" />
+    <link rel="prev" title="model" href="model.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,9 +87,11 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="pymoog.html">pymoog</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="synth.html">synth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model.html">model</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">line_data</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="miscellaneous.html">Miscellaneous</a></li>
 </ul>
 
             
@@ -157,33 +161,9 @@
             
   <div class="section" id="module-line_data">
 <span id="line-data"></span><h1>line_data<a class="headerlink" href="#module-line_data" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt id="line_data.element2index">
-<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">element2index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string_all</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.element2index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert element string to index in VALD format.</p>
-<p>Example: TiO 1, … (48)TiO -&gt; 822.01648; Fe 1, … Fe -&gt; 26.0.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>string_all</strong> (<em>str</em>) – The string in containing element index in VALD linelist. Combination of the first and last column.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="line_data.get_diss_energy">
-<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">get_diss_energy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ele_index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.get_diss_energy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get dissociation for an molecular particle from ele_index.</p>
-<p>Only support those in VALD linelist.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>ele_index</strong> (<em>str</em><em> or </em><em>float</em>) – The element index in MOOG format.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
+<dl class="function">
 <dt id="line_data.get_isotope_list">
-<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">get_isotope_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.get_isotope_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">get_isotope_list</code><span class="sig-paren">(</span><em class="sig-param">string</em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.get_isotope_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the isotope list of element from the last column of VALD line list.</p>
 <p>Example:  (48)TiO -&gt; [48, 16]</p>
 <dl class="field-list simple">
@@ -193,9 +173,65 @@
 </dl>
 </dd></dl>
 
+<dl class="function">
+<dt id="line_data.element2index">
+<<<<<<< HEAD
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">element2index</code><span class="sig-paren">(</span><em class="sig-param">string_all</em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.element2index" title="Permalink to this definition">¶</a></dt>
+=======
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">element2index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string_all</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.element2index" title="Permalink to this definition">¶</a></dt>
+>>>>>>> master
+<dd><p>Convert element string to index in VALD format.</p>
+<p>Example: TiO 1, … (48)TiO -&gt; 822.01648; Fe 1, … Fe -&gt; 26.0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string_all</strong> (<em>str</em>) – The string in containing element index in VALD linelist. Combination of the first and last column.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="line_data.get_diss_energy">
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">get_diss_energy</code><span class="sig-paren">(</span><em class="sig-param">ele_index</em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.get_diss_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get dissociation for an molecular particle from ele_index.</p>
+<p>Only support those in VALD linelist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ele_index</strong> (<em>str</em><em> or </em><em>float</em>) – The element index in MOOG format.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<<<<<<< HEAD
+<dl class="function">
+<dt id="line_data.save_linelist">
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">save_linelist</code><span class="sig-paren">(</span><em class="sig-param">linelist_all</em>, <em class="sig-param">sub_ll_name</em>, <em class="sig-param">wav_start=None</em>, <em class="sig-param">wav_end=None</em>, <em class="sig-param">type='vald'</em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.save_linelist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the linelist in MOOG format into specified position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>linelist_all</strong> (<em>pandas.Dataframe</em>) – The Dataframe of linelist in MOOG format</p></li>
+<li><p><strong>sub_ll_name</strong> (<em>str</em>) – The name of the line list to be saved into.</p></li>
+<li><p><strong>wav_start</strong> (<em>float</em>) – Start wavelength of the line list.</p></li>
+<li><p><strong>end_start</strong> (<em>float</em>) – End wavelength of the line list.</p></li>
+<li><p><strong>type</strong> (<em>str</em><em>, </em><em>= 'vald'</em>) – Type of the line list. Now only ‘vald’ is supported.</p></li>
+</ul>
+=======
 <dl class="py function">
+<dt id="line_data.get_isotope_list">
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">get_isotope_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.get_isotope_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the isotope list of element from the last column of VALD line list.</p>
+<p>Example:  (48)TiO -&gt; [48, 16]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – The string in the format of “(d*)[A-Z][a-z]*”. This is the last part in VALD linelist.</p>
+>>>>>>> master
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="line_data.read_linelist">
-<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">read_linelist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">linelist_path</span></em>, <em class="sig-param"><span class="n">loggf_cut</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.read_linelist" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">read_linelist</code><span class="sig-paren">(</span><em class="sig-param">linelist_path</em>, <em class="sig-param">loggf_cut=None</em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.read_linelist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the post-processed linelist.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -203,6 +239,8 @@
 <li><p><strong>linelist_path</strong> (<em>str</em>) – The MOOG format line list</p></li>
 <li><p><strong>loggf_cut</strong> (<em>float</em><em>, </em><em>optional</em>) – Cut on loggf (only save for the lines with loggf &gt; loggf_cut)</p></li>
 </ul>
+<<<<<<< HEAD
+=======
 </dd>
 </dl>
 </dd></dl>
@@ -220,13 +258,14 @@
 <li><p><strong>end_start</strong> (<em>float</em>) – End wavelength of the line list.</p></li>
 <li><p><strong>type</strong> (<em>str</em><em>, </em><em>= 'vald'</em>) – Type of the line list. Now only ‘vald’ is supported.</p></li>
 </ul>
+>>>>>>> master
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
+<dl class="function">
 <dt id="line_data.vald2moog_format">
-<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">vald2moog_format</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">init_linelist_name</span></em>, <em class="sig-param"><span class="n">out_linelist_name</span></em>, <em class="sig-param"><span class="n">head</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loggf_cut</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.vald2moog_format" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">vald2moog_format</code><span class="sig-paren">(</span><em class="sig-param">init_linelist_name</em>, <em class="sig-param">out_linelist_name</em>, <em class="sig-param">head=None</em>, <em class="sig-param">loggf_cut=None</em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.vald2moog_format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform VALD linelist into MOOG format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -250,8 +289,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="miscellaneous.html" class="btn btn-neutral float-right" title="Miscellaneous" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="synth.html" class="btn btn-neutral float-left" title="synth" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="model.html" class="btn btn-neutral float-left" title="model" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
