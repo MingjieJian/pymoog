@@ -30,7 +30,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -161,9 +161,41 @@
             
   <div class="section" id="module-model">
 <span id="model"></span><h1>model<a class="headerlink" href="#module-model" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
+<dl class="py function">
+<dt id="model.KURUCZ_convert">
+<code class="sig-prename descclassname">model.</code><code class="sig-name descname">KURUCZ_convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vmicro</span><span class="o">=</span><span class="default_value">2.0</span></em>, <em class="sig-param"><span class="n">abun_change</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">converted_model_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#model.KURUCZ_convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the model file from Kurucz format in to MOOG format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path of donloaded model file. If not given then it will be MOOG_run_path + ‘model.mod’</p></li>
+<li><p><strong>v_micro</strong> (<em>float</em><em>, </em><em>default 2.0</em>) – Microturbulance velocity of the spectra.</p></li>
+<li><p><strong>abun_change</strong> (<em>list of pairs</em><em> [</em><em>int</em><em>, </em><em>float</em><em>]</em>) – Abundance change, have to be a list of pairs of atomic number and [X/Fe] values.</p></li>
+<li><p><strong>converted_model_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of converted model. Default will be saved into MOOG working folder.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="model.interpolate_model">
+<code class="sig-prename descclassname">model.</code><code class="sig-name descname">interpolate_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">teff</span></em>, <em class="sig-param"><span class="n">logg</span></em>, <em class="sig-param"><span class="n">m_h</span></em>, <em class="sig-param"><span class="n">to_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#model.interpolate_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the model in Kurucz format according to given stellar paraeters when necessary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>teff</strong> (<em>int</em>) – The effective temperature of the model</p></li>
+<li><p><strong>logg</strong> (<em>float</em>) – logg value of the model</p></li>
+<li><p><strong>m_h</strong> (<em>float</em>) – [M/H] value (overall metallicity) of the model</p></li>
+<li><p><strong>to_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path of Kurucz model. If not given then it will be in MOOG_run_path + ‘model.mod’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="model.read_Kurucz_model">
-<code class="sig-prename descclassname">model.</code><code class="sig-name descname">read_Kurucz_model</code><span class="sig-paren">(</span><em class="sig-param">model_path</em><span class="sig-paren">)</span><a class="headerlink" href="#model.read_Kurucz_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">model.</code><code class="sig-name descname">read_Kurucz_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#model.read_Kurucz_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the Kurucz model and save it as np.array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -180,25 +212,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="model.interpolate_model">
-<code class="sig-prename descclassname">model.</code><code class="sig-name descname">interpolate_model</code><span class="sig-paren">(</span><em class="sig-param">teff</em>, <em class="sig-param">logg</em>, <em class="sig-param">m_h</em>, <em class="sig-param">to_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#model.interpolate_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpolate the model in Kurucz format according to given stellar paraeters when necessary.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>teff</strong> (<em>int</em>) – The effective temperature of the model</p></li>
-<li><p><strong>logg</strong> (<em>float</em>) – logg value of the model</p></li>
-<li><p><strong>m_h</strong> (<em>float</em>) – [M/H] value (overall metallicity) of the model</p></li>
-<li><p><strong>to_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path of Kurucz model. If not given then it will be in MOOG_run_path + ‘model.mod’</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
+<dl class="py function">
 <dt id="model.save_interpo_model">
-<code class="sig-prename descclassname">model.</code><code class="sig-name descname">save_interpo_model</code><span class="sig-paren">(</span><em class="sig-param">teff</em>, <em class="sig-param">logg</em>, <em class="sig-param">m_h</em>, <em class="sig-param">abun</em>, <em class="sig-param">model_line</em>, <em class="sig-param">pradk</em>, <em class="sig-param">to_path</em><span class="sig-paren">)</span><a class="headerlink" href="#model.save_interpo_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">model.</code><code class="sig-name descname">save_interpo_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">teff</span></em>, <em class="sig-param"><span class="n">logg</span></em>, <em class="sig-param"><span class="n">m_h</span></em>, <em class="sig-param"><span class="n">abun</span></em>, <em class="sig-param"><span class="n">model_line</span></em>, <em class="sig-param"><span class="n">pradk</span></em>, <em class="sig-param"><span class="n">to_path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#model.save_interpo_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the array of kurucz model (e.g., the output of <cite>read_Kurucz_model</cite>) into a file with Kurucz format. The given stellar parameters will be written into the file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -210,22 +226,6 @@
 <li><p><strong>model_line</strong> (<em>np.array</em>) – The model_line part with the same format in the output of read_Kurucz_model.</p></li>
 <li><p><strong>pradk</strong> (<em>float</em>) – pradk value.</p></li>
 <li><p><strong>to_path</strong> (<em>str</em>) – The path to save the model.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="model.KURUCZ_convert">
-<code class="sig-prename descclassname">model.</code><code class="sig-name descname">KURUCZ_convert</code><span class="sig-paren">(</span><em class="sig-param">model_path=None</em>, <em class="sig-param">vmicro=2.0</em>, <em class="sig-param">abun_change=None</em>, <em class="sig-param">converted_model_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#model.KURUCZ_convert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert the model file from Kurucz format in to MOOG format.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path of donloaded model file. If not given then it will be MOOG_run_path + ‘model.mod’</p></li>
-<li><p><strong>v_micro</strong> (<em>float</em><em>, </em><em>default 2.0</em>) – Microturbulance velocity of the spectra.</p></li>
-<li><p><strong>abun_change</strong> (<em>list of pairs</em><em> [</em><em>int</em><em>, </em><em>float</em><em>]</em>) – Abundance change, have to be a list of pairs of atomic number and [X/Fe] values.</p></li>
-<li><p><strong>converted_model_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of converted model. Default will be saved into MOOG working folder.</p></li>
 </ul>
 </dd>
 </dl>
