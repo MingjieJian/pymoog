@@ -29,11 +29,7 @@ gfortran: fatal error: no input files
 compilation terminated.
 ```
 
-<<<<<<< HEAD
 then gfortran is already installed and please go to [Install pymoog](#install-pymoog). 
-=======
-then gfortran is already installed and please go to [Install pymoog](#install-pumoog). 
->>>>>>> master
 
 If you get:
 
