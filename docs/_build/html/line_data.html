@@ -175,7 +175,11 @@
 
 <dl class="function">
 <dt id="line_data.element2index">
+<<<<<<< HEAD
 <code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">element2index</code><span class="sig-paren">(</span><em class="sig-param">string_all</em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.element2index" title="Permalink to this definition">¶</a></dt>
+=======
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">element2index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string_all</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.element2index" title="Permalink to this definition">¶</a></dt>
+>>>>>>> master
 <dd><p>Convert element string to index in VALD format.</p>
 <p>Example: TiO 1, … (48)TiO -&gt; 822.01648; Fe 1, … Fe -&gt; 26.0.</p>
 <dl class="field-list simple">
@@ -197,6 +201,7 @@
 </dl>
 </dd></dl>
 
+<<<<<<< HEAD
 <dl class="function">
 <dt id="line_data.save_linelist">
 <code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">save_linelist</code><span class="sig-paren">(</span><em class="sig-param">linelist_all</em>, <em class="sig-param">sub_ll_name</em>, <em class="sig-param">wav_start=None</em>, <em class="sig-param">wav_end=None</em>, <em class="sig-param">type='vald'</em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.save_linelist" title="Permalink to this definition">¶</a></dt>
@@ -210,6 +215,16 @@
 <li><p><strong>end_start</strong> (<em>float</em>) – End wavelength of the line list.</p></li>
 <li><p><strong>type</strong> (<em>str</em><em>, </em><em>= 'vald'</em>) – Type of the line list. Now only ‘vald’ is supported.</p></li>
 </ul>
+=======
+<dl class="py function">
+<dt id="line_data.get_isotope_list">
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">get_isotope_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.get_isotope_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the isotope list of element from the last column of VALD line list.</p>
+<p>Example:  (48)TiO -&gt; [48, 16]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – The string in the format of “(d*)[A-Z][a-z]*”. This is the last part in VALD linelist.</p>
+>>>>>>> master
 </dd>
 </dl>
 </dd></dl>
@@ -224,6 +239,26 @@
 <li><p><strong>linelist_path</strong> (<em>str</em>) – The MOOG format line list</p></li>
 <li><p><strong>loggf_cut</strong> (<em>float</em><em>, </em><em>optional</em>) – Cut on loggf (only save for the lines with loggf &gt; loggf_cut)</p></li>
 </ul>
+<<<<<<< HEAD
+=======
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="line_data.save_linelist">
+<code class="sig-prename descclassname">line_data.</code><code class="sig-name descname">save_linelist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">linelist_all</span></em>, <em class="sig-param"><span class="n">sub_ll_name</span></em>, <em class="sig-param"><span class="n">wav_start</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">wav_end</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'vald'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#line_data.save_linelist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the linelist in MOOG format into specified position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>linelist_all</strong> (<em>pandas.Dataframe</em>) – The Dataframe of linelist in MOOG format</p></li>
+<li><p><strong>sub_ll_name</strong> (<em>str</em>) – The name of the line list to be saved into.</p></li>
+<li><p><strong>wav_start</strong> (<em>float</em>) – Start wavelength of the line list.</p></li>
+<li><p><strong>end_start</strong> (<em>float</em>) – End wavelength of the line list.</p></li>
+<li><p><strong>type</strong> (<em>str</em><em>, </em><em>= 'vald'</em>) – Type of the line list. Now only ‘vald’ is supported.</p></li>
+</ul>
+>>>>>>> master
 </dd>
 </dl>
 </dd></dl>
