@@ -69,7 +69,7 @@ class synth:
             
         if line_list == None:
             # Linelist file is not specified, will use built-in VALD linelist according to wavelength specification.
-            vald = line_data.read_linelist(MOOG_file_path + '/linelist/vald', loggf_cut=loggf_cut)
+            vald = line_data.read_linelist(MOOG_file_path + 'linelist/ges/ges_hfs_iso', loggf_cut=loggf_cut)
             line_data.save_linelist(vald, MOOG_run_path + 'line.list', wav_start=self.start_wav, wav_end=self.end_wav)
             self.line_list = 'line.list'
         else:

@@ -149,10 +149,8 @@ def save_linelist(linelist_all, sub_ll_name, wav_start=None, wav_end=None, type=
     with open(sub_ll_name, 'w') as file:
         file.write('VALD linelist\n')
         for i in range(len(sub_linelist)):
-            if np.isnan(sub_linelist.iloc[i].values[-1]):
-                file.write('{:10.4f}{:10.5f}{:10.4f}{:10.3f}{:10.3f}\n'.format(*sub_linelist.iloc[i].values[:-1]))
-            else:
-                file.write('{:10.4f}{:10.5f}{:10.4f}{:10.3f}{:10.3f}{:10.3f}\n'.format(*sub_linelist.iloc[i].values))
+            line = '{:10.4f}{:10.5f}{:10.4f}{:10.3f}{:10.3f}{:10.3f}{:10.3f}\n'.format(*sub_linelist.iloc[i].values).replace('nan', '   ')
+            file.write(line)
 
 def read_linelist(linelist_path, loggf_cut=None):
     '''
@@ -166,14 +164,13 @@ def read_linelist(linelist_path, loggf_cut=None):
         Cut on loggf (only save for the lines with loggf > loggf_cut)
     '''
     linelist = pd.read_fwf(linelist_path,
-            colspecs=[(0,11), (11,21), (21,31), (31,41), (41,51), (51,61)],
-            names=['wavelength', 'id', 'EP', 'loggf', 'C6', 'D0'],
+            colspecs=[(0,11), (11,21), (21,31), (31,41), (41,51), (51,61), (61,71)],
+            names=['wavelength', 'id', 'EP', 'loggf', 'C6', 'D0', 'EW'],
             skiprows=1)
-    # MOOG seems will crash if there is line with EP larger than 50eV, so they are removed.
+    # MOOG seems to crash if there is line with EP larger than 50eV, so they are removed.
     linelist = linelist[(linelist['EP'] <= 50)]
     if loggf_cut != None:
         linelist = linelist[(linelist['loggf'] >= loggf_cut)]
-        print('fsdfadsf')
         linelist.reset_index(drop=True, inplace=True)
     return linelist
     
@@ -212,8 +209,7 @@ def vald2moog_format(init_linelist_name, out_linelist_name, head=None, loggf_cut
     
     # subprocess.run(['sed', "s/'//g", init_linelist_name, '>', 'temp'])
     # subprocess.run(['mv', "temp", init_linelist_name])    
-    vald_init = pd.read_csv(init_linelist_name,skiprows=2, skipfooter=footer_index, usecols=range(9), engine = 'python' ,
-                                names=['element', 'wavelength', 'EP', 'loggf', 'rad_damp', 'Stark_damp', 'Walls_damp', 'Lande_factor', 'Comment'])
+    vald_init = pd.read_csv(init_linelist_name,skiprows=2, skipfooter=footer_index, usecols=range(9), engine = 'python', names=['element', 'wavelength', 'EP', 'loggf', 'rad_damp', 'Stark_damp', 'Walls_damp', 'Lande_factor', 'Comment'])
     
     if head != None:
         vald_init = vald_init[:head]

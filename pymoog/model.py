@@ -95,7 +95,7 @@ def save_interpo_model(teff, logg, m_h, abun, model_line, pradk, to_path):
     else:
         pass
 
-    content = ['Kurucz model: ' + 'TEFF   {:.0f}  GRAVITY {:.5f} LTE\n'.format(teff, logg)]
+    content = ['Kurucz model: ' + 'TEFF   {:.1f}  GRAVITY {:.5f} LTE\n'.format(teff, logg)]
     content = content + ['TITLE SDSC GRID  [{:+.1f}]   VTURB 2.0 KM/S    L/H 1.25\n'.format(m_h)]    
     content = content + [' OPACITY IFOP 1 1 1 1 1 1 1 1 1 1 1 1 1 0 1 0 0 0 0 0\n']
     content = content + [' CONVECTION ON   1.25 TURBULENCE OFF  0.00  0.00  0.00  0.00\n']
@@ -223,20 +223,20 @@ def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_mode
     # Convert the model files into MOOG format.
 
     # Read and save the first two lines (except 'TITLE ') into header.
-    header = ['Kurucz model: ' + model_file.readline()]
-    header = header + [model_file.readline()]
-    try:
-        m_h = re.findall(r'\[(.*)\]', header[1])[0]
-    except IndexError:
-        m_h = 0
-        print(header)
+    header = model_file.readline() + model_file.readline()
+    teff, logg, m_h, vmicro_model, l_h = [float(s) for s in re.findall(r'[-+]?[0-9]*\.?[0-9]+', header)]
+    # try:
+    #     m_h = re.findall(r'\[(.*)\]', header[1])[0]
+    # except IndexError:
+    #     m_h = 0
+    #     print(header)
 
     # Read the abundance change as well as model lines.
     temp = model_file.readline() + model_file.readline() + model_file.readline()
 
     abun_list = ''
     temp = model_file.readline()
-    while temp[:17] == ' ABUNDANCE CHANGE':
+    while 'ABUNDANCE CHANGE' in temp[:17]:
         abun_list = abun_list + temp[17:]
         temp = model_file.readline()
     abun = np.array(abun_list.split(), dtype='f').reshape(int(len(abun_list.split())/2), 2)
@@ -272,8 +272,8 @@ def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_mode
     c_model_file = open(c_model_path, 'w')
 
     # Header part
-    c_model_file.writelines(header[0])
-    c_model_file.writelines(header[1])
+    c_model_file.writelines('KURUCZ\n')
+    c_model_file.writelines('TEFF = {:.1f}, LOGG = {:.1f}, M/H = {:.1f}, VTURB = {:.1f}, L/H = {:.2f}\n'.format(teff, logg, m_h, vmicro_model, l_h))
 
     # Model part
     c_model_file.writelines('ntau=       ' + str(model_linen) + '\n')
