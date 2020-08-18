@@ -12,7 +12,7 @@ MOOG_run_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
 MOOG_file_path = '{}/.pymoog/files/'.format(os.environ['HOME'])
 
 class synth:
-    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, del_wav=0.02, smooth='g'):
+    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, del_wav=0.02, smooth='g', line_list='ges'):
         '''
         Initiate a synth Instance and read the parameters.
         
@@ -30,6 +30,8 @@ class synth:
             The end wavelength of synthetic spenctra
         resolution : float
             Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.
+        line_list : str
+            The name of the linelist file. If not specified will use built-in VALD linelist.
         '''
         self.teff = teff
         self.logg = logg
@@ -37,8 +39,9 @@ class synth:
         self.start_wav = start_wav
         self.end_wav = end_wav
         self.resolution = resolution
+        self.line_list = line_list
         
-    def prepare_file(self, model_file=None, line_list=None, loggf_cut=None):
+    def prepare_file(self, model_file=None, loggf_cut=None):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
@@ -48,8 +51,7 @@ class synth:
         ----------
         model_file : str, optional
             The name of the model file. If not specified will download Kurucz model. 
-        line_list : str
-            The name of the linelist file. If not specified will use built-in VALD linelist.
+        
         logf_cut : float, optional
             The cut in loggf; if specified will only include the lines with loggf >= loggf_cut.
         '''
@@ -66,15 +68,13 @@ class synth:
             subprocess.run(['cp', model_file, MOOG_run_path], encoding='UTF-8', stdout=subprocess.PIPE)
             self.model_file = model_file.split('/')[-1]
 
-            
-        if line_list == None:
-            # Linelist file is not specified, will use built-in VALD linelist according to wavelength specification.
-            vald = line_data.read_linelist(MOOG_file_path + 'linelist/ges/ges_hfs_iso', loggf_cut=loggf_cut)
-            line_data.save_linelist(vald, MOOG_run_path + 'line.list', wav_start=self.start_wav, wav_end=self.end_wav)
+        if self.line_list[-5:] != '.list':
+            line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut)
+            line_data.save_linelist(line_list, MOOG_run_path + 'line.list', wav_start=self.start_wav, wav_end=self.end_wav)
             self.line_list = 'line.list'
-        else:
+        elif self.line_list[-5:] == '.list':
             # Linelist file is specified; record linelist file name and copy to working directory.
-            subprocess.run(['cp', line_list, MOOG_run_path], encoding='UTF-8', stdout=subprocess.PIPE)
+            subprocess.run(['cp', self.line_list, MOOG_run_path], encoding='UTF-8', stdout=subprocess.PIPE)
             self.line_list = line_list.split('/')[-1]
             
         # Create parameter file.

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pymoog
-Version: 0.0.1
+Version: 0.0.2
 Summary: The python wrapper to run LTE spectra synthesis code MOOG.
 Home-page: https://github.com/MingjieJian/ir_ldr
 Author: Mingjie Jian, Pranav Satheesh and Kruthi Krishna
@@ -37,7 +37,7 @@ Description: # pymoog
         compilation terminated.
         ```
         
-        then gfortran is already installed and please go to [Install pymoog](#install-pumoog). 
+        then gfortran is already installed and please go to [Install pymoog](#install-pymoog). 
         
         If you get:
         
@@ -67,12 +67,16 @@ Description: # pymoog
         For tutorial, Please refer to [this notebook](docs/Tutorial.ipynb).
         
         Documentation is available in [here](https://pymoog.readthedocs.io/en/latest/).
+        
+        ## Acknowledgement
+        
+        This package has made use of the VALD database, operated at Uppsala University, the Institute of Astronomy RAS in Moscow, and the University of Vienna.
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Framework :: IPython
 Classifier: Operating System :: OS Independent
-Classifier: Development Status :: 3 - Alpha
+Classifier: Development Status :: 2 - Pre-Alpha
 Classifier: Topic :: Scientific/Engineering :: Astronomy
 Requires-Python: >=3.5
 Description-Content-Type: text/markdown

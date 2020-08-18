@@ -1,9 +1,0 @@
-Kurucz model: EFF   4500.  GRAVITY 3.00000 LTE 
-ITLE SDSC GRID  [-2.0]   VTURB 2.0 KM/S    L/H 1.25                            
-ntau=       3
- ABUNDANCE CHANGE 9 -7.48 10 -3.95 11
- ABUNDANCE CHANGE 15 -6.59 16 -4.83 17
- ABUNDANCE CHANGE 21 -8.94 22 -7.05 23
-    2.0E00
-NATOMS      0   -2.0
-NMOL        0

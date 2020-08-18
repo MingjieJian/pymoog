@@ -59,3 +59,7 @@ Once you are done with the installation, you can use the `pymoog` package now on
 For tutorial, Please refer to [this notebook](docs/Tutorial.ipynb).
 
 Documentation is available in [here](https://pymoog.readthedocs.io/en/latest/).
+
+## Acknowledgement
+
+This package has made use of the VALD database, operated at Uppsala University, the Institute of Astronomy RAS in Moscow, and the University of Vienna.
