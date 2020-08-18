@@ -19,6 +19,8 @@ if os.environ.get('READTHEDOCS') != 'True':
         os.mkdir(MOOGMODELING_path + 'files')
     rm_status = subprocess.run(['rm', '-r', MOOGMODELING_path + 'files/'], stdout=subprocess.PIPE)
     cp_status = subprocess.run(['cp', '-r', 'pymoog/files', MOOGMODELING_path + 'files'], stdout=subprocess.PIPE)
+    # untar the kurucz line list.
+    tar_status = subprocess.run(['tar', '-xzvf', MOOGMODELING_path + 'files/linelist/kurucz/kurucz.list.tar.gz', '-C', MOOGMODELING_path + 'files/linelist/kurucz/'], stdout=subprocess.PIPE)
 
     # Copy the moog_nosm folder to MOOGMODELING_path; if the folder already exist it will be removed first.
     if os.path.isdir(MOOGMODELING_path + 'moog_nosm'):
