@@ -12,6 +12,9 @@
 #
 import os
 import sys
+from recommonmark.parser import CommonMarkParser
+from recommonmark.transform import AutoStructify
+
 sys.path.insert(0, os.path.abspath('../pymoog'))
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -57,3 +60,12 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = []
+
+# For AutoStruscfity of Markdown
+github_doc_root = 'https://github.com/rtfd/recommonmark/tree/master/doc/'
+def setup(app):
+    app.add_config_value('recommonmark_config', {
+            'url_resolver': lambda url: github_doc_root + url,
+            'auto_toc_tree_section': 'Contents',
+            }, True)
+    app.add_transform(AutoStructify)

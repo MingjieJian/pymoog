@@ -2,8 +2,10 @@ MANIFEST.in
 README.md
 setup.py
 pymoog/__init__.py
-pymoog/_combine_linelist.py
+pymoog/deprecated.py
+pymoog/internal.py
 pymoog/line_data.py
+pymoog/model.py
 pymoog/synth.py
 pymoog.egg-info/PKG-INFO
 pymoog.egg-info/SOURCES.txt
