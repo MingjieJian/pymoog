@@ -8,13 +8,13 @@ import pandas as pd
 from pymoog import line_data
 from scipy.spatial import Delaunay
 
-MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_FEB2017/'.format(os.environ['HOME'])
+MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(os.environ['HOME'])
 MOOG_run_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
 MOOG_file_path = '{}/.pymoog/files/'.format(os.environ['HOME'])
 
 if os.environ.get('READTHEDOCS') != 'True':
-    directory_path = os.path.dirname(os.path.abspath(__file__))
-    grid_kurucz = pd.read_csv(directory_path + '/files/grid_points_kurucz.csv')
+    #directory_path = os.path.dirname(os.path.abspath(__file__))
+    grid_kurucz = pd.read_csv(MOOG_file_path + '/grid_points_kurucz.csv')
     grid_matrix = np.array(grid_kurucz[['Teff', 'logg', 'm_h']])
     tri = Delaunay(grid_matrix)
     
@@ -126,7 +126,7 @@ def save_interpo_model(teff, logg, m_h, abun, model_line, pradk, to_path):
     with open(to_path, 'w') as file:
         file.writelines(content)
 
-def interpolate_model(teff, logg, m_h, to_path=None):
+def interpolate_model(teff, logg, m_h, to_path=None, abun_change=None, kurucz_format=False, molecules=None):
     '''
     Interpolate the model in Kurucz format according to given stellar paraeters when necessary.
     
@@ -140,7 +140,14 @@ def interpolate_model(teff, logg, m_h, to_path=None):
         [M/H] value (overall metallicity) of the model
     to_path : str, optional
         The path of Kurucz model. If not given then it will be in MOOG_run_path + 'model.mod'
+    abun_change : dict of pairs {int:float, ...}
+        Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.   
+    kurucz_format : bool, default False
+        If False then the model in MOOG format will be saved; if True then the initial Kurucz format  will be saved.
     '''
+    
+    if to_path == None:
+        to_path = MOOG_run_path + 'model.mod'
     
     p = np.array([teff, logg, m_h])
     
@@ -174,7 +181,9 @@ def interpolate_model(teff, logg, m_h, to_path=None):
     if len(grid_kurucz_use) == 1:
         # No interpolation
         model_path = MOOG_file_path + 'model/kurucz/standard/single/teff{:.0f}logg{:.1f}m_h{:+.1f}.dat'.format(*np.array(grid_kurucz_use.loc[0]))
-        KURUCZ_convert(model_path=model_path)
+        subprocess.run(['cp', model_path, to_path])
+        if not kurucz_format:
+            KURUCZ_convert(model_path=to_path, abun_change=abun_change)
     else:
         # Interpolation
         short_64 = np.any(grid_kurucz_use['length'] == 64)
@@ -200,9 +209,10 @@ def interpolate_model(teff, logg, m_h, to_path=None):
 
         # Output the interpolated model
         save_interpo_model(teff, logg, m_h, abun, model_line, pradk, to_path)
-        KURUCZ_convert()
+        if not kurucz_format:
+            KURUCZ_convert(model_path=to_path, abun_change=abun_change, molecules=molecules)
         
-def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_model_path=None):
+def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_model_path=None, model_type='atlas9', molecules=None):
     '''
     Convert the model file from Kurucz format in to MOOG format.
 
@@ -211,11 +221,13 @@ def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_mode
     model_path : str, optional
         The path of donloaded model file. If not given then it will be MOOG_run_path + 'model.mod'
     v_micro : float, default 2.0
-        Microturbulance velocity of the spectra.
-    abun_change : list of pairs [int, float]
-        Abundance change, have to be a list of pairs of atomic number and [X/Fe] values.
+        microturbulance velocity of the spectra.
+    abun_change : dict of pairs {int:float, ...}
+        Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
     converted_model_path : str, optional
         The name of converted model. Default will be saved into MOOG working folder.
+    type : str, default 'atlas9'
+        The type if input model, either 'atlas9' or 'atlas12'.
     '''
     if model_path == None:
         model_path = MOOG_run_path + 'model.mod'
@@ -225,11 +237,6 @@ def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_mode
     # Read and save the first two lines (except 'TITLE ') into header.
     header = model_file.readline() + model_file.readline()
     teff, logg, m_h, vmicro_model, l_h = [float(s) for s in re.findall(r'[-+]?[0-9]*\.?[0-9]+', header)]
-    # try:
-    #     m_h = re.findall(r'\[(.*)\]', header[1])[0]
-    # except IndexError:
-    #     m_h = 0
-    #     print(header)
 
     # Read the abundance change as well as model lines.
     temp = model_file.readline() + model_file.readline() + model_file.readline()
@@ -254,6 +261,9 @@ def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_mode
             -5.00,-0.54,-5.00,-5.00,-5.00]
 
     # Read the model lines
+    if model_type == 'atlas12':
+        for _ in range(22):
+            temp = model_file.readline()
     temp = temp.split()
     model_lines = []
     model_linen = int(temp[2])
@@ -287,13 +297,25 @@ def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_mode
     if abun_change != None:
         abun_change_num = len(abun_change)
         c_model_file.writelines('NATOMS      {}   {}\n'.format(abun_change_num, m_h))
-        for abun in abun_change:
-            c_model_file.writelines('      {:.2f}    {:.2f}\n'.format(abun[0], xabu[abun[0]-1]+abun[1]+float(m_h)))
+        ele_names = list(abun_change.keys())
+        ele_names.sort()
+        for element in ele_names:
+            if element == 2:
+                c_model_file.writelines('      {:.2f}    {:.2f}\n'.format(element, xabu[element-1]+abun_change[element]))
+            else:
+                c_model_file.writelines('      {:.2f}    {:.2f}\n'.format(element, xabu[element-1]+abun_change[element]+float(m_h)))
     else:
         c_model_file.writelines('NATOMS      0   {}\n'.format(m_h))
-
-    # Molecular line switches (temporary closed)
-    c_model_file.writelines('NMOL        0')
+    
+    # Molecular line switches
+    if molecules != None:
+        molecules_num = len(molecules)
+        c_model_file.writelines('NMOL        {}\n'.format(molecules_num))
+        molecules_str = ['{:11.1f}'.format(i) for i in molecules]
+        molecules_str = ''.join(molecules_str)
+        c_model_file.writelines(molecules_str)
+    else:
+        c_model_file.writelines('NMOL        0')
     c_model_file.close()
 
     # cv_situation = os.path.isfile(c_model_path)
