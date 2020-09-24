@@ -7,7 +7,7 @@ import re
 from pymoog import line_data
 from pymoog import model
 
-MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_FEB2017/'.format(os.environ['HOME'])
+MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(os.environ['HOME'])
 MOOG_run_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
 MOOG_file_path = '{}/.pymoog/files/'.format(os.environ['HOME'])
 
@@ -25,9 +25,9 @@ class synth:
         m_h : float
             [M/H] value (overall metallicity) of the model
         start_wav : float
-            The start wavelength of synthetic spenctra
+            The start wavelength of synthetic spectra
         end_wav : float
-            The end wavelength of synthetic spenctra
+            The end wavelength of synthetic spectra
         resolution : float
             Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.
         line_list : str
@@ -41,7 +41,7 @@ class synth:
         self.resolution = resolution
         self.line_list = line_list
         
-    def prepare_file(self, model_file=None, loggf_cut=None):
+    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
@@ -50,23 +50,34 @@ class synth:
         Parameters
         ----------
         model_file : str, optional
-            The name of the model file. If not specified will download Kurucz model. 
+            The name of the model file. If not specified will use internal Kurucz model.
+             
+        model_type : str, optional
+            The type of the model file. Default is "moog" (then no conversion of format will be done); can be "moog", "kurucz-atlas9" and "kurucz-atlas12". 
         
         logf_cut : float, optional
             The cut in loggf; if specified will only include the lines with loggf >= loggf_cut.
+            
+        abun_change : dict of pairs {int:float, ...}
+            Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
         '''
         subprocess.run(['rm', MOOG_run_path + 'batch.par'])
         subprocess.run(['rm', MOOG_run_path + 'model.mod'])
         subprocess.run(['rm', MOOG_run_path + 'line.list'])
+        subprocess.run(['rm', MOOG_run_path + 'MOOG.out*'])
         
         if model_file == None:
             # Model file is not specified, will download Kurucz model according to stellar parameters.
-            model.interpolate_model(self.teff, self.logg, self.m_h)
+            model.interpolate_model(self.teff, self.logg, self.m_h, abun_change=abun_change, molecules=molecules)
             self.model_file = 'model.mod'
         else:
             # Model file is specified; record model file name and copy to working directory.
-            subprocess.run(['cp', model_file, MOOG_run_path], encoding='UTF-8', stdout=subprocess.PIPE)
-            self.model_file = model_file.split('/')[-1]
+            if model_type == 'moog':
+                subprocess.run(['cp', model_file, MOOG_run_path], encoding='UTF-8', stdout=subprocess.PIPE)
+                self.model_file = model_file.split('/')[-1]
+            elif model_type[:6] == 'kurucz':
+                model.KURUCZ_convert(model_path=model_file, abun_change=abun_change, model_type=model_type[7:], molecules=molecules)
+                self.model_file = 'model.mod'
 
         if self.line_list[-5:] != '.list':
             line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut)
@@ -75,12 +86,12 @@ class synth:
         elif self.line_list[-5:] == '.list':
             # Linelist file is specified; record linelist file name and copy to working directory.
             subprocess.run(['cp', self.line_list, MOOG_run_path], encoding='UTF-8', stdout=subprocess.PIPE)
-            self.line_list = line_list.split('/')[-1]
+            self.line_list = self.line_list.split('/')[-1]
             
         # Create parameter file.
         self.create_para_file()    
         
-    def create_para_file(self, del_wav=0.02, smooth='g', atmosphere=1, lines=1):
+    def create_para_file(self, del_wav=0.02, smooth='g', atmosphere=1, lines=1, molecules=1):
         '''
         Function for creating the parameter file of batch.par
         
@@ -100,13 +111,14 @@ class synth:
         smooth_para = [smooth, smooth_width, 0.0, 0.0, 0.0, 0.0]
         #MOOG_para_file = open('batch.par', 'w')
         MOOG_contant = ["synth\n",
-                        "atmosphere         {}\n".format(atmosphere),
-                        "lines              {}\n".format(lines),
                         "standard_out       '{}'\n".format('MOOG.out1'),
                         "summary_out        '{}'\n".format('MOOG.out2'),
                         "smoothed_out       '{}'\n".format('MOOG.out3'),
                         "model_in           '{}'\n".format(self.model_file),
                         "lines_in           '{}'\n".format(self.line_list),
+                        "atmosphere         {}\n".format(atmosphere),
+                        "lines              {}\n".format(lines),
+                        "molecules          {}\n".format(molecules),
                         "terminal           'x11'\n",
                         "synlimits\n",
                         "  {}  {}  {}  4.0\n".format(self.start_wav, self.end_wav, del_wav),
@@ -136,21 +148,26 @@ class synth:
         MOOG_run = subprocess.run([MOOG_path + '/MOOGSILENT'], stdout=subprocess.PIPE,
                                   cwd=MOOG_run_path)
 
+        
+        MOOG_run = str(MOOG_run.stdout, encoding = "utf-8").split('\n')
+        MOOG_output = []
+        for i in MOOG_run:
+            if len(i) > 12:
+                ansi_escape = re.compile(r'\x1b\[...H')
+                temp = ansi_escape.sub('', i)
+                ansi_escape = re.compile(r'\x1b\[....H')
+                temp = ansi_escape.sub('', temp)
+                ansi_escape = re.compile(r'\x1b\[H')
+                temp = ansi_escape.sub('', temp)
+                ansi_escape = re.compile(r'\x1b\[2J')
+                MOOG_output.append(ansi_escape.sub('', temp))
+                
         if output:
-            MOOG_run = str(MOOG_run.stdout, encoding = "utf-8").split('\n')
-            MOOG_output = []
-            for i in MOOG_run:
-                if len(i) > 12:
-                    ansi_escape = re.compile(r'\x1b\[...H')
-                    temp = ansi_escape.sub('', i)
-                    ansi_escape = re.compile(r'\x1b\[....H')
-                    temp = ansi_escape.sub('', temp)
-                    ansi_escape = re.compile(r'\x1b\[H')
-                    temp = ansi_escape.sub('', temp)
-                    ansi_escape = re.compile(r'\x1b\[2J')
-                    MOOG_output.append(ansi_escape.sub('', temp))
             for i in MOOG_output:
                 print(i)
+        
+        if 'ERROR' in ''.join(MOOG_run):
+            raise ValueError('There is error during the running of MOOG.')
 
     def read_spectra(self, type='smooth'):
         '''

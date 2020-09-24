@@ -103,8 +103,10 @@ def extract_kappa_l(file_name, line_id='all'):
 
     if line_id == 'all':
         return line_opacity_array
+    elif line_id > 0:
+        return line_opacity_array[line_id-1]            
     else:
-        return line_opacity_array[line_id-1]
+        raise ValueError('line_id must larger than 0.')
 
 def extract_kappa_c(file_name):
     # Read the continuum opacity

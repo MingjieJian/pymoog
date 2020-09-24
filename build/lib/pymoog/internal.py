@@ -11,7 +11,7 @@ from scipy.spatial import Delaunay
 import line_data
 import mendeleev
 
-MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_FEB2017/'.format(os.environ['HOME'])
+MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(os.environ['HOME'])
 MOOG_run_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
 MOOG_file_path = '{}/.pymoog/files/'.format(os.environ['HOME'])
 
@@ -103,6 +103,7 @@ def element2index(string_all):
 def get_diss_energy(ele_index):
     '''
     Get dissociation for an molecular particle from ele_index.
+    Source: https://labs.chem.ucsb.edu/zakarian/armen/11---bonddissociationenergy.pdf
     
     Only support those in VALD linelist.
     
