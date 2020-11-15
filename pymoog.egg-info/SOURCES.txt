@@ -4,7 +4,6 @@ setup.py
 pymoog/__init__.py
 pymoog/abfind.py
 pymoog/contri_func.py
-pymoog/contri_function.py
 pymoog/deprecated.py
 pymoog/internal.py
 pymoog/line_data.py
