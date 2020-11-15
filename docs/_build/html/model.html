@@ -163,15 +163,16 @@
 <span id="model"></span><h1>model<a class="headerlink" href="#module-model" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="model.KURUCZ_convert">
-<code class="sig-prename descclassname">model.</code><code class="sig-name descname">KURUCZ_convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vmicro</span><span class="o">=</span><span class="default_value">2.0</span></em>, <em class="sig-param"><span class="n">abun_change</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">converted_model_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#model.KURUCZ_convert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">model.</code><code class="sig-name descname">KURUCZ_convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vmicro</span><span class="o">=</span><span class="default_value">2.0</span></em>, <em class="sig-param"><span class="n">abun_change</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">converted_model_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">model_type</span><span class="o">=</span><span class="default_value">'atlas9'</span></em>, <em class="sig-param"><span class="n">molecules</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#model.KURUCZ_convert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the model file from Kurucz format in to MOOG format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path of donloaded model file. If not given then it will be MOOG_run_path + ‘model.mod’</p></li>
-<li><p><strong>v_micro</strong> (<em>float</em><em>, </em><em>default 2.0</em>) – Microturbulance velocity of the spectra.</p></li>
-<li><p><strong>abun_change</strong> (<em>list of pairs</em><em> [</em><em>int</em><em>, </em><em>float</em><em>]</em>) – Abundance change, have to be a list of pairs of atomic number and [X/Fe] values.</p></li>
+<li><p><strong>v_micro</strong> (<em>float</em><em>, </em><em>default 2.0</em>) – microturbulance velocity of the spectra.</p></li>
+<li><p><strong>abun_change</strong> (<em>dict of pairs {int:float</em><em>, </em><em>..}</em>) – Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.</p></li>
 <li><p><strong>converted_model_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of converted model. Default will be saved into MOOG working folder.</p></li>
+<li><p><strong>type</strong> (<em>str</em><em>, </em><em>default 'atlas9'</em>) – The type if input model, either ‘atlas9’ or ‘atlas12’.</p></li>
 </ul>
 </dd>
 </dl>
@@ -179,7 +180,7 @@
 
 <dl class="py function">
 <dt id="model.interpolate_model">
-<code class="sig-prename descclassname">model.</code><code class="sig-name descname">interpolate_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">teff</span></em>, <em class="sig-param"><span class="n">logg</span></em>, <em class="sig-param"><span class="n">m_h</span></em>, <em class="sig-param"><span class="n">to_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#model.interpolate_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">model.</code><code class="sig-name descname">interpolate_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">teff</span></em>, <em class="sig-param"><span class="n">logg</span></em>, <em class="sig-param"><span class="n">m_h</span></em>, <em class="sig-param"><span class="n">to_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">abun_change</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kurucz_format</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">molecules</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#model.interpolate_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolate the model in Kurucz format according to given stellar paraeters when necessary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -188,6 +189,8 @@
 <li><p><strong>logg</strong> (<em>float</em>) – logg value of the model</p></li>
 <li><p><strong>m_h</strong> (<em>float</em>) – [M/H] value (overall metallicity) of the model</p></li>
 <li><p><strong>to_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path of Kurucz model. If not given then it will be in MOOG_run_path + ‘model.mod’</p></li>
+<li><p><strong>abun_change</strong> (<em>dict of pairs {int:float</em><em>, </em><em>..}</em>) – Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.</p></li>
+<li><p><strong>kurucz_format</strong> (<em>bool</em><em>, </em><em>default False</em>) – If False then the model in MOOG format will be saved; if True then the initial Kurucz format  will be saved.</p></li>
 </ul>
 </dd>
 </dl>

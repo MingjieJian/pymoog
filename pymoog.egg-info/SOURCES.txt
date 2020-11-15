@@ -3,11 +3,12 @@ README.md
 setup.py
 pymoog/__init__.py
 pymoog/abfind.py
-pymoog/contri_function.py
+pymoog/contri_func.py
 pymoog/deprecated.py
 pymoog/internal.py
 pymoog/line_data.py
 pymoog/model.py
+pymoog/private.py
 pymoog/synth.py
 pymoog.egg-info/PKG-INFO
 pymoog.egg-info/SOURCES.txt
