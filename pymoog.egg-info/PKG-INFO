@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pymoog
-Version: 0.0.6
+Version: 0.0.7
 Summary: The python wrapper to run LTE spectra synthesis code MOOG.
 Home-page: https://github.com/MingjieJian/pymoog
 Author: Mingjie Jian, Pranav Satheesh and Kruthi Krishna
