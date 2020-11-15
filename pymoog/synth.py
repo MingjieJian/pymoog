@@ -40,7 +40,7 @@ class synth:
         self.resolution = resolution
         self.line_list = line_list
         
-    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None):
+    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, atmosphere=1, lines=1):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
@@ -88,7 +88,7 @@ class synth:
             self.line_list = self.line_list.split('/')[-1]
             
         # Create parameter file.
-        self.create_para_file()    
+        self.create_para_file(atmosphere=atmosphere, lines=lines)    
         
     def create_para_file(self, del_wav=0.02, smooth='g', atmosphere=1, lines=1, molecules=1):
         '''

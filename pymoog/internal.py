@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
 import line_data
 import mendeleev
+import re
 
 MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(os.environ['HOME'])
 MOOG_run_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
@@ -86,7 +87,7 @@ def element2index(string_all):
         ion_stage = int(ion_stage) - 1
         element_indices = []
         for ele in element_string_list:
-            element_indices.append(md.element(ele).atomic_number)
+            element_indices.append(mendeleev.element(ele).atomic_number)
    
     if len(element_indices) == 1:
         return '{}.{}'.format(element_indices[0], ion_stage*10000)
@@ -283,6 +284,7 @@ def vald2moog_format(init_linelist_name, out_linelist_name, head=None, loggf_cut
     vald_init['diss_energy'] = vald_init['element_index'].map(get_diss_energy)
 
     vald_out = vald_init[['wavelength', 'element_index', 'EP', 'loggf', 'Walls_damp', 'diss_energy']]
+    vald_out.columns = ['wavelength', 'element_index', 'EP', 'loggf', 'C6', 'diss_energy']
     vald_out = vald_out.astype(np.float64)
     
     # Remove triple or higher ionized lines; MOOG cannot do this.
