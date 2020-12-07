@@ -7,4 +7,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from scipy.spatial import Delaunay
-from astropy.modeling.blackbody import blackbody_lambda
+from astropy import units as u
+from astropy.modeling.models import BlackBody
+

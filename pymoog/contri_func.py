@@ -186,7 +186,8 @@ def cal_contri_func(file_name, line_id=1):
     tau_c, tau_l = calculate_tau(tau_ref, 10**kappa_c['kaplam'].values, kappa_l, kappa_ref)
 
     # Calculate source function from temperature
-    S = private.blackbody_lambda(wavelength, kappa_c['T(i)']).value
+    # S = private.BlackBody(wavelength, kappa_c['T(i)']).value
+    S = private.BlackBody(temperature=kappa_c['T(i)']*private.u.K)(wavelength*private.u.AA).cgs.value
     kappa_c = 10**kappa_c['kaplam'].values
     CF_I_c = S * private.np.exp(-tau_c) * atmosphere['tauref'] * private.np.log(10) * kappa_c / kappa_ref
     dlog_tau_ref = calculate_dz(private.np.log10(tau_ref))
@@ -205,8 +206,17 @@ def cal_contri_func(file_name, line_id=1):
                'CF_Ilc':CF_Ilc, 'CF_Il':CF_Il}
     return CF_dict, atmosphere
 
-def plot_contri_func(line_wav_input, line_id, teff, logg, fe_h, resolution, line_list):
-    s = synth.synth(teff, logg, fe_h, line_wav_input-7, line_wav_input+7, resolution, line_list=line_list)
+def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=None, line_id=None, target_line_df=None):
+    
+    if target_line_df is None and (line_wav_input is None or line_id is None):
+        raise ValueError('Please provide target_line_df or both line_wav_input and line_id.')
+    
+    if target_line_df is not None:
+        wav_start = private.np.min(target_line_df['wavelength'])-7
+        wav_end = private.np.max(target_line_df['wavelength'])+7
+        s = synth.synth(teff, logg, fe_h, wav_start, wav_end, resolution, line_list=line_list)
+    else:
+        s = synth.synth(teff, logg, fe_h, line_wav_input-7, line_wav_input+7, resolution, line_list=line_list)
 
     # Whole spectra 
     s.prepare_file()
@@ -216,9 +226,12 @@ def plot_contri_func(line_wav_input, line_id, teff, logg, fe_h, resolution, line
 
     # Target line excluded
     linelist_all = line_data.read_linelist(MOOG_run_path + 'line.list')
-    smooth_width = line_wav_input / resolution
-    indices = (private.np.abs(linelist_all['wavelength']-line_wav_input) <= smooth_width) & (linelist_all['id'] == line_id)
-    line_index_all = linelist_all[indices].index
+    if target_line_df is not None:
+        line_index_all = line_data.find_lines(target_line_df, linelist_all)
+    else:
+        smooth_width = line_wav_input / resolution
+        indices = (private.np.abs(linelist_all['wavelength']-line_wav_input) <= smooth_width) & (linelist_all['id'] == line_id)
+        line_index_all = linelist_all[indices].index
 
     private.plt.figure(figsize=(14, 5*len(line_index_all)))
 
@@ -243,7 +256,7 @@ def plot_contri_func(line_wav_input, line_id, teff, logg, fe_h, resolution, line
 
         # Calculate the EW and blending fraction
         EW = (private.np.sum(1-flux_all)*0.02 - private.np.sum(1-flux_exclude)*0.02) * 1000
-        depth = private.np.min(flux_all[private.np.abs(wav_all-line_wavlength) <= 0.01])
+        depth = 1 - private.np.min(flux_all[private.np.abs(wav_all-line_wavlength) <= 0.01])
         r_blend_depth = (1-flux_exclude[private.np.argmin(private.np.abs(wav_exclude-line_wavlength))]) / (1-flux_all[private.np.argmin(private.np.abs(wav_all-line_wavlength))])
 
         # Plot the line information
@@ -263,6 +276,8 @@ def plot_contri_func(line_wav_input, line_id, teff, logg, fe_h, resolution, line
         private.plt.legend()
         private.plt.xlabel(r'Wavelength ($\mathrm{\AA}$)')
         private.plt.ylabel('Normalized flux')
+        if target_line_df is not None:
+            line_id = linelist_all.loc[line_index, 'id']
         private.plt.title('Teff={:.0f}, logg={:.2f}, [Fe/H]={:.2f}, line_id={:.1f}, EP={:.2f}, loggf={:.3f}'.format(teff, logg, fe_h, line_id, line_EP, line_loggf))
         plot_index += 1
 
