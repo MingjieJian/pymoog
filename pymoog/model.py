@@ -88,15 +88,14 @@ def save_interpo_model(teff, logg, m_h, abun, model_line, pradk, to_path):
         pradk value.
     to_path : str
         The path to save the model.
-        
+    
     '''
     if to_path == None:
         to_path = MOOG_run_path + 'model.mod'
     else:
         pass
-
     content = ['Kurucz model: ' + 'TEFF   {:.1f}  GRAVITY {:.5f} LTE\n'.format(teff, logg)]
-    content = content + ['TITLE SDSC GRID  [{:+.1f}]   VTURB 2.0 KM/S    L/H 1.25\n'.format(m_h)]    
+    content = content + ['TITLE SDSC GRID  [{:+.2f}]   VTURB 2.0 KM/S    L/H 1.25\n'.format(m_h)]    
     content = content + [' OPACITY IFOP 1 1 1 1 1 1 1 1 1 1 1 1 1 0 1 0 0 0 0 0\n']
     content = content + [' CONVECTION ON   1.25 TURBULENCE OFF  0.00  0.00  0.00  0.00\n']
     content = content + [' ABUNDANCE SCALE   {:.5f} ABUNDANCE CHANGE 1 {:.5f} 2 {:.5f}\n'.format(10**m_h, *abun[0:2,1])]
@@ -126,7 +125,7 @@ def save_interpo_model(teff, logg, m_h, abun, model_line, pradk, to_path):
     with open(to_path, 'w') as file:
         file.writelines(content)
 
-def interpolate_model(teff, logg, m_h, to_path=None, abun_change=None, kurucz_format=False, molecules=None):
+def interpolate_model(teff, logg, m_h, to_path=None, abun_change=None, kurucz_format=False, molecules=None, model_type='kurucz'):
     '''
     Interpolate the model in Kurucz format according to given stellar paraeters when necessary.
     
@@ -144,11 +143,15 @@ def interpolate_model(teff, logg, m_h, to_path=None, abun_change=None, kurucz_fo
         Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.   
     kurucz_format : bool, default False
         If False then the model in MOOG format will be saved; if True then the initial Kurucz format  will be saved.
+    type : str, default "kurucz"
+        The type of the model to interpolate.
     '''
     
     if to_path == None:
         to_path = MOOG_run_path + 'model.mod'
-    
+    if model_type == 'kurucz':
+        m_h_input = m_h
+        m_h = m_h - 0.17
     p = np.array([teff, logg, m_h])
     
     # Find the grid point for interpolation and their coefficients.
@@ -208,11 +211,17 @@ def interpolate_model(teff, logg, m_h, to_path=None, abun_change=None, kurucz_fo
                 pradk = pradk + pradk_single * b[i]
 
         # Output the interpolated model
-        save_interpo_model(teff, logg, m_h, abun, model_line, pradk, to_path)
+        if model_type == 'kurucz':
+            save_interpo_model(teff, logg, m_h_input, abun, model_line, pradk, to_path, )
+        else:
+            save_interpo_model(teff, logg, m_h, abun, model_line, pradk, to_path)
         if not kurucz_format:
-            KURUCZ_convert(model_path=to_path, abun_change=abun_change, molecules=molecules)
+            if model_type == 'kurucz':
+                KURUCZ_convert(model_path=to_path, abun_change=abun_change, molecules=molecules, m_h_model=m_h)
+            else:
+                KURUCZ_convert(model_path=to_path, abun_change=abun_change, molecules=molecules)
         
-def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_model_path=None, model_type='atlas9', molecules=None):
+def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_model_path=None, model_type='atlas9', molecules=None, m_h_model=None):
     '''
     Convert the model file from Kurucz format in to MOOG format.
 
@@ -283,8 +292,10 @@ def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_mode
 
     # Header part
     c_model_file.writelines('KURUCZ\n')
-    c_model_file.writelines('TEFF = {:.1f}, LOGG = {:.1f}, M/H = {:.1f}, VTURB = {:.1f}, L/H = {:.2f}\n'.format(teff, logg, m_h, vmicro_model, l_h))
-
+    if m_h_model is None:
+        c_model_file.writelines('TEFF = {:.1f}, LOGG = {:.1f}, M/H = {:.2f}, VTURB = {:.1f}, L/H = {:.2f}\n'.format(teff, logg, m_h, vmicro_model, l_h))
+    else:
+        c_model_file.writelines('TEFF = {:.1f}, LOGG = {:.1f}, M/H = {:.2f} ({:.2f}), VTURB = {:.1f}, L/H = {:.2f}\n'.format(teff, logg, m_h, m_h_model, vmicro_model, l_h))
     # Model part
     c_model_file.writelines('ntau=       ' + str(model_linen) + '\n')
     for i in model_lines:

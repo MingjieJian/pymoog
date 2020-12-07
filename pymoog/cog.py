@@ -7,10 +7,11 @@ MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ[
 MOOG_run_path = '{}/.pymoog/rundir/'.format(private.os.environ['HOME'])
 MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
 
-class abfind:
-    def __init__(self, teff, logg, m_h, line_list='ges'):
+class cog:
+    def __init__(self, teff, logg, m_h, line_list, cog_low=-7.5, cog_up=-3.5, cog_step=0.05, lp_step=0):
         '''
-        Initiate a abfind Instance and read the parameters.
+        Initiate a cog Instance and read the parameters. 
+        line_list muse be provided with suffix of '.list', and it can only contain one line.
         
         Parameters
         ----------
@@ -20,18 +21,30 @@ class abfind:
             logg value of the model
         m_h : float
             [M/H] value (overall metallicity) of the model
-        line_list : str, default 'ges'
-            The name of the linelist file. If not specified will use built-in VALD linelist.
+        line_list : str
+            The name of the linelist file.
+        cog_low : float, default -7.5
+            The log(W/lambda) lower limit for the cog. If larger than -5 then it will be set as -5 in MOOG.
+        cog_up : float, default -3.5
+            The log(W/lambda) upper limit for the cog. When larger than -3 step jump of cog will present.
+        cog_step : float, default 0.05
+            The log(W/lambda) step size for the cog.
+        lp_step : float, default 0
+            An explicit line profile wavelength step size, if desired.
         '''
         self.teff = teff
         self.logg = logg
         self.m_h = m_h
         self.line_list = line_list
+        self.cog_low = cog_low
+        self.cog_up = cog_up
+        self.cog_step = cog_step
+        self.lp_step = lp_step
         
-    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, atmosphere=1, lines=1):
+    def prepare_file(self, model_file=None, model_type='moog', abun_change=None, molecules=None, atmosphere=1, lines=1):
         '''
-        Prepare the model, linelist and control files for MOOG.
-        Can either provide stellar parameters and wavelengths or provide file names.
+        Prepare the model, linelist and control files for cog.
+        Can either provide stellar parameters or provide file names.
         If fine name(s) provided, the files will be copied to working directory for calculation.  
         
         Parameters
@@ -41,9 +54,6 @@ class abfind:
              
         model_type : str, optional
             The type of the model file. Default is "moog" (then no conversion of format will be done); can be "moog", "kurucz-atlas9" and "kurucz-atlas12". 
-        
-        logf_cut : float, optional
-            The cut in loggf; if specified will only include the lines with loggf >= loggf_cut.
             
         abun_change : dict of pairs {int:float, ...}
             Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
@@ -75,11 +85,14 @@ class abfind:
         
     def create_para_file(self, atmosphere=1, lines=1, molecules=1):
         '''
-        Function for creating the parameter file of batch.par for abfind.
+        Function for creating the parameter file of batch.par for cog.
         
         Parameters
         ----------
         
+        Returns
+        ----------
+        None. A control file batch.par will be save in the pymoog working path.
         '''
         MOOG_para_file = open(MOOG_run_path + '/batch.par', 'w')
         # Parameter list of MOOG: standard output file (1), summary output file (2), smoothed output file (3),
@@ -87,7 +100,7 @@ class abfind:
         #                         smoothing function, Gaussian FWHM, vsini, limb darkening coefficient,
         #                         Macrotrubulent FWHM, Lorentzian FWHM
         #MOOG_para_file = open('batch.par', 'w')
-        MOOG_contant = ["abfind\n",
+        MOOG_contant = ["cog\n",
                         "standard_out       '{}'\n".format('MOOG.out1'),
                         "summary_out        '{}'\n".format('MOOG.out2'),
                         "model_in           '{}'\n".format(self.model_file),
@@ -96,13 +109,15 @@ class abfind:
                         "lines              {}\n".format(lines),
                         "molecules          {}\n".format(molecules),
                         "terminal           'x11'\n",
+                        "coglimits\n",
+                        "  {}  {}  {}  {}  0\n".format(self.cog_low, self.cog_up, self.cog_step, self.lp_step)
                     ]
         MOOG_para_file.writelines(MOOG_contant)
         MOOG_para_file.close()
     
     def run_moog(self, output=False):
         '''
-        Run MOOG and print the reuslt if required.
+        Run MOOG and print the result if required.
 
         Parameters
         ----------
@@ -111,10 +126,10 @@ class abfind:
 
         Returns
         ----------
-        None. Three files MOOG.out1, MOOG.out2 and MOOG.out3 will be save in the pymoog working path.
+        None. Two files MOOG.out1 and MOOG.out2 will be save in the pymoog working path.
         '''
         
-        MOOG_run = private.subprocess.run([MOOG_path + '/MOOGSILENT'], stdout=private.subprocess.PIPE, cwd=MOOG_run_path)
+        MOOG_run = private.subprocess.run([MOOG_path + '/MOOGSILENT'], stdout=private.subprocess.PIPE, input=bytes('n', 'utf-8'), cwd=MOOG_run_path)
 
         
         MOOG_run = str(MOOG_run.stdout, encoding = "utf-8").split('\n')
@@ -139,36 +154,26 @@ class abfind:
 
     def read_output(self):
         '''
-        Read the output of abfind.
+        Read the output of cog.
 
         Parameters
         ----------
-        None.
 
         Returns
         ---------
-        abfind_dict : dict
-            A dictionary which the keys are the element index and values are DataFrames of abfind result.
+        self.loggf : a numpy array
+            An array of loggf for cog.
+        self.logrw : a numpy array
+            An array of log(W/lambda) for cog.
         '''
         file = open(MOOG_run_path + 'MOOG.out2', 'r')
-        abfind_content = file.readlines()
-        para = private.np.array(private.re.findall('[0-9]+.[0-9]+', abfind_content[2]), dtype=float)
+        cog_content = file.readlines()
 
-        sep_index = []
-        for i in range(len(abfind_content)):
-            if 'Abundance Results' in abfind_content[i]:
-                sep_index.append(i)
-
-        abfind_dict = {}
-        for i in range(len(sep_index)-1):
-            abfind_single = abfind_content[sep_index[i]:sep_index[i+1]]
-            for j in range(len(abfind_single)):
-                if 'average abundance' in abfind_single[j]:
-                    end_index = j
-
-            abfind_s_df = private.pd.DataFrame(private.np.array([ele.split() for ele in abfind_single[2:end_index]], dtype=float), columns=abfind_single[1].split())
-
-            ele_index = abfind_s_df.loc[0, 'ID']
-            abfind_dict[ele_index] = abfind_s_df
+        cog_single_content = [ele.replace(',', '').split() for ele in cog_content[6:]]
+        cog_single_content = [item for sublist in cog_single_content for item in sublist]
+        cog_array = private.np.array(cog_single_content, dtype=float).reshape(-1,2)
+        loggf = cog_array[:,0]
+        logrw = cog_array[:,1]
             
-        return abfind_dict
+        self.loggf = loggf
+        self.logrw = logrw

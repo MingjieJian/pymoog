@@ -3,17 +3,18 @@ import os
 import subprocess
 import numpy as np
 import re
-from pymoog import line_data
-from pymoog import model
+from . import line_data
+from . import model
+from . import synth
 
 MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(os.environ['HOME'])
 MOOG_run_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
 MOOG_file_path = '{}/.pymoog/files/'.format(os.environ['HOME'])
 
-class synth:
-    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, del_wav=0.02, smooth='g', line_list='ges'):
+class weedout:
+    def __init__(self, teff, logg, m_h, start_wav, end_wav, kappa_ratio=0.01, line_list='ges', keeplines='keep.list', tosslines='toss.list'):
         '''
-        Initiate a synth Instance and read the parameters.
+        Initiate a weedout Instance and read the parameters.
         
         Parameters
         ----------
@@ -24,21 +25,27 @@ class synth:
         m_h : float
             [M/H] value (overall metallicity) of the model
         start_wav : float
-            The start wavelength of synthetic spectra
+            The start wavelength of line list
         end_wav : float
-            The end wavelength of synthetic spectra
-        resolution : float
-            Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.
-        line_list : str
+            The end wavelength of line list
+        kappa_ratio : float, default 0.01
+            Minimum line/continuum opacity ratio.
+        line_list : str, default 'ges'
             The name of the linelist file. If not specified will use built-in VALD linelist.
+        keeplines : str, default 'keep.list'
+            The name of the linelist for the lines being kept (in the pymoog working path).
+        tosslines : str, default 'toss.list'
+            The name of the linelist for the lines tossed (in the pymoog working path).
         '''
         self.teff = teff
         self.logg = logg
         self.m_h = m_h
         self.start_wav = start_wav
         self.end_wav = end_wav
-        self.resolution = resolution
+        self.kappa_ratio = kappa_ratio
         self.line_list = line_list
+        self.keeplines = keeplines
+        self.tosslines = tosslines
         
     def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, atmosphere=1, lines=1):
         '''
@@ -62,7 +69,7 @@ class synth:
         '''
         subprocess.run(['rm', MOOG_run_path + 'batch.par'])
         subprocess.run(['rm', MOOG_run_path + 'model.mod'])
-        subprocess.run(['rm', MOOG_run_path + 'line.list'])
+        os.system('rm ' + MOOG_run_path + '*.list')
         os.system('rm ' + MOOG_run_path + 'MOOG.out*')
         
         if model_file == None:
@@ -79,7 +86,6 @@ class synth:
                 self.model_file = 'model.mod'
 
         if self.line_list[-5:] != '.list':
-            # Linelist file is not specified, use internal line list;
             line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut)
             line_data.save_linelist(line_list, MOOG_run_path + 'line.list', wav_start=self.start_wav, wav_end=self.end_wav)
             self.line_list = 'line.list'
@@ -91,49 +97,40 @@ class synth:
         # Create parameter file.
         self.create_para_file(atmosphere=atmosphere, lines=lines)    
         
-    def create_para_file(self, del_wav=0.02, smooth='g', atmosphere=1, lines=1, molecules=2):
+    def create_para_file(self, atmosphere=1, lines=1, molecules=2):
         '''
         Function for creating the parameter file of batch.par
         
         Parameters
         ----------
         del_wav : float, optional
-            The sampling distance of synthetic spectra. Default 0.02.
+            The sampling distance of weedout spectra. Default 0.02.
         smooth : str, optional
-            Line profile to be used to smooth the synthetic spectra, same as decribed in MOOG documention. Default Gaussian. 
+            Line profile to be used to smooth the weedout spectra, same as decribed in MOOG documention. Default Gaussian. 
         '''
         MOOG_para_file = open(MOOG_run_path + '/batch.par', 'w')
         # Parameter list of MOOG: standard output file (1), summary output file (2), smoothed output file (3),
         #                         begin wavelength, end wavelength, wavelength step;
         #                         smoothing function, Gaussian FWHM, vsini, limb darkening coefficient,
         #                         Macrotrubulent FWHM, Lorentzian FWHM
-        smooth_width = np.mean([self.start_wav / self.resolution, self.end_wav / self.resolution])
-        smooth_para = [smooth, smooth_width, 0.0, 0.0, 0.0, 0.0]
-        #MOOG_para_file = open('batch.par', 'w')
-        MOOG_contant = ["synth\n",
+
+        MOOG_contant = ["weedout\n",
                         "standard_out       '{}'\n".format('MOOG.out1'),
-                        "summary_out        '{}'\n".format('MOOG.out2'),
-                        "smoothed_out       '{}'\n".format('MOOG.out3'),
                         "model_in           '{}'\n".format(self.model_file),
                         "lines_in           '{}'\n".format(self.line_list),
+                        "keeplines_out      '{}'\n".format(self.keeplines),
+                        "tosslines_out      '{}'\n".format(self.tosslines),
                         "atmosphere         {}\n".format(atmosphere),
                         "lines              {}\n".format(lines),
                         "molecules          {}\n".format(molecules),
                         "terminal           'x11'\n",
-                        "synlimits\n",
-                        "  {}  {}  {}  4.0\n".format(self.start_wav, self.end_wav, del_wav),
-                        "plot        3\n",
-                        "plotpars    1\n",
-                        "  0.0  0.0  0.0  0.0 \n",
-                        "  0.0  0.0  0.0  0.0 \n",
-                        "  '{}'  {:.3f}  {}  {}  {}  {}\n".format(*smooth_para)
                     ]
         MOOG_para_file.writelines(MOOG_contant)
         MOOG_para_file.close()
     
     def run_moog(self, output=False):
         '''
-        Run MOOG and print the reuslt if required.
+        Run MOOG and print the result if required.
 
         Parameters
         ----------
@@ -145,8 +142,7 @@ class synth:
         None. Three files MOOG.out1, MOOG.out2 and MOOG.out3 will be save in the pymoog working path.
         '''
         
-        MOOG_run = subprocess.run([MOOG_path + '/MOOGSILENT'], stdout=subprocess.PIPE,
-                                  cwd=MOOG_run_path)
+        MOOG_run = subprocess.run([MOOG_path + '/MOOGSILENT'], stdout=subprocess.PIPE, input=bytes('{}'.format(self.kappa_ratio), 'utf-8'), cwd=MOOG_run_path)
 
         
         MOOG_run = str(MOOG_run.stdout, encoding = "utf-8").split('\n')
@@ -161,51 +157,75 @@ class synth:
                 temp = ansi_escape.sub('', temp)
                 ansi_escape = re.compile(r'\x1b\[2J')
                 MOOG_output.append(ansi_escape.sub('', temp))
-                
+        
+        # Move line.list as all.list
+        subprocess.run(['mv', MOOG_run_path + 'line.list', MOOG_run_path + 'all.list'])
+        
         if output:
+            
             for i in MOOG_output:
                 print(i)
         
         if 'ERROR' in ''.join(MOOG_run):
             raise ValueError('There is error during the running of MOOG.')
 
-    def read_spectra(self, type='smooth'):
+    def read_linelist(self, tosslines=False):
         '''
-        Read the output spectra of MOOG.
+        Read the keep (and toss) linelist of weedout driver.
 
         Parameters
         ----------
-        type : str, default 'smooth'
-            Decide the type of spectra to be read. 'smooth' will read the smoothed spectra (MOOG.out3), and 'standard' will read the un-smoothed one (MOOG.out2).
+        tosslines : bool, default False
+            If True then also output the tossed linelist.
 
         Returns
         ---------
-        wav : a numpy array
-            An array of wavelength
-        flux : a numpy array
-            An array of flux
+        self.keep_list : a panda DataFrame
+            A DataFrame for the lines being kept.
+        self.toss_list : a panda DataFrame only appear when tosslines is True
+            A DataFrame for the lines tossed.
         '''
-        if type == 'standard':
-            models_file = open(MOOG_run_path+'MOOG.out2')
-            models = models_file.readline()
-            models = models_file.readline()
-            models = models_file.read().split()
-            models = [float(i) for i in models]
-            x = range(round((models[1]-models[0])/models[2])+1)
-            model_wav = []
-            for i in x:
-                model_wav.append(models[0] + models[2]*i)
-            model_flux = np.array(models[4:])
-            self.wav, self.flux =  np.array(model_wav), np.array(model_flux)
-        elif type == 'smooth':
-            models_file = open(MOOG_run_path+'MOOG.out3')
-            models = models_file.readline()
-            models = models_file.readline()
-            models = models_file.readlines()
-            wavelength = []
-            depth = []
-            for i in models:
-                temp = i.split()
-                wavelength.append(float(temp[0]))
-                depth.append(float(temp[1]))
-            self.wav, self.flux =  np.array(wavelength), np.array(depth)
+        
+        keep_list = line_data.read_linelist(MOOG_run_path + self.keeplines)
+        
+        if tosslines:
+            toss_list = line_data.read_linelist(MOOG_run_path + self.tosslines)
+            self.keep_list, self.toss_list =  keep_list, toss_list
+        else:
+            self.keep_list = keep_list
+        
+    def compare(self, resolution, output=False):
+        '''
+        Compare the synthetic spectra before and after weedout.
+ 
+        Parameters
+        ----------
+        resolution : float
+            Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.
+
+        Returns
+        ---------
+        self.wav_all : a numpy array
+            An array of wavelength for the spectra using all the lines input.
+        self.flux_all : a numpy array
+            An array of flux for the spectra using all the lines input.
+        self.wav_keep : a numpy array
+            An array of wavelength for the spectra using the lines being kept.
+        self.flux_keep : a numpy array
+            An array of flux for the spectra using the lines being kept.
+        
+        '''
+        
+        # run synth to get the spectra
+        s_all = synth.synth(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, resolution, line_list=MOOG_run_path + 'all.list')
+        s_all.prepare_file()
+        s_all.run_moog(output=output)
+        s_all.read_spectra()
+        
+        s_keep = synth.synth(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, resolution, line_list=MOOG_run_path + 'keep.list')
+        s_keep.prepare_file()
+        s_keep.run_moog(output=output)
+        s_keep.read_spectra()
+        
+        self.wav_all, self.flux_all, self.wav_keep, self.flux_keep =  s_all.wav, s_all.flux, s_keep.wav, s_keep.flux
+        
