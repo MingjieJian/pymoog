@@ -2,12 +2,12 @@
 from . import private
 from . import line_data
 from . import model
+from . import rundir_num
 
 MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ['HOME'])
-MOOG_run_path = '{}/.pymoog/rundir/'.format(private.os.environ['HOME'])
 MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
 
-class cog:
+class cog(rundir_num.rundir_num):
     def __init__(self, teff, logg, m_h, line_list, cog_low=-7.5, cog_up=-3.5, cog_step=0.05, lp_step=0):
         '''
         Initiate a cog Instance and read the parameters. 
@@ -32,6 +32,7 @@ class cog:
         lp_step : float, default 0
             An explicit line profile wavelength step size, if desired.
         '''
+        super(cog, self).__init__('{}/.pymoog/'.format(private.os.environ['HOME']))
         self.teff = teff
         self.logg = logg
         self.m_h = m_h
@@ -58,26 +59,27 @@ class cog:
         abun_change : dict of pairs {int:float, ...}
             Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
         '''
-        private.subprocess.run(['rm', MOOG_run_path + 'batch.par'])
-        private.subprocess.run(['rm', MOOG_run_path + 'model.mod'])
-        private.subprocess.run(['rm', MOOG_run_path + 'line.list'])
-        private.os.system('rm ' + MOOG_run_path + 'MOOG.out*')
+        self.lock()
+        private.subprocess.run(['rm', self.rundir_path + 'batch.par'])
+        private.subprocess.run(['rm', self.rundir_path + 'model.mod'])
+        private.subprocess.run(['rm', self.rundir_path + 'line.list'])
+        private.os.system('rm ' + self.rundir_path + 'MOOG.out*')
         
         if model_file == None:
             # Model file is not specified, will download Kurucz model according to stellar parameters.
-            model.interpolate_model(self.teff, self.logg, self.m_h, abun_change=abun_change, molecules=molecules)
+            model.interpolate_model(self.teff, self.logg, self.m_h, abun_change=abun_change, molecules=molecules, to_path=self.rundir_path + 'model.mod')
             self.model_file = 'model.mod'
         else:
             # Model file is specified; record model file name and copy to working directory.
             if model_type == 'moog':
-                private.subprocess.run(['cp', model_file, MOOG_run_path], encoding='UTF-8', stdout=private.subprocess.PIPE)
+                private.subprocess.run(['cp', model_file, self.rundir_path], encoding='UTF-8', stdout=private.subprocess.PIPE)
                 self.model_file = model_file.split('/')[-1]
             elif model_type[:6] == 'kurucz':
-                model.KURUCZ_convert(model_path=model_file, abun_change=abun_change, model_type=model_type[7:], molecules=molecules)
+                model.KURUCZ_convert(model_path=model_file, abun_change=abun_change, model_type=model_type[7:], molecules=molecules, converted_model_path=self.rundir_path + 'model.mod')
                 self.model_file = 'model.mod'
 
         # Linelist file is specified; record linelist file name and copy to working directory.
-        private.subprocess.run(['cp', self.line_list, MOOG_run_path], encoding='UTF-8', stdout=private.subprocess.PIPE)
+        private.subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=private.subprocess.PIPE)
         self.line_list = self.line_list.split('/')[-1]
             
         # Create parameter file.
@@ -94,7 +96,7 @@ class cog:
         ----------
         None. A control file batch.par will be save in the pymoog working path.
         '''
-        MOOG_para_file = open(MOOG_run_path + '/batch.par', 'w')
+        MOOG_para_file = open(self.rundir_path + '/batch.par', 'w')
         # Parameter list of MOOG: standard output file (1), summary output file (2), smoothed output file (3),
         #                         begin wavelength, end wavelength, wavelength step;
         #                         smoothing function, Gaussian FWHM, vsini, limb darkening coefficient,
@@ -115,7 +117,7 @@ class cog:
         MOOG_para_file.writelines(MOOG_contant)
         MOOG_para_file.close()
     
-    def run_moog(self, output=False):
+    def run_moog(self, output=False, unlock=False):
         '''
         Run MOOG and print the result if required.
 
@@ -129,9 +131,11 @@ class cog:
         None. Two files MOOG.out1 and MOOG.out2 will be save in the pymoog working path.
         '''
         
-        MOOG_run = private.subprocess.run([MOOG_path + '/MOOGSILENT'], stdout=private.subprocess.PIPE, input=bytes('n', 'utf-8'), cwd=MOOG_run_path)
+        MOOG_run = private.subprocess.run([MOOG_path + '/MOOGSILENT'], stdout=private.subprocess.PIPE, input=bytes('n', 'utf-8'), cwd=self.rundir_path)
 
-        
+        if unlock:
+            self.unlock()
+                    
         MOOG_run = str(MOOG_run.stdout, encoding = "utf-8").split('\n')
         MOOG_output = []
         for i in MOOG_run:
@@ -152,7 +156,7 @@ class cog:
         if 'ERROR' in ''.join(MOOG_run):
             raise ValueError('There is error during the running of MOOG.')
 
-    def read_output(self):
+    def read_output(self, unlock=True):
         '''
         Read the output of cog.
 
@@ -166,7 +170,7 @@ class cog:
         self.logrw : a numpy array
             An array of log(W/lambda) for cog.
         '''
-        file = open(MOOG_run_path + 'MOOG.out2', 'r')
+        file = open(self.rundir_path + 'MOOG.out2', 'r')
         cog_content = file.readlines()
 
         cog_single_content = [ele.replace(',', '').split() for ele in cog_content[6:]]
@@ -177,3 +181,6 @@ class cog:
             
         self.loggf = loggf
         self.logrw = logrw
+        
+        if unlock:
+            self.unlock()

@@ -186,7 +186,7 @@ def interpolate_model(teff, logg, m_h, to_path=None, abun_change=None, kurucz_fo
         model_path = MOOG_file_path + 'model/kurucz/standard/single/teff{:.0f}logg{:.1f}m_h{:+.1f}.dat'.format(*np.array(grid_kurucz_use.loc[0]))
         subprocess.run(['cp', model_path, to_path])
         if not kurucz_format:
-            KURUCZ_convert(model_path=to_path, abun_change=abun_change)
+            KURUCZ_convert(model_path=to_path, abun_change=abun_change, converted_model_path=to_path)
     else:
         # Interpolation
         short_64 = np.any(grid_kurucz_use['length'] == 64)
@@ -217,9 +217,9 @@ def interpolate_model(teff, logg, m_h, to_path=None, abun_change=None, kurucz_fo
             save_interpo_model(teff, logg, m_h, abun, model_line, pradk, to_path)
         if not kurucz_format:
             if model_type == 'kurucz':
-                KURUCZ_convert(model_path=to_path, abun_change=abun_change, molecules=molecules, m_h_model=m_h)
+                KURUCZ_convert(model_path=to_path, abun_change=abun_change, molecules=molecules, m_h_model=m_h, converted_model_path=to_path)
             else:
-                KURUCZ_convert(model_path=to_path, abun_change=abun_change, molecules=molecules)
+                KURUCZ_convert(model_path=to_path, abun_change=abun_change, molecules=molecules, converted_model_path=to_path)
         
 def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_model_path=None, model_type='atlas9', molecules=None, m_h_model=None):
     '''
