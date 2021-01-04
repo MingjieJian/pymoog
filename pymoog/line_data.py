@@ -52,11 +52,7 @@ def save_linelist(linelist_all, sub_ll_name, wav_start=None, wav_end=None, heade
     if np.any(abs(sub_linelist['C6'].values) > 1e-25):
         output_format = '{:10.3f}{:10.5f}{:10.4f}{:10.3f}{:10.3f}{:10.3f}{:10.3f}\n'
     elif np.any(abs(sub_linelist['C6'].values) < 1e-25):
-<<<<<<< HEAD
         output_format = '{:10.3f}{:10.5f}{:10.4f}{:10.3f}{:10.2E}{:10.3f}{:10.3f}\n'
-=======
-        output_format = '{:10.4f}{:10.5f}{:10.4f}{:10.3f}{:10.2E}{:10.3f}{:10.3f}\n'
->>>>>>> master
     # Remove the last column if no EW values.
     if len(sub_linelist.columns) == 6:
         output_format = output_format[:-9] + '\n'
