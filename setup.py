@@ -75,7 +75,8 @@ setuptools.setup(
           'pandas >= 1.0.0',
           'matplotlib >= 3.1.0',
           'mendeleev >= 0.6.0',
-          'scipy >= 1.4.0'
+          'scipy >= 1.4.0',
+          'astropy >= 4.0'
       ],
       include_package_data=True,  
     #   package_data={'': ['moog_nosm/moog_nosm_FEB2017/']},
