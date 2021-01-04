@@ -1,0 +1,273 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Contribution function &mdash; pymoog 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Line lists" href="line_lists.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> pymoog
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../pymoog.html">pymoog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../miscellaneous.html">Miscellaneous</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="grid_points.html">Model grid points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="line_lists.html">Line lists</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Contribution function</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pymoog</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../miscellaneous.html">Miscellaneous</a> &raquo;</li>
+        
+      <li>Contribution function</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/miscellaneous/contrbution_function.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="contribution-function">
+<h1>Contribution function<a class="headerlink" href="#contribution-function" title="Permalink to this headline">¶</a></h1>
+<p>Contribution function describes where the line forms.</p>
+<p>From radiative transfer, we have the formal solution of intensity:</p>
+<p><span class="math notranslate nohighlight">\(I_\nu(0) = \int_0^{\infty} S_\nu e^{-\frac{\tau_\nu}{\mu}} \frac{d\tau_\nu}{\mu}\)</span></p>
+<p>The expression inside the intergral, <span class="math notranslate nohighlight">\(C_I = \frac{1}{\mu} S_\nu e^{-\frac{\tau_\nu}{\mu}}\)</span>, describe the amount of intensity emitted in a specific layer <span class="math notranslate nohighlight">\(\Delta \tau_\nu\)</span>, when the atmosphere is divided into some plane parallels.
+We call <span class="math notranslate nohighlight">\(C_I\)</span> as the contribution function of intensity</p>
+<p>However, we usually care more about where the absorption (remove of intensity) is formed instead of intensity, so we need to write the contribution function of the depression in the line core.
+We divide the intensity and depression of a line into following parts:</p>
+<p><img alt="" src="../_images/Gur91-1.png" /></p>
+<p>Here the black curve represents the actual spectral line, and the light blue curve represents the spectral line when no line emission presents.</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(I_c\)</span> is the emission of continuum and represents the intensity when the spectral line is absent;</p></li>
+<li><p><span class="math notranslate nohighlight">\(D_l^p\)</span> is the depression of <span class="math notranslate nohighlight">\(I_c\)</span> due to line absorption;</p></li>
+<li><p><span class="math notranslate nohighlight">\(I_l^c\)</span> is the emission of continuum not absorbed by spectral line;</p></li>
+<li><p><span class="math notranslate nohighlight">\(I_l^p\)</span> is the emission of spectral line;</p></li>
+<li><p><span class="math notranslate nohighlight">\(D_l = D_l^p - I_l^p\)</span> is the amount of observed absorption;</p></li>
+<li><p><span class="math notranslate nohighlight">\(I_l = I_l^c + I_l^p\)</span> is the amount of observed intensity.</p></li>
+</ul>
+<p>Then we can derive their expression and contribution as follow (<span class="math notranslate nohighlight">\(\eta = \kappa_l / \kappa_c\)</span>):</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="text-align:center head"><p></p></th>
+<th class="text-align:center head"><p>expression</p></th>
+<th class="text-align:center head"><p>contribution function</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(I_c\)</span></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\int_0^{\infty} S_\nu e^{-\frac{\tau_\nu}{\mu}} \frac{d\tau_\nu}{\mu}\)</span></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(S_\nu e^{-\frac{\tau_\nu}{\mu}}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(D_l^p\)</span></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\int_0^\infty \left[ \int_{\tau_c}^\infty S_c(\tau_c) e^{-\tau_c} d\tau_c \right] e^{-\tau_l} \eta d\tau_c\)</span></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\left[ \int_{\tau_c}^\infty S_c(\tau_c) e^{-\tau_c} d\tau_c \right] e^{-\tau_l} \eta\)</span></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(I_l^p\)</span></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\int_0^\infty S_l e^{-(\tau_c+\tau_l)} \eta d\tau_c\)</span></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(S_l e^{-(\tau_c+\tau_l)} \eta\)</span></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(D_l\)</span></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\int_0^\infty \left[ \int_{\tau_c}^\infty S_c(\tau_c) e^{-\tau_c} d\tau_c - S_l(\tau_c) e^{-\tau_c} \right] e^{-\tau_l} \eta d\tau_c\)</span></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\left[ \int_{\tau_c}^\infty S_c(\tau_c) e^{-\tau_c} d\tau_c - S_l(\tau_c) e^{-\tau_c} \right] e^{-\tau_l} \eta\)</span></p></td>
+</tr>
+<tr class="row-even"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(I_l^c\)</span></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\int_0^\infty S_c e^{-(\tau_c+\tau_l)} d\tau_c\)</span></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(S_c e^{-(\tau_c+\tau_l)}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:center"><p><span class="math notranslate nohighlight">\(I_l\)</span></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\int_0^\infty (S_c + \eta S_l) e^{-(\tau_c+\tau_l)} d\tau_c\)</span></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\((S_c + \eta S_l) e^{-(\tau_c+\tau_l)}\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<p>As an example, the following figure shows the three ocntribution function calculated by pymoog:</p>
+<p><img alt="" src="../_images/cf_example.jpg" /></p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="line_lists.html" class="btn btn-neutral float-left" title="Line lists" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Mingjie Jian, Pranav Satheesh and Kruthi Krishna
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

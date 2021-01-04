@@ -42,7 +42,7 @@ if os.environ.get('READTHEDOCS') != 'True':
     print(install.stdout)
 
     # Check if MOOG and MOOGSILENT is in the folder
-    if not(os.path.isfile(MOOGMODELING_path+'moog_nosm/moog_nosm_NOV2019/MOOG')) or not(os.path.isfile(MOOGMODELING_path+'moog_nosm/moog_nosm_NOV2019/MOOG')):
+    if not(os.path.isfile(MOOGMODELING_path+'moog_nosm/moog_nosm_NOV2019/MOOG')) or not(os.path.isfile(MOOGMODELING_path+'moog_nosm/moog_nosm_NOV2019/MOOGSILENT')):
         raise ValueError("MOOG is not installed correctly!")
     else:
         print('Successfully installed MOOG!')
@@ -53,7 +53,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
       name='pymoog',
-      version='0.0.7',
+      version='0.0.8',
       description='The python wrapper to run LTE spectra synthesis code MOOG.',
       long_description=long_description,
       long_description_content_type="text/markdown",

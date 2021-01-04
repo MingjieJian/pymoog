@@ -1,3 +1,9 @@
+## 0.0.8 (2021-01-04)
+
+### Bug Fixes
+
+* support installaiton in Mac OS (also with Apple Silicon) 
+
 ## 0.0.7 (2020-11-15)
 
 
