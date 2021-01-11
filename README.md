@@ -63,6 +63,7 @@ Documentation is available in [here](https://pymoog.readthedocs.io/en/latest/).
 ## Development progress
 
 - [x] synth
+<<<<<<< HEAD
 - ~[] plotit~
 - [x] abfind
 - [x] blends
@@ -77,6 +78,22 @@ Documentation is available in [here](https://pymoog.readthedocs.io/en/latest/).
 - [] synpop
 - [] abpop
 - [] mydriver
+=======
+- ~[ ] plotit~
+- [x] abfind
+- [x] blends
+- [ ] binary
+- [x] cog
+- ~[ ] grdisyn~
+- [x] weedout
+- [ ] cogsyn
+- [ ] ewfind
+- [ ] calmod
+- [ ] doflux
+- [ ] synpop
+- [ ] abpop
+- [ ] mydriver
+>>>>>>> 369b2cc126d7369412589e0c8c5fcfdd729aa99d
 
 ## Acknowledgement
 
