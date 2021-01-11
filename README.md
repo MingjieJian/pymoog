@@ -63,20 +63,20 @@ Documentation is available in [here](https://pymoog.readthedocs.io/en/latest/).
 ## Development progress
 
 - [x] synth
-- ~[] plotit~
+- ~[ ] plotit~
 - [x] abfind
 - [x] blends
-- [] binary
+- [ ] binary
 - [x] cog
-- ~[] grdisyn~
+- ~[ ] grdisyn~
 - [x] weedout
-- [] cogsyn
-- [] ewfind
-- [] calmod
-- [] doflux
-- [] synpop
-- [] abpop
-- [] mydriver
+- [ ] cogsyn
+- [ ] ewfind
+- [ ] calmod
+- [ ] doflux
+- [ ] synpop
+- [ ] abpop
+- [ ] mydriver
 
 ## Acknowledgement
 
