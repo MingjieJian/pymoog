@@ -21,8 +21,8 @@ class cog(rundir_num.rundir_num):
             logg value of the model
         m_h : float
             [M/H] value (overall metallicity) of the model
-        line_list : str
-            The name of the linelist file.
+        line_list : pandas.DataFrame
+            The dataframe containting the line information.
         cog_low : float, default -7.5
             The log(W/lambda) lower limit for the cog. If larger than -5 then it will be set as -5 in MOOG.
         cog_up : float, default -3.5
@@ -79,8 +79,9 @@ class cog(rundir_num.rundir_num):
                 self.model_file = 'model.mod'
 
         # Linelist file is specified; record linelist file name and copy to working directory.
-        private.subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=private.subprocess.PIPE)
-        self.line_list = self.line_list.split('/')[-1]
+        line_data.save_linelist(self.line_list, self.rundir_path + '/line.list')
+        # private.subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=private.subprocess.PIPE)
+        self.line_list_name = 'line.list'
             
         # Create parameter file.
         self.create_para_file(atmosphere=atmosphere, lines=lines)    
@@ -106,7 +107,7 @@ class cog(rundir_num.rundir_num):
                         "standard_out       '{}'\n".format('MOOG.out1'),
                         "summary_out        '{}'\n".format('MOOG.out2'),
                         "model_in           '{}'\n".format(self.model_file),
-                        "lines_in           '{}'\n".format(self.line_list),
+                        "lines_in           '{}'\n".format(self.line_list_name),
                         "atmosphere         {}\n".format(atmosphere),
                         "lines              {}\n".format(lines),
                         "molecules          {}\n".format(molecules),

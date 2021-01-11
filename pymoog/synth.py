@@ -5,6 +5,7 @@ import re
 from . import line_data
 from . import model
 from . import rundir_num
+from . import weedout
 from . import private
 
 MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ['HOME'])
@@ -12,7 +13,7 @@ MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ[
 MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
 
 class synth(rundir_num.rundir_num):
-    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, del_wav=0.02, smooth='g', line_list='ges'):
+    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, del_wav=0.02, smooth='g', line_list='ges', weedout=False):
         '''
         Initiate a synth Instance and read the parameters.
         
@@ -32,6 +33,8 @@ class synth(rundir_num.rundir_num):
             Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.
         line_list : str
             The name of the linelist file. If not specified will use built-in VALD linelist.
+        weedout : bool or float, default False
+            The switch for running weedout driver before synth. If False then weedout is not run; if True the weedout is run with kappa_ratio=0.0, and if a float (> 0 and < 1) is given then weedout is run with the kappa_ratio set as the number
         '''
         super(synth, self).__init__('{}/.pymoog/'.format(private.os.environ['HOME']))
         self.teff = teff
@@ -41,6 +44,7 @@ class synth(rundir_num.rundir_num):
         self.end_wav = end_wav
         self.resolution = resolution
         self.line_list = line_list
+        self.weedout = weedout
         
     def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, atmosphere=1, lines=1):
         '''
@@ -90,6 +94,18 @@ class synth(rundir_num.rundir_num):
             # Linelist file is specified; record linelist file name and copy to working directory.
             subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
             self.line_list = self.line_list.split('/')[-1]
+            
+        # Weedout the line list 
+        if self.weedout != False:
+            if self.weedout == True:
+                w = weedout.weedout(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, line_list=self.rundir_path+self.line_list)
+            else:
+                w = weedout.weedout(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, kappa_ratio=self.weedout, line_list=self.rundir_path+self.line_list)
+            w.prepare_file()
+            w.run_moog()
+            w.read_linelist()
+            line_data.save_linelist(w.keep_list, self.rundir_path + self.line_list)
+            
             
         # Create parameter file.
         self.create_para_file(atmosphere=atmosphere, lines=lines)    

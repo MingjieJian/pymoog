@@ -1,0 +1,30 @@
+Here I put the test cases for batch.par which is still not totally clear.
+
+# binary
+binary
+bin_raw_out        'MOOG.out4'
+bin_smo_out        'MOOG.out5'
+deltaradvel        100
+atmosphere         1
+lines              1
+molecules          2
+terminal           'x11'
+plot        1
+plotpars    1
+  0.0  0.0  0.0  0.0 
+  0.0  0.0  0.0  0.0 
+  'g'  0.386  0.0  0.0  0.0  0.0
+synlimits
+  10800  10830  0.02  4.0
+RUN                1
+model_in           'model.mod'
+lines_in           'line.list'
+standard_out       'MOOG.out1_1'
+summary_out        'MOOG.out2_1'
+RUN                2
+model_in           'model.mod'
+lines_in           'line.list'
+standard_out       'MOOG.out1_2'
+summary_out        'MOOG.out2_2'
+RUN                3
+

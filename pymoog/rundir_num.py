@@ -35,3 +35,9 @@ class rundir_num(object):
         
     def unlock(self):
         private.subprocess.run(['rm', '{}/rundir{}.lock'.format(self.pymoog_path, self.rundir_num)])
+        
+    def clear_lock(self, num):
+        if num != 'all':
+            private.subprocess.run(['rm', '{}/rundir{}.lock'.format(self.pymoog_path, num)])
+        elif num == 'all':
+            private.subprocess.run(['rm', '{}/rundir*.lock'.format(self.pymoog_path)])
