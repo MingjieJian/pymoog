@@ -79,8 +79,9 @@ class cog(rundir_num.rundir_num):
                 self.model_file = 'model.mod'
 
         # Linelist file is specified; record linelist file name and copy to working directory.
-        line_data.save_linelist(self.line_list, self.rundir_path + '/line.list')
-        # private.subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=private.subprocess.PIPE)
+        # self.line_list = line_data.read_linelist(self.line_list)
+        # line_data.save_linelist(self.line_list, self.rundir_path + '/line.list')
+        private.subprocess.run(['cp', self.line_list, self.rundir_path+'/line.list'], encoding='UTF-8', stdout=private.subprocess.PIPE)
         self.line_list_name = 'line.list'
             
         # Create parameter file.

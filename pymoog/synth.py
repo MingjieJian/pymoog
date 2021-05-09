@@ -43,10 +43,11 @@ class synth(rundir_num.rundir_num):
         self.start_wav = start_wav
         self.end_wav = end_wav
         self.resolution = resolution
+        self.del_wav = del_wav
         self.line_list = line_list
         self.weedout = weedout
         
-    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, atmosphere=1, lines=1):
+    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, vmicro=2, atmosphere=1, lines=1):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
@@ -74,7 +75,7 @@ class synth(rundir_num.rundir_num):
         
         if model_file == None:
             # Model file is not specified, will download Kurucz model according to stellar parameters.
-            model.interpolate_model(self.teff, self.logg, self.m_h, abun_change=abun_change, molecules=molecules, to_path=self.rundir_path + 'model.mod')
+            model.interpolate_model(self.teff, self.logg, self.m_h, abun_change=abun_change, molecules=molecules, vmicro=vmicro, to_path=self.rundir_path + 'model.mod')
             self.model_file = 'model.mod'
         else:
             # Model file is specified; record model file name and copy to working directory.
@@ -108,7 +109,7 @@ class synth(rundir_num.rundir_num):
             
             
         # Create parameter file.
-        self.create_para_file(atmosphere=atmosphere, lines=lines)    
+        self.create_para_file(atmosphere=atmosphere, lines=lines, del_wav=self.del_wav)    
         
     def create_para_file(self, del_wav=0.02, smooth='g', atmosphere=1, lines=1, molecules=2):
         '''
@@ -140,7 +141,7 @@ class synth(rundir_num.rundir_num):
                         "molecules          {}\n".format(molecules),
                         "terminal           'x11'\n",
                         "synlimits\n",
-                        "  {}  {}  {}  4.0\n".format(self.start_wav, self.end_wav, del_wav),
+                        "  {}  {}  {}  6.0\n".format(self.start_wav, self.end_wav, del_wav),
                         "plot        3\n",
                         "plotpars    1\n",
                         "  0.0  0.0  0.0  0.0 \n",

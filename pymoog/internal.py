@@ -8,7 +8,7 @@ import os
 from pymoog import model
 import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
-import line_data
+from pymoog import line_data
 import mendeleev
 import re
 
@@ -337,7 +337,7 @@ def kurucz2moog(kurucz_path, save_path):
     kurucz_use['EW'] = np.nan
     line_data.save_linelist(kurucz_use, save_path, wav_start=1000, wav_end=7e5)
     
-atoms_number = pd.read_csv('files/atoms.csv')
+atoms_number = pd.read_csv(MOOG_file_path + '/atoms.csv')
 
 def get_species(num):
     if num <= 100:
