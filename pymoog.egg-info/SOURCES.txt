@@ -3,6 +3,7 @@ README.md
 setup.py
 pymoog/__init__.py
 pymoog/abfind.py
+pymoog/binary.py
 pymoog/blends.py
 pymoog/cog.py
 pymoog/contri_func.py
@@ -11,6 +12,7 @@ pymoog/internal.py
 pymoog/line_data.py
 pymoog/model.py
 pymoog/private.py
+pymoog/rundir_num.py
 pymoog/synth.py
 pymoog/weedout.py
 pymoog.egg-info/PKG-INFO

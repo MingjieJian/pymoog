@@ -49,11 +49,12 @@ def read_Kurucz_model(model_path):
 
     abun_list = ''
     temp = model_file.readline()
-    abun_list = abun_list + temp[42:]
+    abun_list = abun_list + temp[42:].replace('E', '')
     temp = model_file.readline()
     while 'ABUNDANCE CHANGE' in temp:
         abun_list = abun_list + temp[temp.index('ABUNDANCE CHANGE')+16:]
         temp = model_file.readline()
+    
     abun = np.array(abun_list.split(), dtype='f').reshape(int(len(abun_list.split())/2), 2)
 
     # Read the model lines
@@ -125,7 +126,7 @@ def save_interpo_model(teff, logg, m_h, abun, model_line, pradk, to_path):
     with open(to_path, 'w') as file:
         file.writelines(content)
 
-def interpolate_model(teff, logg, m_h, to_path=None, abun_change=None, kurucz_format=False, molecules=None, model_type='kurucz'):
+def interpolate_model(teff, logg, m_h, abun_change=None, vmicro=2, kurucz_format=False, molecules=None, model_type='kurucz', to_path=None):
     '''
     Interpolate the model in Kurucz format according to given stellar paraeters when necessary.
     
@@ -137,14 +138,16 @@ def interpolate_model(teff, logg, m_h, to_path=None, abun_change=None, kurucz_fo
         logg value of the model
     m_h : float
         [M/H] value (overall metallicity) of the model
-    to_path : str, optional
-        The path of Kurucz model. If not given then it will be in MOOG_run_path + 'model.mod'
+    vmicro : float, default 2
+        The microtrubulance velocity of the synthesized spectra (this is different from the v_micro of the atmosphere model which is always 2)
     abun_change : dict of pairs {int:float, ...}
         Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.   
     kurucz_format : bool, default False
         If False then the model in MOOG format will be saved; if True then the initial Kurucz format  will be saved.
     type : str, default "kurucz"
         The type of the model to interpolate.
+    to_path : str, optional
+        The path of Kurucz model. If not given then it will be in MOOG_run_path + 'model.mod'
     '''
     
     if to_path == None:
@@ -186,13 +189,14 @@ def interpolate_model(teff, logg, m_h, to_path=None, abun_change=None, kurucz_fo
         model_path = MOOG_file_path + 'model/kurucz/standard/single/teff{:.0f}logg{:.1f}m_h{:+.1f}.dat'.format(*np.array(grid_kurucz_use.loc[0]))
         subprocess.run(['cp', model_path, to_path])
         if not kurucz_format:
-            KURUCZ_convert(model_path=to_path, abun_change=abun_change)
+            KURUCZ_convert(model_path=to_path, vmicro=vmicro, abun_change=abun_change, converted_model_path=to_path)
     else:
         # Interpolation
         short_64 = np.any(grid_kurucz_use['length'] == 64)
         column_7 = np.any(grid_kurucz_use['column'] == 7)
         for i in range(len(grid_kurucz_use)):
             model_path = MOOG_file_path + 'model/kurucz/standard/single/teff{:.0f}logg{:.1f}m_h{:+.1f}.dat'.format(*np.array(grid_kurucz_use.loc[i]))
+
             abun_single, model_line_single, pradk_single = read_Kurucz_model(model_path)
 
             # Cut the long model (72) into short (64) if one of the grid points model is short.
@@ -209,17 +213,19 @@ def interpolate_model(teff, logg, m_h, to_path=None, abun_change=None, kurucz_fo
                 abun = abun + abun_single * b[i]
                 model_line = model_line + model_line_single * b[i]
                 pradk = pradk + pradk_single * b[i]
-
+        if to_path == False:
+            return abun, model_line, pradk
+        
         # Output the interpolated model
         if model_type == 'kurucz':
-            save_interpo_model(teff, logg, m_h_input, abun, model_line, pradk, to_path, )
+            save_interpo_model(teff, logg, m_h_input, abun, model_line, pradk, to_path)
         else:
             save_interpo_model(teff, logg, m_h, abun, model_line, pradk, to_path)
         if not kurucz_format:
             if model_type == 'kurucz':
-                KURUCZ_convert(model_path=to_path, abun_change=abun_change, molecules=molecules, m_h_model=m_h)
+                KURUCZ_convert(model_path=to_path, vmicro=vmicro, abun_change=abun_change, molecules=molecules, m_h_model=m_h, converted_model_path=to_path)
             else:
-                KURUCZ_convert(model_path=to_path, abun_change=abun_change, molecules=molecules)
+                KURUCZ_convert(model_path=to_path, vmicro=vmicro, abun_change=abun_change, molecules=molecules, converted_model_path=to_path)
         
 def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_model_path=None, model_type='atlas9', molecules=None, m_h_model=None):
     '''
