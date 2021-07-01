@@ -18,8 +18,9 @@
 - Meléndez & Barby line list in K-band: `mb99_k`(adopted from [Meléndez & Barbuy 1999](http://adsabs.harvard.edu/abs/1999ApJS..124..527M)) 
     - No molecular line included.
 - Kurucz line list: `kurucz` (adopted from [Kurucz website](http://kurucz.harvard.edu/linelists.html))
-    - [gfall.dat](http://kurucz.harvard.edu/linelists/gfall/gfall.dat), modified in 2012.09.12 without hyperfine splitting.
+    - [gfall08oct17.dat](http://kurucz.harvard.edu/linelists/gfnew/gfall08oct17.dat), modified in 2017.10.08 with hyperfine structure.
     - No molecular line included.
+    - A shorter linelist `kurucz_winered` covering 9100-13540A is available. 
 - APOGEE line list: `apogee` (adopted from [Shetrone et al. 2015](https://ui.adsabs.harvard.edu/abs/2015ApJS..221...24S/abstract))
     - Molecular lines included.
 

@@ -206,6 +206,56 @@ def cal_contri_func(file_name, line_id=1):
                'CF_Ilc':CF_Ilc, 'CF_Il':CF_Il}
     return CF_dict, atmosphere
 
+def cal_blending_ratio(teff, logg, fe_h, resolution, line_list, wav_range, weedout=True):
+    
+    wav_start = wav_range[0] - 7
+    wav_end = wav_range[1] + 7
+    s = synth.synth(teff, logg, fe_h, wav_start, wav_end, resolution, line_list=line_list, weedout=weedout)
+
+    # Whole spectra
+    s.prepare_file()
+    s.run_moog()
+    s.read_spectra(unlock=False)
+    s.weedout = False
+    wav_all, flux_all = s.wav, s.flux
+
+    # Target line excluded
+    linelist_all = line_data.read_linelist(s.rundir_path + line_list)
+    indices = (linelist_all['wavelength']>=wav_range[0]) & (linelist_all['wavelength']<=wav_range[1])
+    linelist_out = linelist_all[indices].reset_index(drop=True)
+    line_index_all = linelist_all[indices].index
+
+    r_blend_depth = []
+    r_blend_EW = []
+    depth = []
+    for line_index in line_index_all:
+#     for line_index in [0]:
+        linelist_exclude = linelist_all.drop(line_index).reset_index(drop=True)
+        line_data.save_linelist(linelist_exclude, s.rundir_path + line_list)
+        s.run_moog()
+        s.read_spectra()
+        wav_exclude, flux_exclude = s.wav, s.flux
+
+        # Calculate the EW and blending fraction
+        linelist_target = linelist_all.loc[line_index:line_index].reset_index(drop=True)
+        line_wavlength = linelist_target.loc[0, 'wavelength']
+        EW = (private.np.sum(1-flux_all)*0.02 - private.np.sum(1-flux_exclude)*0.02) * 1000
+        if flux_exclude[private.np.argmin(private.np.abs(wav_exclude-line_wavlength))] - flux_all[private.np.argmin(private.np.abs(wav_exclude-line_wavlength))] < 1e-5:
+            r_blend_depth.append(1.0)
+        else:
+            r_blend_depth.append((1-flux_exclude[private.np.argmin(private.np.abs(wav_exclude-line_wavlength))]) / (1-flux_all[private.np.argmin(private.np.abs(wav_all-line_wavlength))]))
+            
+        EW_indices = private.np.abs(wav_exclude-line_wavlength) < line_wavlength / resolution *3
+        r_blend_EW.append(private.np.sum(1-flux_exclude[EW_indices]) / private.np.sum(1-flux_all[EW_indices]))
+        depth.append(1 - private.np.min(flux_all[private.np.abs(wav_all-line_wavlength) <= 0.03]))
+    linelist_out['depth'] = depth
+    linelist_out['r_blend_depth'] = r_blend_depth
+    linelist_out['r_blend_EW'] = r_blend_EW
+
+    return linelist_out
+
+
+
 def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=None, line_id=None, target_line_df=None):
     
     if target_line_df is None and (line_wav_input is None or line_id is None):

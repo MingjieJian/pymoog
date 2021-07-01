@@ -25,6 +25,9 @@ if os.environ.get('READTHEDOCS') != 'True':
 
     # untar the kurucz line list.
     tar_status = subprocess.run(['tar', '-xzvf', MOOGMODELING_path + 'files/linelist/kurucz/kurucz.list.tar.gz', '-C', MOOGMODELING_path + 'files/linelist/kurucz/'], stdout=subprocess.PIPE)
+    tar_status = subprocess.run(['tar', '-xzvf', MOOGMODELING_path + 'files/linelist/kurucz/kurucz_winered.list.tar.gz', '-C', MOOGMODELING_path + 'files/linelist/kurucz/'], stdout=subprocess.PIPE)
+    tar_status = subprocess.run(['tar', '-xzvf', MOOGMODELING_path + 'files/linelist/vald/vald_3000_24000.list.tar.gz', '-C', MOOGMODELING_path + 'files/linelist/kurucz/'], stdout=subprocess.PIPE)
+    tar_status = subprocess.run(['tar', '-xzvf', MOOGMODELING_path + 'files/linelist/vald/vald_winered.list.tar.gz', '-C', MOOGMODELING_path + 'files/linelist/kurucz/'], stdout=subprocess.PIPE)
 
     # Copy the moog_nosm folder to MOOGMODELING_path; if the folder already exist it will be removed first.
     if os.path.isdir(MOOGMODELING_path + '/moog_nosm'):

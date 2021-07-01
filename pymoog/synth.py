@@ -141,7 +141,7 @@ class synth(rundir_num.rundir_num):
                         "molecules          {}\n".format(molecules),
                         "terminal           'x11'\n",
                         "synlimits\n",
-                        "  {}  {}  {}  6.0\n".format(self.start_wav, self.end_wav, del_wav),
+                        "  {:.2f}  {:.2f}  {}  6.0\n".format(self.start_wav, self.end_wav, del_wav),
                         "plot        3\n",
                         "plotpars    1\n",
                         "  0.0  0.0  0.0  0.0 \n",

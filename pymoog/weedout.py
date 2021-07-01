@@ -95,7 +95,10 @@ class weedout(rundir_num.rundir_num):
             self.line_list = 'line.list'
         elif self.line_list[-5:] == '.list':
             # Linelist file is specified; record linelist file name and copy to working directory.
-            subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
+            line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut)
+            line_data.save_linelist(line_list, self.rundir_path + 'line.list', wav_start=self.start_wav, wav_end=self.end_wav)
+            self.line_list = 'line.list'
+            # subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
             self.line_list = self.line_list.split('/')[-1]
             
         # Create parameter file.
@@ -191,9 +194,7 @@ class weedout(rundir_num.rundir_num):
         self.toss_list : a panda DataFrame only appear when tosslines is True
             A DataFrame for the lines tossed.
         '''
-        
         keep_list = line_data.read_linelist(self.rundir_path + self.keeplines)
-        
         if tosslines:
             toss_list = line_data.read_linelist(self.rundir_path + self.tosslines)
             self.keep_list, self.toss_list =  keep_list, toss_list

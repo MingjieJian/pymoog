@@ -9,6 +9,7 @@ import pkg_resources
 import os
 from . import synth
 from . import weedout
+from . import rundir_num
 
 MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(os.environ['HOME'])
 MOOG_run_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
@@ -77,7 +78,7 @@ def read_linelist(linelist_name, loggf_cut=None):
         Cut on loggf (only save for the lines with loggf > loggf_cut)
     '''
     
-    available_line_list = ['ges', 'ges_hfs_iso', 'ges_nohfs_noiso', 'vald_3000_11000', 'vald_11000_24000', 'mb99_j', 'mb99_k', 'apogee', 'kurucz']
+    available_line_list = ['ges', 'ges_hfs_iso', 'ges_nohfs_noiso', 'vald_3000_24000', 'vald_winered', 'mb99_j', 'mb99_k', 'apogee', 'kurucz', 'kurucz_winered']
     
     if linelist_name[-5:] != '.list' and linelist_name in available_line_list:
         # Read built in line list
@@ -87,7 +88,7 @@ def read_linelist(linelist_name, loggf_cut=None):
     elif linelist_name[-5:] == '.list':
         pass
     else:
-        raise ValueError("Built in line list type not recognized. Please use one of the following:\n              'ges', 'ges_hfs_iso', 'ges_nohfs_noiso', 'vald_3000_11000', 'vald_11000_24000', 'mb99_j', 'mb99_k', 'kurucz' or 'apogee'.")
+        raise ValueError("Built in line list type not recognized. Please use one of the following:\n              'ges', 'ges_hfs_iso', 'ges_nohfs_noiso', 'vald_3000_24000', 'vald_winered', 'mb99_j', 'mb99_k', 'kurucz', 'kurucz_winered' or 'apogee'.")
     linelist = pd.read_fwf(linelist_name,
             colspecs=[(0,11), (11,21), (21,31), (31,41), (41,51), (51,61), (61,71)],
             names=['wavelength', 'id', 'EP', 'loggf', 'C6', 'D0', 'EW'],
@@ -102,7 +103,7 @@ def read_linelist(linelist_name, loggf_cut=None):
 
 def find_lines(linelist_keep, linelist_all):
     line_index_keep = []
-    for i in range(len(linelist_keep)):
+    for i in linelist_keep.index:
         indice = (np.abs(linelist_all['wavelength'] - linelist_keep.loc[i, 'wavelength']) < 0.001)
         for col in ['id', 'EP', 'loggf']:
             indice = indice & (np.abs(linelist_all[col] - linelist_keep.loc[i, col]) < 0.001)
@@ -116,19 +117,14 @@ def find_single_dominant_line(line_wav_input, teff, logg, fe_h, resolution, r_d_
 
     # Establish the linelist
     linelist_all = read_linelist(line_list)
-    save_linelist(linelist_all, MOOG_run_path + 'all.list', wav_start=line_wav_input-search_half_width, wav_end=line_wav_input+search_half_width)
-    linelist_all = read_linelist(MOOG_run_path + 'all.list')
+    linelist_all = linelist_all[np.abs(linelist_all['wavelength']-line_wav_input) < search_half_width]
 
     # Calculate the blending ratio
-    s = synth.synth(teff, logg, fe_h, line_wav_input-search_half_width-1, line_wav_input+search_half_width+1, resolution, line_list=MOOG_run_path + 'all.list')
-
+    s = synth.synth(teff, logg, fe_h, line_wav_input-search_half_width-1, line_wav_input+search_half_width+1, resolution, line_list=line_list)
+    s.prepare_file(abun_change=abun_change)
     # Whole spectra 
-    if abun_change is not None:
-        s.prepare_file(abun_change=abun_change)
-    else:
-        s.prepare_file()
     s.run_moog()
-    s.read_spectra()
+    s.read_spectra(unlock=False)
     wav_all, flux_all = s.wav, s.flux
 
     # weedout lines
@@ -139,23 +135,26 @@ def find_single_dominant_line(line_wav_input, teff, logg, fe_h, resolution, r_d_
         
     # Target line exclude
     if weedout_switch:
-        linelist_keep = read_linelist(MOOG_run_path + 'keep.list')
+        linelist_keep = read_linelist(w.rundir_path + 'keep.list')
     else:
-        linelist_keep = read_linelist(MOOG_run_path + 'all.list')
+        linelist_keep = linelist_all
+    
+    # Unlock runs
+    s.unlock()
+    if weedout_switch != False:
+        w.unlock()
     
     line_index_keep = find_lines(linelist_keep, linelist_all)
 
     r_blend_depth_list = []
     for line_index in line_index_keep:
-        s = synth.synth(teff, logg, fe_h, line_wav_input-search_half_width-1, line_wav_input+search_half_width+1, resolution, line_list=MOOG_run_path+'line.list')
-        if abun_change is not None:
-            s.prepare_file(abun_change=abun_change)
-        else:
-            s.prepare_file()
+        s = synth.synth(teff, logg, fe_h, line_wav_input-search_half_width-1, line_wav_input+search_half_width+1, 
+                        resolution, line_list='ges')
+        s.prepare_file(abun_change=abun_change)
         linelist_exclude = linelist_all.drop(line_index).reset_index(drop=True)
-        save_linelist(linelist_exclude, MOOG_run_path + 'line.list')
+        save_linelist(linelist_exclude, s.rundir_path + 'line.list')
         s.run_moog()
-        s.read_spectra()
+        s.read_spectra(unlock=False)
         wav_exclude, flux_exclude = s.wav, s.flux
 
         # Target line only
@@ -167,12 +166,10 @@ def find_single_dominant_line(line_wav_input, teff, logg, fe_h, resolution, r_d_
             s.prepare_file(abun_change=abun_change)
         else:
             s.prepare_file()
-        save_linelist(linelist_target, MOOG_run_path + 'line.list')
+        save_linelist(linelist_target, s.rundir_path + 'line.list')
         s.run_moog()
         s.read_spectra()
         wav_target, flux_target = s.wav, s.flux
-        # plt.plot(wav_exclude, flux_exclude)
-        # print(linelist_target)
 
         # Calculate the EW and blending fraction
         EW = (np.sum(1-flux_all)*0.02 - np.sum(1-flux_exclude)*0.02) * 1000
