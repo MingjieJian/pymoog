@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pymoog
-Version: 0.0.13
+Version: 0.0.15
 Summary: The python wrapper to run LTE spectra synthesis code MOOG.
 Home-page: https://github.com/MingjieJian/pymoog
 Author: Mingjie Jian, Pranav Satheesh and Kruthi Krishna
@@ -58,7 +58,6 @@ Description: # pymoog
         
         - `clone` this repository and `cd` into the corresponding folder;
         - `pip install .`
-         
         
         ## Tutorial
         
@@ -71,13 +70,12 @@ Description: # pymoog
         ## Development progress
         
         - [x] synth
-        <<<<<<< HEAD
-        - ~[] plotit~
+        ~- [] plotit~
         - [x] abfind
         - [x] blends
         - [] binary
         - [x] cog
-        - ~[] grdisyn~
+        ~- [] grdisyn~
         - [x] weedout
         - [] cogsyn
         - [] ewfind
@@ -86,22 +84,6 @@ Description: # pymoog
         - [] synpop
         - [] abpop
         - [] mydriver
-        =======
-        - ~[ ] plotit~
-        - [x] abfind
-        - [x] blends
-        - [ ] binary
-        - [x] cog
-        - ~[ ] grdisyn~
-        - [x] weedout
-        - [ ] cogsyn
-        - [ ] ewfind
-        - [ ] calmod
-        - [ ] doflux
-        - [ ] synpop
-        - [ ] abpop
-        - [ ] mydriver
-        >>>>>>> 369b2cc126d7369412589e0c8c5fcfdd729aa99d
         
         ## Acknowledgement
         

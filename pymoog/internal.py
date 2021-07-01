@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
 from pymoog import line_data
 import mendeleev
+import astropy.units as u
 import re
 from astropy import constants
 
