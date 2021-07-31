@@ -70,12 +70,13 @@ Description: # pymoog
         ## Development progress
         
         - [x] synth
-        ~- [] plotit~
+        <<<<<<< HEAD
+        - ~[] plotit~
         - [x] abfind
         - [x] blends
         - [] binary
         - [x] cog
-        ~- [] grdisyn~
+        - ~[] grdisyn~
         - [x] weedout
         - [] cogsyn
         - [] ewfind
