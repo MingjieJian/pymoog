@@ -47,7 +47,7 @@ class synth(rundir_num.rundir_num):
         self.line_list = line_list
         self.weedout = weedout
         
-    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, vmicro=2, atmosphere=1, lines=1):
+    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, vmicro=2, atmosphere=1, lines=1, smooth_para=None):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
@@ -72,6 +72,9 @@ class synth(rundir_num.rundir_num):
         subprocess.run(['rm', self.rundir_path + 'model.mod'])
         subprocess.run(['rm', self.rundir_path + 'line.list'])
         private.os.system('rm ' + self.rundir_path + 'MOOG.out*')
+        
+        if smooth_para is None:
+            smooth_para = ['g', 0.0, 0.0, 0.0, 0.0, 0.0]
         
         if model_file == None:
             # Model file is not specified, will download Kurucz model according to stellar parameters.
@@ -106,12 +109,11 @@ class synth(rundir_num.rundir_num):
             w.run_moog()
             w.read_linelist()
             line_data.save_linelist(w.keep_list, self.rundir_path + self.line_list)
-            
-            
+                
         # Create parameter file.
-        self.create_para_file(atmosphere=atmosphere, lines=lines, del_wav=self.del_wav)    
+        self.create_para_file(atmosphere=atmosphere, lines=lines, del_wav=self.del_wav, smooth_para=smooth_para)    
         
-    def create_para_file(self, del_wav=0.02, smooth='g', atmosphere=1, lines=1, molecules=2):
+    def create_para_file(self, del_wav=0.02, smooth_para=['g', 0.0, 0.0, 0.0, 0.0, 0.0], atmosphere=1, lines=1, molecules=2):
         '''
         Function for creating the parameter file of batch.par
         
@@ -128,8 +130,11 @@ class synth(rundir_num.rundir_num):
         #                         smoothing function, Gaussian FWHM, vsini, limb darkening coefficient,
         #                         Macrotrubulent FWHM, Lorentzian FWHM
         smooth_width = np.mean([self.start_wav / self.resolution, self.end_wav / self.resolution])
-        smooth_para = [smooth, smooth_width, 0.0, 0.0, 0.0, 0.0]
-        #MOOG_para_file = open('batch.par', 'w')
+
+        if smooth_para[1] == 0:
+            smooth_para[1] = smooth_width
+
+        # The fitting range is enlarge by smooth_para[1]*2 A, to cover a full range of wavelength without being cut by the smoothing function.
         MOOG_contant = ["synth\n",
                         "standard_out       '{}'\n".format('MOOG.out1'),
                         "summary_out        '{}'\n".format('MOOG.out2'),
@@ -141,12 +146,12 @@ class synth(rundir_num.rundir_num):
                         "molecules          {}\n".format(molecules),
                         "terminal           'x11'\n",
                         "synlimits\n",
-                        "  {:.2f}  {:.2f}  {}  6.0\n".format(self.start_wav, self.end_wav, del_wav),
+                        "  {:.2f}  {:.2f}  {}  6.0\n".format(self.start_wav - smooth_para[1]*2, self.end_wav + smooth_para[1]*2, del_wav),
                         "plot        3\n",
                         "plotpars    1\n",
                         "  0.0  0.0  0.0  0.0 \n",
                         "  0.0  0.0  0.0  0.0 \n",
-                        "  '{}'  {:.3f}  {}  {}  {}  {}\n".format(*smooth_para)
+                        "  {}  {:.3f}  {:.3f}  {:.3f}  {:.3f}  {:.3f}\n".format(*smooth_para)
                     ]
         MOOG_para_file.writelines(MOOG_contant)
         MOOG_para_file.close()
@@ -218,7 +223,7 @@ class synth(rundir_num.rundir_num):
             for i in x:
                 model_wav.append(models[0] + models[2]*i)
             model_flux = np.array(models[4:])
-            self.wav, self.flux =  np.array(model_wav), np.array(model_flux)
+            self.wav, self.flux = np.array(model_wav), np.array(model_flux)
         elif type == 'smooth':
             models_file = open(self.rundir_path+'MOOG.out3')
             models = models_file.readline()
@@ -231,6 +236,11 @@ class synth(rundir_num.rundir_num):
                 wavelength.append(float(temp[0]))
                 depth.append(float(temp[1]))
             self.wav, self.flux =  np.array(wavelength), np.array(depth)
+            
+        # Crop the spectra to fit the synthetic wavelength.
+        indices = (self.wav >= self.start_wav) & (self.wav <= self.end_wav) 
+        self.wav = self.wav[indices]
+        self.flux = self.flux[indices]    
             
         if unlock:
             self.unlock()
