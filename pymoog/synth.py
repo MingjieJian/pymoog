@@ -47,7 +47,7 @@ class synth(rundir_num.rundir_num):
         self.line_list = line_list
         self.weedout = weedout
         
-    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, vmicro=2, atmosphere=1, lines=1):
+    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, vmicro=2, atmosphere=1, lines=1, smooth_para=None):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
@@ -72,6 +72,9 @@ class synth(rundir_num.rundir_num):
         subprocess.run(['rm', self.rundir_path + 'model.mod'])
         subprocess.run(['rm', self.rundir_path + 'line.list'])
         private.os.system('rm ' + self.rundir_path + 'MOOG.out*')
+        
+        if smooth_para is None:
+            smooth_para = ['g', 0.0, 0.0, 0.0, 0.0, 0.0]
         
         if model_file == None:
             # Model file is not specified, will download Kurucz model according to stellar parameters.
@@ -106,12 +109,11 @@ class synth(rundir_num.rundir_num):
             w.run_moog()
             w.read_linelist()
             line_data.save_linelist(w.keep_list, self.rundir_path + self.line_list)
-            
-            
+                
         # Create parameter file.
-        self.create_para_file(atmosphere=atmosphere, lines=lines, del_wav=self.del_wav)    
+        self.create_para_file(atmosphere=atmosphere, lines=lines, del_wav=self.del_wav, smooth_para=smooth_para)    
         
-    def create_para_file(self, del_wav=0.02, smooth='g', atmosphere=1, lines=1, molecules=2):
+    def create_para_file(self, del_wav=0.02, smooth_para=['g', 0.0, 0.0, 0.0, 0.0, 0.0], atmosphere=1, lines=1, molecules=2):
         '''
         Function for creating the parameter file of batch.par
         
@@ -128,7 +130,10 @@ class synth(rundir_num.rundir_num):
         #                         smoothing function, Gaussian FWHM, vsini, limb darkening coefficient,
         #                         Macrotrubulent FWHM, Lorentzian FWHM
         smooth_width = np.mean([self.start_wav / self.resolution, self.end_wav / self.resolution])
-        smooth_para = [smooth, smooth_width, 0.0, 0.0, 0.0, 0.0]
+
+        if smooth_para[1] == 0:
+            smooth_para[1] = smooth_width
+
         #MOOG_para_file = open('batch.par', 'w')
         MOOG_contant = ["synth\n",
                         "standard_out       '{}'\n".format('MOOG.out1'),
@@ -146,7 +151,7 @@ class synth(rundir_num.rundir_num):
                         "plotpars    1\n",
                         "  0.0  0.0  0.0  0.0 \n",
                         "  0.0  0.0  0.0  0.0 \n",
-                        "  '{}'  {:.3f}  {}  {}  {}  {}\n".format(*smooth_para)
+                        "  {}  {:.3f}  {:.3f}  {:.3f}  {:.3f}  {:.3f}\n".format(*smooth_para)
                     ]
         MOOG_para_file.writelines(MOOG_contant)
         MOOG_para_file.close()
