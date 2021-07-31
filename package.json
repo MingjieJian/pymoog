@@ -1,6 +1,10 @@
 {
   "name": "pymoog",
+<<<<<<< HEAD
   "version": "0.0.17",
+=======
+  "version": "0.0.16",
+>>>>>>> 844fab1d200c0463fb168f75a48afbea7879a2a6
   "description": "[![Documentation Status](https://readthedocs.org/projects/pymoog/badge/?version=latest)](https://pymoog.readthedocs.io/en/latest/?badge=latest)",
   "main": "index.js",
   "directories": {

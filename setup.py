@@ -56,7 +56,11 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
       name='pymoog',
+<<<<<<< HEAD
       version='0.0.17',
+=======
+      version='0.0.16',
+>>>>>>> 844fab1d200c0463fb168f75a48afbea7879a2a6
       description='The python wrapper to run LTE spectra synthesis code MOOG.',
       long_description=long_description,
       long_description_content_type="text/markdown",
