@@ -134,7 +134,7 @@ class synth(rundir_num.rundir_num):
         if smooth_para[1] == 0:
             smooth_para[1] = smooth_width
 
-        #MOOG_para_file = open('batch.par', 'w')
+        # The fitting range is enlarge by smooth_para[1]*2 A, to cover a full range of wavelength without being cut by the smoothing function.
         MOOG_contant = ["synth\n",
                         "standard_out       '{}'\n".format('MOOG.out1'),
                         "summary_out        '{}'\n".format('MOOG.out2'),
@@ -146,7 +146,7 @@ class synth(rundir_num.rundir_num):
                         "molecules          {}\n".format(molecules),
                         "terminal           'x11'\n",
                         "synlimits\n",
-                        "  {:.2f}  {:.2f}  {}  6.0\n".format(self.start_wav, self.end_wav, del_wav),
+                        "  {:.2f}  {:.2f}  {}  6.0\n".format(self.start_wav - smooth_para[1]*2, self.end_wav + smooth_para[1]*2, del_wav),
                         "plot        3\n",
                         "plotpars    1\n",
                         "  0.0  0.0  0.0  0.0 \n",
@@ -223,7 +223,7 @@ class synth(rundir_num.rundir_num):
             for i in x:
                 model_wav.append(models[0] + models[2]*i)
             model_flux = np.array(models[4:])
-            self.wav, self.flux =  np.array(model_wav), np.array(model_flux)
+            self.wav, self.flux = np.array(model_wav), np.array(model_flux)
         elif type == 'smooth':
             models_file = open(self.rundir_path+'MOOG.out3')
             models = models_file.readline()
@@ -236,6 +236,11 @@ class synth(rundir_num.rundir_num):
                 wavelength.append(float(temp[0]))
                 depth.append(float(temp[1]))
             self.wav, self.flux =  np.array(wavelength), np.array(depth)
+            
+        # Crop the spectra to fit the synthetic wavelength.
+        indices = (self.wav >= self.start_wav) & (self.wav <= self.end_wav) 
+        self.wav = self.wav[indices]
+        self.flux = self.flux[indices]    
             
         if unlock:
             self.unlock()
