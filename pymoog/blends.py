@@ -83,7 +83,7 @@ class blends(rundir_num.rundir_num):
 
         if self.line_list[-5:] != '.list':
             # Linelist file is not specified, use internal line list;
-            line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut)
+            line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut, mode='npy')
             
             # Input EW into the linelist
             line_list = line_list[(line_list['wavelength'] >= self.start_wav) & (line_list['wavelength'] <= self.end_wav)].reset_index(drop=True)

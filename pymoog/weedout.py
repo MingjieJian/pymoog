@@ -90,7 +90,7 @@ class weedout(rundir_num.rundir_num):
                 self.model_file = 'model.mod'
 
         if self.line_list[-5:] != '.list':
-            line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut)
+            line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut, mode='npy')
             line_data.save_linelist(line_list, self.rundir_path + 'line.list', wav_start=self.start_wav, wav_end=self.end_wav)
             self.line_list = 'line.list'
         elif self.line_list[-5:] == '.list':

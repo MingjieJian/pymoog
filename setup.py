@@ -27,7 +27,9 @@ if os.environ.get('READTHEDOCS') != 'True':
     tar_status = subprocess.run(['tar', '-xzvf', MOOGMODELING_path + 'files/linelist/kurucz/kurucz.list.tar.gz', '-C', MOOGMODELING_path + 'files/linelist/kurucz/'], stdout=subprocess.PIPE)
     tar_status = subprocess.run(['tar', '-xzvf', MOOGMODELING_path + 'files/linelist/kurucz/kurucz_winered.list.tar.gz', '-C', MOOGMODELING_path + 'files/linelist/kurucz/'], stdout=subprocess.PIPE)
     tar_status = subprocess.run(['tar', '-xzvf', MOOGMODELING_path + 'files/linelist/vald/vald_3000_24000.list.tar.gz', '-C', MOOGMODELING_path + 'files/linelist/vald/'], stdout=subprocess.PIPE)
+    tar_status = subprocess.run(['tar', '-xzvf', MOOGMODELING_path + 'files/linelist/vald/vald_3000_24000.npy.tar.gz', '-C', MOOGMODELING_path + 'files/linelist/vald/'], stdout=subprocess.PIPE)
     tar_status = subprocess.run(['tar', '-xzvf', MOOGMODELING_path + 'files/linelist/vald/vald_winered.list.tar.gz', '-C', MOOGMODELING_path + 'files/linelist/vald/'], stdout=subprocess.PIPE)
+    tar_status = subprocess.run(['tar', '-xzvf', MOOGMODELING_path + 'files/linelist/vald/vald_winered.npy.tar.gz', '-C', MOOGMODELING_path + 'files/linelist/vald/'], stdout=subprocess.PIPE)
 
     # Copy the moog_nosm folder to MOOGMODELING_path; if the folder already exist it will be removed first.
     if os.path.isdir(MOOGMODELING_path + '/moog_nosm'):
@@ -56,11 +58,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
       name='pymoog',
-<<<<<<< HEAD
       version='0.0.17',
-=======
-      version='0.0.16',
->>>>>>> 844fab1d200c0463fb168f75a48afbea7879a2a6
       description='The python wrapper to run LTE spectra synthesis code MOOG.',
       long_description=long_description,
       long_description_content_type="text/markdown",
@@ -83,7 +81,8 @@ setuptools.setup(
           'matplotlib >= 3.1.0',
           'mendeleev >= 0.6.0',
           'scipy >= 1.4.0',
-          'astropy >= 4.0'
+          'astropy >= 4.0',
+          'spectres'
       ],
       include_package_data=True,  
     #   package_data={'': ['moog_nosm/moog_nosm_FEB2017/']},

@@ -1,12 +1,9 @@
 #!/usr/bin/python
+from re import sub
 import numpy as np
 import pandas as pd
-import mendeleev as md
-import re
-import sys
-import subprocess
-import pkg_resources
 import os
+from . import private
 from . import synth
 from . import weedout
 from . import rundir_num
@@ -51,22 +48,19 @@ def save_linelist(linelist_all, sub_ll_name, wav_start=None, wav_end=None, heade
     sub_linelist = linelist_all[index]
     sub_linelist.reset_index(drop=True, inplace=True)
     if np.any(abs(sub_linelist['C6'].values) > 1e-25):
-        output_format = '{:10.3f}{:10.5f}{:10.4f}{:10.3f}{:10.3f}{:10.3f}{:10.3f}\n'
+        output_format = '%10.3f%10.5f%10.4f%10.3f%10.3f%10.3f%10.3f'
     elif np.any(abs(sub_linelist['C6'].values) < 1e-25):
-        output_format = '{:10.3f}{:10.5f}{:10.4f}{:10.3f}{:10.2E}{:10.3f}{:10.3f}\n'
+        output_format = '%10.3f%10.5f%10.4f%10.3f%10.2E%10.3f%10.3f'
     # Remove the last column if no EW values.
     if len(sub_linelist.columns) == 6:
-        output_format = output_format[:-9] + '\n'
-    with open(sub_ll_name, 'w') as file:
-        if header == None:
-            file.write('Linelist\n')
-        else:
-            file.write('{}\n'.format(header))
-        for i in range(len(sub_linelist)):
-            line = output_format.format(*sub_linelist.iloc[i].values).replace('nan', '   ')
-            file.write(line)
+        output_format = output_format[:-6]
+    np.savetxt(sub_ll_name, np.array(sub_linelist), fmt=output_format)
+    run_status = private.subprocess.run(['sed', '-i', 's/nan/   /g', sub_ll_name])
+    if header == None:
+        header = 'Linelist'
+    run_status = private.subprocess.run(['sed', '-i', '1 i\{}'.format(header), sub_ll_name])
 
-def read_linelist(linelist_name, loggf_cut=None):
+def read_linelist(linelist_name, loggf_cut=None, mode='ascii'):
     '''
     Read the post-processed linelist.
     
@@ -76,23 +70,32 @@ def read_linelist(linelist_name, loggf_cut=None):
         The MOOG format line list
     loggf_cut : float, optional
         Cut on loggf (only save for the lines with loggf > loggf_cut)
+    mode : str, default 'ascii'
+        Reading mode for reading line-list. The efficiency of 'npy' mode is much higher than 'ascii' mode.
     '''
     
     available_line_list = ['ges', 'ges_hfs_iso', 'ges_nohfs_noiso', 'vald_3000_24000', 'vald_winered', 'mb99_j', 'mb99_k', 'apogee', 'kurucz', 'kurucz_winered']
     
     if linelist_name[-5:] != '.list' and linelist_name in available_line_list:
-        # Read built in line list
+        # Read built-in line list
         if linelist_name == 'ges':
-                    linelist_name = 'ges_hfs_iso'
-        linelist_name = MOOG_file_path + 'linelist/{}/{}.list'.format(linelist_name.split('_')[0], linelist_name)
+            linelist_name = 'ges_hfs_iso'
+        if mode == 'npy':
+            linelist_name = MOOG_file_path + 'linelist/{}/{}.npy'.format(linelist_name.split('_')[0], linelist_name)
+        elif mode == 'ascii':
+            linelist_name = MOOG_file_path + 'linelist/{}/{}.list'.format(linelist_name.split('_')[0], linelist_name)
+        else:
+            raise ValueError('mode must be "npy" or "ascii".')
     elif linelist_name[-5:] == '.list':
         pass
     else:
         raise ValueError("Built in line list type not recognized. Please use one of the following:\n              'ges', 'ges_hfs_iso', 'ges_nohfs_noiso', 'vald_3000_24000', 'vald_winered', 'mb99_j', 'mb99_k', 'kurucz', 'kurucz_winered' or 'apogee'.")
-    linelist = pd.read_fwf(linelist_name,
-            colspecs=[(0,11), (11,21), (21,31), (31,41), (41,51), (51,61), (61,71)],
-            names=['wavelength', 'id', 'EP', 'loggf', 'C6', 'D0', 'EW'],
-            skiprows=1)
+    
+    if mode == 'npy':
+        linelist_array = np.load(linelist_name, allow_pickle=True)
+        linelist = pd.DataFrame(linelist_array, columns=['wavelength', 'id', 'EP', 'loggf', 'C6', 'D0', 'EW'])
+    elif mode == 'ascii':
+        linelist = pd.read_fwf(linelist_name, colspecs=[(0,11), (11,21), (21,31), (31,41), (41,51), (51,61), (61,71)], names=['wavelength', 'id', 'EP', 'loggf', 'C6', 'D0', 'EW'], skiprows=1)
     # MOOG seems to crash if there is line with EP larger than 50eV, so they are removed.
     # Need to be test for other line lists
     linelist = linelist[(linelist['EP'] <= 50)]

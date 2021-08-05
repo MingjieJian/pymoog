@@ -229,7 +229,7 @@ def cal_blending_ratio(teff, logg, fe_h, resolution, line_list, wav_range, weedo
     r_blend_EW = []
     depth = []
     for line_index in line_index_all:
-#     for line_index in [0]:
+
         linelist_exclude = linelist_all.drop(line_index).reset_index(drop=True)
         line_data.save_linelist(linelist_exclude, s.rundir_path + line_list)
         s.run_moog()
@@ -253,8 +253,6 @@ def cal_blending_ratio(teff, logg, fe_h, resolution, line_list, wav_range, weedo
     linelist_out['r_blend_EW'] = r_blend_EW
 
     return linelist_out
-
-
 
 def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=None, line_id=None, target_line_df=None):
     
