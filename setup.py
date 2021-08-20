@@ -82,7 +82,8 @@ setuptools.setup(
           'mendeleev >= 0.6.0',
           'scipy >= 1.4.0',
           'astropy >= 4.0',
-          'spectres'
+          'spectres',
+          'tqdm'
       ],
       include_package_data=True,  
     #   package_data={'': ['moog_nosm/moog_nosm_FEB2017/']},

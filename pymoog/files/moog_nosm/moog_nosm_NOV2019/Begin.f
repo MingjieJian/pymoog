@@ -52,7 +52,7 @@ c     system.
          call finish (0)
       endif
 10    close (99,status='delete')
-      write (systemcall,*) '\\rm -f tmpsize'
+      write (systemcall,*) 'rm -f tmpsize'
       call system (systemcall)
       if (maxline .lt. 10) then
          maxline = 24

@@ -7,3 +7,4 @@ from . import weedout
 from . import cog
 from . import binary
 from . import internal
+from . import mpfit
