@@ -286,7 +286,7 @@ def KURUCZ_convert(model_path=None, vmicro=2.0, abun_change=None, converted_mode
         model_lines.append(model_file.readline().split()[:7])
 
     # Prepare the microtrubulance value.
-    vmicro = '{}E00'.format(vmicro)
+    vmicro = '{:.2E}'.format(vmicro)
 
     # Write the model file.
     # header, abun09, model_lines and vmicro

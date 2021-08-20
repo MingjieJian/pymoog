@@ -7,6 +7,7 @@ from . import model
 from . import rundir_num
 from . import weedout
 from . import private
+import time
 
 MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ['HOME'])
 # self.rundir_path = r.rundir_path
@@ -68,10 +69,11 @@ class synth(rundir_num.rundir_num):
             Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
         '''
         self.lock()
-        subprocess.run(['rm', self.rundir_path + 'batch.par'])
-        subprocess.run(['rm', self.rundir_path + 'model.mod'])
-        subprocess.run(['rm', self.rundir_path + 'line.list'])
-        private.os.system('rm ' + self.rundir_path + 'MOOG.out*')
+        
+        subprocess.run(['rm', '-f', self.rundir_path + 'batch.par'])
+        subprocess.run(['rm', '-f', self.rundir_path + 'model.mod'])
+        private.os.system('rm -f ' + self.rundir_path + '*.list')
+        private.os.system('rm -f ' + self.rundir_path + 'MOOG.out*')
         
         if smooth_para is None:
             smooth_para = ['g', 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -91,7 +93,7 @@ class synth(rundir_num.rundir_num):
 
         if self.line_list[-5:] != '.list':
             # Linelist file is not specified, use internal line list;
-            line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut)
+            line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut, mode='npy')
             line_data.save_linelist(line_list, self.rundir_path + 'line.list', wav_start=self.start_wav, wav_end=self.end_wav)
             self.line_list = 'line.list'
         elif self.line_list[-5:] == '.list':
@@ -169,7 +171,7 @@ class synth(rundir_num.rundir_num):
         ----------
         None. Three files MOOG.out1, MOOG.out2 and MOOG.out3 will be save in the pymoog working path.
         '''
-        
+
         MOOG_run = subprocess.run([MOOG_path + '/MOOGSILENT'], stdout=subprocess.PIPE,
                                   cwd=self.rundir_path)
         if unlock:
@@ -191,7 +193,6 @@ class synth(rundir_num.rundir_num):
         if output:
             for i in MOOG_output:
                 print(i)
-        
         
         if 'ERROR' in ''.join(MOOG_run):
             raise ValueError('There is error during the running of MOOG.')

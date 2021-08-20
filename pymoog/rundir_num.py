@@ -7,7 +7,7 @@ class rundir_num(object):
         '''
 
         '''
-        rundir_nax_num = 10
+        rundir_max_num = 10
         self.pymoog_path = pymoog_path
         file_list = private.subprocess.run(['ls', pymoog_path], stdout=private.subprocess.PIPE)
         file_list = str(file_list.stdout, encoding = "utf-8").split('\n')
@@ -15,7 +15,7 @@ class rundir_num(object):
 
         dir_exist = [int(private.re.search('rundir(.+)\.lock', i).group(1)) for i in file_list]
 
-        rundir_list = list(range(1, rundir_nax_num+1))
+        rundir_list = list(range(1, rundir_max_num+1))
         for ele in dir_exist:
             try:
                 rundir_list.remove(ele)
