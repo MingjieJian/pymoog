@@ -47,10 +47,17 @@ def save_linelist(linelist_all, sub_ll_name, wav_start=None, wav_end=None, heade
            
     sub_linelist = linelist_all[index]
     sub_linelist.reset_index(drop=True, inplace=True)
+    
+    # Judge if the length of the line list is 0; if so raise an error.
+    if len(sub_linelist) == 0:
+        raise ValueError('The length of line list is 0. Consider enalrge the wavelength or check the input line list.')
+    
+    # Decidcde which format to save the linelist according to C6 value.
     if np.any(abs(sub_linelist['C6'].values) > 1e-25):
         output_format = '%10.3f%10.5f%10.4f%10.3f%10.3f%10.3f%10.3f'
     elif np.any(abs(sub_linelist['C6'].values) < 1e-25):
         output_format = '%10.3f%10.5f%10.4f%10.3f%10.2E%10.3f%10.3f'
+    
     # Remove the last column if no EW values.
     if len(sub_linelist.columns) == 6:
         output_format = output_format[:-6]

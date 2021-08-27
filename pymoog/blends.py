@@ -9,7 +9,7 @@ MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ[
 MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
 
 class blends(rundir_num.rundir_num):
-    def __init__(self, teff, logg, m_h, start_wav, end_wav, EW, ele, line_list='ges'):
+    def __init__(self, teff, logg, m_h, start_wav, end_wav, EW, ele, line_list='ges', prefix=''):
         '''
         Initiate a abfind Instance and read the parameters.
         
@@ -32,7 +32,7 @@ class blends(rundir_num.rundir_num):
         line_list : str, default 'ges'
             The name of the linelist file. If not specified will use built-in VALD linelist.
         '''
-        super(blends, self).__init__('{}/.pymoog/'.format(private.os.environ['HOME']))
+        super(blends, self).__init__('{}/.pymoog/'.format(private.os.environ['HOME']), 'blends', prefix=prefix)
         self.teff = teff
         self.logg = logg
         self.m_h = m_h
@@ -62,11 +62,6 @@ class blends(rundir_num.rundir_num):
         abun_change : dict of pairs {int:float, ...}
             Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
         '''
-        self.lock()
-        private.subprocess.run(['rm', self.rundir_path + 'batch.par'])
-        private.subprocess.run(['rm', self.rundir_path + 'model.mod'])
-        private.subprocess.run(['rm', self.rundir_path + 'line.list'])
-        private.os.system('rm ' + self.rundir_path + 'MOOG.out*')
         
         if model_file == None:
             # Model file is not specified, will download Kurucz model according to stellar parameters.
@@ -166,8 +161,8 @@ class blends(rundir_num.rundir_num):
                 ansi_escape = private.re.compile(r'\x1b\[2J')
                 MOOG_output.append(ansi_escape.sub('', temp))
                 
-        if unlock:
-            self.unlock()
+        # if unlock:
+        #     self.unlock()
                 
         if output:
             for i in MOOG_output:
@@ -208,5 +203,5 @@ class blends(rundir_num.rundir_num):
 
         self.blends_s_df = blends_s_df
 
-        if unlock:
-            self.unlock()
+        # if unlock:
+        #     self.unlock()
