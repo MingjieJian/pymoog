@@ -11,6 +11,7 @@ pymoog/deprecated.py
 pymoog/internal.py
 pymoog/line_data.py
 pymoog/model.py
+pymoog/mpfit.py
 pymoog/private.py
 pymoog/rundir_num.py
 pymoog/synth.py
@@ -32,7 +33,9 @@ pymoog/files/linelist/kurucz/kurucz_winered.list.tar.gz
 pymoog/files/linelist/mb99/mb99_j.list
 pymoog/files/linelist/mb99/mb99_k.list
 pymoog/files/linelist/vald/vald_3000_24000.list.tar.gz
+pymoog/files/linelist/vald/vald_3000_24000.npy.tar.gz
 pymoog/files/linelist/vald/vald_winered.list.tar.gz
+pymoog/files/linelist/vald/vald_winered.npy.tar.gz
 pymoog/files/model/kurucz/standard/single.tar.gz
 pymoog/files/moog_nosm/README.md
 pymoog/files/moog_nosm/manual/MOOG Manual.aux

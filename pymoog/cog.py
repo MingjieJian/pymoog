@@ -8,7 +8,7 @@ MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ[
 MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
 
 class cog(rundir_num.rundir_num):
-    def __init__(self, teff, logg, m_h, line_list, vmicro=2., cog_low=-7.5, cog_up=-3.5, cog_step=0.05, lp_step=0):
+    def __init__(self, teff, logg, m_h, line_list, vmicro=2., cog_low=-7.5, cog_up=-3.5, cog_step=0.05, lp_step=0, prefix=''):
         '''
         Initiate a cog Instance and read the parameters. 
         line_list muse be provided with suffix of '.list', and it can only contain one line.
@@ -34,7 +34,7 @@ class cog(rundir_num.rundir_num):
         lp_step : float, default 0
             An explicit line profile wavelength step size, if desired.
         '''
-        super(cog, self).__init__('{}/.pymoog/'.format(private.os.environ['HOME']))
+        super(cog, self).__init__('{}/.pymoog/'.format(private.os.environ['HOME']), 'cog', prefix=prefix)
         self.teff = teff
         self.logg = logg
         self.m_h = m_h
@@ -62,11 +62,6 @@ class cog(rundir_num.rundir_num):
         abun_change : dict of pairs {int:float, ...}
             Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
         '''
-        self.lock()
-        private.subprocess.run(['rm', self.rundir_path + 'batch.par'])
-        private.subprocess.run(['rm', self.rundir_path + 'model.mod'])
-        private.subprocess.run(['rm', self.rundir_path + 'line.list'])
-        private.os.system('rm ' + self.rundir_path + 'MOOG.out*')
         
         if model_file == None:
             # Model file is not specified, will download Kurucz model according to stellar parameters.
@@ -139,8 +134,8 @@ class cog(rundir_num.rundir_num):
         
         MOOG_run = private.subprocess.run([MOOG_path + '/MOOGSILENT'], stdout=private.subprocess.PIPE, input=bytes('n', 'utf-8'), cwd=self.rundir_path)
 
-        if unlock:
-            self.unlock()
+        # if unlock:
+        #     self.unlock()
                     
         MOOG_run = str(MOOG_run.stdout, encoding = "utf-8").split('\n')
         MOOG_output = []
@@ -188,8 +183,8 @@ class cog(rundir_num.rundir_num):
         self.loggf = loggf
         self.logrw = logrw
         
-        if unlock:
-            self.unlock()
+        # if unlock:
+        #     self.unlock()
             
     def get_line_status(self, input_loggf=private.np.nan, plot='none'):
         

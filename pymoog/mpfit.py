@@ -20,7 +20,7 @@ def cal_partial_f_v(teff, logg, m_h, wav_start, wav_end, vbroad_in, vmicro_in, r
     # convert rv to wavelength
     del_wav = rv_in / 3e5 * private.np.mean(wav_in)
 
-    s = synth.synth(teff, logg, m_h, wav_start-0.5-del_wav, wav_end+0.5+del_wav, 20000, line_list=line_list, weedout=True)
+    s = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True)
     s.prepare_file(vmicro=vmicro_in+diff_v_dict['vmicro'], smooth_para=['g', vbroad_in+diff_v_dict['vbroad'], 0, 0, 0, 0],
                    abun_change=abun_change)
     s.run_moog()
@@ -28,7 +28,7 @@ def cal_partial_f_v(teff, logg, m_h, wav_start, wav_end, vbroad_in, vmicro_in, r
     s.wav = s.wav * (1 + rv_in/3e5)
     flux_p = spectres.spectres(wav_in, s.wav, s.flux)
 
-    s_ = synth.synth(teff, logg, m_h, wav_start-0.5, wav_end+0.5, 20000, line_list=line_list, weedout=True)
+    s_ = synth.synth(teff, logg, m_h, wav_start-0.75, wav_end+0.75, 20000, line_list=line_list, weedout=True)
     s_.prepare_file(vmicro=vmicro_in-diff_v_dict['vmicro'], smooth_para=['g', vbroad_in-diff_v_dict['vbroad'], 0, 0, 0, 0],
                     abun_change=abun_change)
     s_.run_moog()
@@ -52,7 +52,7 @@ def cal_partial_f_abun(teff, logg, m_h, wav_start, wav_end, vbroad_in, vmicro_in
     del_wav = rv_in / 3e5 * private.np.mean(wav_in)
         
     abun_change[diff_abun] = abun_change[diff_abun] + diff_value
-    s = synth.synth(teff, logg, m_h, wav_start-0.5-del_wav, wav_end+0.5+del_wav, 20000, line_list=line_list, weedout=True)
+    s = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True)
     s.prepare_file(vmicro=vmicro_in, smooth_para=['g', vbroad_in, 0, 0, 0, 0],
                    abun_change=abun_change)
     s.run_moog()
@@ -61,7 +61,7 @@ def cal_partial_f_abun(teff, logg, m_h, wav_start, wav_end, vbroad_in, vmicro_in
     flux_p = spectres.spectres(wav_in, s.wav, s.flux)
 
     abun_change[diff_abun] = abun_change[diff_abun] - 2*diff_value
-    s_ = synth.synth(teff, logg, m_h, wav_start-0.5, wav_end+0.5, 20000, line_list=line_list, weedout=True)
+    s_ = synth.synth(teff, logg, m_h, wav_start-0.75, wav_end+0.75, 20000, line_list=line_list, weedout=True)
     s_.prepare_file(vmicro=vmicro_in, smooth_para=['g', vbroad_in, 0, 0, 0, 0],
                     abun_change=abun_change)
     s_.run_moog()
@@ -80,7 +80,7 @@ def cal_partial_f_m_h(teff, logg, m_h, wav_start, wav_end, vbroad_in, vmicro_in,
     # convert rv to wavelength
     del_wav = rv_in / 3e5 * private.np.mean(wav_in)
     
-    s = synth.synth(teff, logg, m_h+diff_m_h, wav_start-0.5-del_wav, wav_end+0.5+del_wav, 20000, line_list=line_list, weedout=True)
+    s = synth.synth(teff, logg, m_h+diff_m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True)
     s.prepare_file(vmicro=vmicro_in, smooth_para=['g', vbroad_in, 0, 0, 0, 0],
                    abun_change=abun_change)
     s.run_moog()
@@ -88,7 +88,7 @@ def cal_partial_f_m_h(teff, logg, m_h, wav_start, wav_end, vbroad_in, vmicro_in,
     s.wav = s.wav * (1 + rv_in/3e5)
     flux_p = spectres.spectres(wav_in, s.wav, s.flux)
 
-    s_ = synth.synth(teff, logg, m_h-diff_m_h, wav_start-0.5-del_wav, wav_end+0.5+del_wav, 20000, line_list=line_list, weedout=True)
+    s_ = synth.synth(teff, logg, m_h-diff_m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True)
     s_.prepare_file(vmicro=vmicro_in, smooth_para=['g', vbroad_in, 0, 0, 0, 0],
                     abun_change=abun_change)
     s_.run_moog()
@@ -105,7 +105,7 @@ def cal_partial_f_rv(teff, logg, m_h, wav_start, wav_end, vbroad_in, vmicro_in, 
     # convert rv to wavelength
     del_wav = rv_in / 3e5 * private.np.mean(wav_in)
     
-    s = synth.synth(teff, logg, m_h, wav_start-0.5-del_wav, wav_end+0.5+del_wav, 20000, line_list=line_list, weedout=True)
+    s = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True)
     s.prepare_file(vmicro=vmicro_in, smooth_para=['g', vbroad_in, 0, 0, 0, 0],
                    abun_change=abun_change)
     s.run_moog()
@@ -113,7 +113,7 @@ def cal_partial_f_rv(teff, logg, m_h, wav_start, wav_end, vbroad_in, vmicro_in, 
     s.wav = s.wav * (1 + (rv_in + diff_rv)/3e5)
     flux_p = spectres.spectres(wav_in, s.wav, s.flux)
 
-    s_ = synth.synth(teff, logg, m_h, wav_start-0.5-del_wav, wav_end+0.5+del_wav, 20000, line_list=line_list, weedout=True)
+    s_ = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True)
     s_.prepare_file(vmicro=vmicro_in, smooth_para=['g', vbroad_in, 0, 0, 0, 0],
                     abun_change=abun_change)
     s_.run_moog()
@@ -174,7 +174,7 @@ def mpfit_main(wav_in, flux_in, vmicro_in, vbroad_in, rv_in, m_h, abun_change_in
             break
         
         # Calculate F_0
-        s = synth.synth(teff, logg, m_h, wav_in[0]-0.5, wav_in[-1]+0.5, 20000, line_list=line_list, weedout=True)
+        s = synth.synth(teff, logg, m_h, wav_in[0]-0.75, wav_in[-1]+0.75, 20000, line_list=line_list, weedout=True)
         s.prepare_file(vmicro=vmicro_in, smooth_para=['g', vbroad_in, 0, 0, 0, 0], abun_change=abun_change_in)
         s.run_moog()
         s.read_spectra()

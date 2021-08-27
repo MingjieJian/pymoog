@@ -14,7 +14,7 @@ MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ[
 MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
 
 class synth(rundir_num.rundir_num):
-    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, del_wav=0.02, smooth='g', line_list='ges', weedout=False):
+    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, del_wav=0.02, smooth='g', line_list='ges', weedout=False, prefix=''):
         '''
         Initiate a synth Instance and read the parameters.
         
@@ -37,7 +37,7 @@ class synth(rundir_num.rundir_num):
         weedout : bool or float, default False
             The switch for running weedout driver before synth. If False then weedout is not run; if True the weedout is run with kappa_ratio=0.0, and if a float (> 0 and < 1) is given then weedout is run with the kappa_ratio set as the number
         '''
-        super(synth, self).__init__('{}/.pymoog/'.format(private.os.environ['HOME']))
+        super(synth, self).__init__('{}/.pymoog/'.format(private.os.environ['HOME']), 'synth', prefix=prefix)
         self.teff = teff
         self.logg = logg
         self.m_h = m_h
@@ -47,6 +47,7 @@ class synth(rundir_num.rundir_num):
         self.del_wav = del_wav
         self.line_list = line_list
         self.weedout = weedout
+        self.prefix = prefix
         
     def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, vmicro=2, atmosphere=1, lines=1, smooth_para=None):
         '''
@@ -68,12 +69,6 @@ class synth(rundir_num.rundir_num):
         abun_change : dict of pairs {int:float, ...}
             Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
         '''
-        self.lock()
-        
-        subprocess.run(['rm', '-f', self.rundir_path + 'batch.par'])
-        subprocess.run(['rm', '-f', self.rundir_path + 'model.mod'])
-        private.os.system('rm -f ' + self.rundir_path + '*.list')
-        private.os.system('rm -f ' + self.rundir_path + 'MOOG.out*')
         
         if smooth_para is None:
             smooth_para = ['g', 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -104,9 +99,9 @@ class synth(rundir_num.rundir_num):
         # Weedout the line list 
         if self.weedout != False:
             if self.weedout == True:
-                w = weedout.weedout(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, line_list=self.rundir_path+self.line_list)
+                w = weedout.weedout(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, line_list=self.rundir_path+self.line_list, prefix=self.prefix)
             else:
-                w = weedout.weedout(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, kappa_ratio=self.weedout, line_list=self.rundir_path+self.line_list)
+                w = weedout.weedout(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, kappa_ratio=self.weedout, line_list=self.rundir_path+self.line_list, prefix=self.prefix)
             w.prepare_file()
             w.run_moog()
             w.read_linelist()
@@ -174,8 +169,8 @@ class synth(rundir_num.rundir_num):
 
         MOOG_run = subprocess.run([MOOG_path + '/MOOGSILENT'], stdout=subprocess.PIPE,
                                   cwd=self.rundir_path)
-        if unlock:
-            self.unlock()
+        # if unlock:
+        #     self.unlock()
         
         MOOG_run = str(MOOG_run.stdout, encoding = "utf-8").split('\n')
         MOOG_output = []
@@ -197,7 +192,7 @@ class synth(rundir_num.rundir_num):
         if 'ERROR' in ''.join(MOOG_run):
             raise ValueError('There is error during the running of MOOG.')
         
-    def read_spectra(self, type='smooth', unlock=True):
+    def read_spectra(self, type='smooth', remove=True):
         '''
         Read the output spectra of MOOG.
 
@@ -243,5 +238,5 @@ class synth(rundir_num.rundir_num):
         self.wav = self.wav[indices]
         self.flux = self.flux[indices]    
             
-        if unlock:
-            self.unlock()
+        if remove:
+            self.remove()
