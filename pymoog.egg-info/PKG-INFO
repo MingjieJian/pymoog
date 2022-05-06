@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pymoog
-Version: 0.0.21
+Version: 0.0.23
 Summary: The python wrapper to run LTE spectra synthesis code MOOG.
 Home-page: https://github.com/MingjieJian/pymoog
 Author: Mingjie Jian, Pranav Satheesh and Kruthi Krishna
@@ -56,14 +56,19 @@ Description: # pymoog
         
         ### <a name="install-pymoog"></a>Install pymog
         
-        - `clone` this repository and `cd` into the corresponding folder;
-        - `pip install .`
+        - Using pypi (recommended)
+            - `pip install pymoog`
+            - You can also check whether the latest version is installed in [here](https://pypi.org/project/pymoog/).
+        - From github
+            - `clone` this repository and `cd` into the corresponding folder;
+            - `pip install .`
         
         ## Tutorial
         
         Once you are done with the installation, you can use the `pymoog` package now on your code!
         
         For tutorial, Please refer to [this notebook](docs/Tutorial.ipynb).
+        Please download it and [solar_spec.txt](https://github.com/MingjieJian/pymoog/blob/master/docs/solar_spec.txt) in the same folder.
         
         Documentation is available in [here](https://pymoog.readthedocs.io/en/latest/).
         

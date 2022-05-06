@@ -301,7 +301,7 @@ def mpfit_main(wav_in, flux_in, vmicro_in, fwhm_broad, rv_in, m_h, abun_change_i
     return vmicro_in, fwhm_broad, rv_in, m_h, abun_change_in, C_0, niter, para_record
 
 
-def cal_depth(line_lis_in, teff, logg, m_h, vmicro, vbroad, abun_change=None, tqdm_disable=True):
+def cal_depth(line_lis_in, teff, logg, m_h, vmicro, vbroad, abun_change=None, tqdm_disable=True, prefix=''):
     
     depth_list = []
     for i in private.tqdm(range(len(line_lis_in)), disable=tqdm_disable, leave=False):
@@ -312,7 +312,7 @@ def cal_depth(line_lis_in, teff, logg, m_h, vmicro, vbroad, abun_change=None, tq
         # Save the linelist
         line_data.save_linelist(line_lis_in.iloc[i:i+1], 'use.list')
         
-        s = synth.synth(teff, logg, m_h, line_wav-2, line_wav+2, 20000, line_list='use.list', weedout=False)
+        s = synth.synth(teff, logg, m_h, line_wav-2, line_wav+2, 20000, line_list='use.list', weedout=False, prefix=prefix)
         s.prepare_file(vmicro=vmicro, smooth_para=['g', vbroad, 0, 0, 0, 0], abun_change=abun_change)
         s.run_moog()
         s.read_spectra()
@@ -323,14 +323,14 @@ def cal_depth(line_lis_in, teff, logg, m_h, vmicro, vbroad, abun_change=None, tq
         
     return line_lis_in
 
-def cal_depth_blending_ratio(line_lis_in, teff, logg, m_h, vmicro, vbroad, abun_change=None, del_wav=2, tqdm_disable=True):
+def cal_depth_blending_ratio(line_lis_in, teff, logg, m_h, vmicro, vbroad, abun_change=None, del_wav=2, tqdm_disable=True, prefix=''):
     
     depth_blending_ratio_list = []
     for i in private.tqdm(range(len(line_lis_in)), disable=tqdm_disable, leave=False):
     
         line_wav = line_lis_in.iloc[i]['wavelength']
         s = synth.synth(teff, logg, m_h, line_wav-del_wav, line_wav+del_wav, 50000, 
-                               line_list='vald_3000_24000', weedout=False)
+                               line_list='vald_3000_24000', weedout=False, prefix=prefix)
         if i == 0:
             s.prepare_file(vmicro=vmicro, smooth_para=['g', vbroad, 0, 0, 0, 0], abun_change=abun_change)
             private.copyfile(s.rundir_path + 'model.mod', './model.mod')
@@ -351,10 +351,8 @@ def cal_depth_blending_ratio(line_lis_in, teff, logg, m_h, vmicro, vbroad, abun_
         
         
         r_blend_depth = (1-flux_exclude[private.np.argmin(private.np.abs(wav_exclude-line_wav))]) / (1-flux_all[private.np.argmin(private.np.abs(wav_all-line_wav))])
-#         print(r_blend_depth)
+
         depth_blending_ratio_list.append(r_blend_depth)
-#         plt.plot(wav_all, flux_all)
-#         plt.plot(wav_exclude, flux_exclude)
 
     line_lis_in['f_d_blend'] = depth_blending_ratio_list
     

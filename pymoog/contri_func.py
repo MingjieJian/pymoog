@@ -232,7 +232,7 @@ def cal_blending_ratio(teff, logg, fe_h, resolution, line_list, wav_range, weedo
         linelist_exclude = linelist_all.drop(line_index).reset_index(drop=True)
         line_data.save_linelist(linelist_exclude, s.rundir_path + line_list)
         s.run_moog()
-        s.read_spectra()
+        s.read_spectra(remove=False)
         wav_exclude, flux_exclude = s.wav, s.flux
 
         # Calculate the EW and blending fraction

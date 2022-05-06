@@ -124,7 +124,7 @@ c     D. F. Gray, 1976, "The Obs. & Anal. of Stell. Phot", p394-9
          if (step .ge. dlamlim) then
             rotateflag = 'f'
          else
-            pi = 3.141527
+            pi = 3.1415926
             bottom = dlamlim*pi*(1.-limbdark/3.)
             c1 = 2.*(1.-limbdark)/bottom
             c2 = 0.5*limbdark*pi/bottom

@@ -17,7 +17,7 @@ do
 	then
 		machine='pcl'
 		break
-	elif [ $machine == 'Mac' ]
+	elif [ $machine == 'Darwin' ]
 	then
 		machine='mac'
 		break
