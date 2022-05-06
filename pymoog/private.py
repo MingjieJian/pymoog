@@ -15,3 +15,5 @@ from scipy.spatial import Delaunay
 from astropy import units as u
 from astropy.modeling.models import BlackBody
 
+def D2E(string):
+    return string.replace('D', 'E')

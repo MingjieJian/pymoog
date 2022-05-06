@@ -28,7 +28,7 @@ COMMON =  Atmos.com Dummy.com Equivs.com Factor.com Kappa.com Linex.com \
         Quants.com Multimod.com Dampdat.com
 
 CC = cc
-FC = gfortran -ff2c -Wall
+FC = gfortran -ff2c -Wall -fallow-argument-mismatch
 
 # the following lines point to some needed libraries
 X11LIB = /usr/lib64
