@@ -1,5 +1,6 @@
 {
     "python.pythonPath": "/home/mingjie/software/anaconda3/envs/codeastro/bin/python",
     "restructuredtext.confPath": "${workspaceFolder}/sphinx_folder",
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "fortran.fortls.disabled": true
 }

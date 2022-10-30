@@ -253,7 +253,7 @@ def cal_blending_ratio(teff, logg, fe_h, resolution, line_list, wav_range, weedo
 
     return linelist_out
 
-def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=None, line_id=None, target_line_df=None, smooth_para=None, plot=True):
+def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=None, line_id=None, target_line_df=None, smooth_para=None, plot=True, dpi=100, plot_Dlp=True, plot_Dl=True, plot_Ilp=True, plot_Ic=True):
     
     if target_line_df is None and (line_wav_input is None or line_id is None):
         raise ValueError('Please provide target_line_df or both line_wav_input and line_id.')
@@ -284,7 +284,7 @@ def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=Non
         line_index_all = linelist_all[indices].index
 
     if plot:
-        private.plt.figure(figsize=(14, 5*len(line_index_all)))
+        private.plt.figure(figsize=(14, 5*len(line_index_all)), dpi=dpi)
 
     plot_index = 1
     CF_res = []
@@ -311,7 +311,11 @@ def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=Non
 
         # Calculate the EW and blending fraction
         EW = (private.np.sum(1-flux_all)*0.02 - private.np.sum(1-flux_exclude)*0.02) * 1000
-        depth = 1 - private.np.min(flux_all[private.np.abs(wav_all-line_wavlength) <= 0.01])
+        try:
+            depth = 1 - private.np.min(flux_all[private.np.abs(wav_all-line_wavlength) <= 0.1])
+        except:
+            # print(flux_all[private.np.abs(wav_all-line_wavlength) <= 0.1])
+            depth = private.np.nan
         r_blend_depth = (1-flux_exclude[private.np.argmin(private.np.abs(wav_exclude-line_wavlength))]) / (1-flux_all[private.np.argmin(private.np.abs(wav_all-line_wavlength))])
 
         # Plot the line information
@@ -339,13 +343,16 @@ def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=Non
             plot_index += 1
 
             ax = private.plt.subplot(len(line_index_all),2,plot_index)
-
-            private.plt.plot(private.np.log10(CF_dict['tau_ref']), CF_dict['CF_Dlp'] / max(CF_dict['CF_Ic']), label='CF: $D_l^p$')
-            private.plt.plot(private.np.log10(CF_dict['tau_ref']), CF_dict['CF_Ilp'] / max(CF_dict['CF_Ic']), label='CF: $I_l^p$')
-            private.plt.plot(private.np.log10(CF_dict['tau_ref']), CF_dict['CF_Dl'] / max(CF_dict['CF_Ic']), label='CF: $D_l$')
+            if plot_Dlp:
+                private.plt.plot(private.np.log10(CF_dict['tau_ref']), CF_dict['CF_Dlp'] / max(CF_dict['CF_Ic']), label='CF: $D_l^p$')
+            if plot_Ilp:
+                private.plt.plot(private.np.log10(CF_dict['tau_ref']), CF_dict['CF_Ilp'] / max(CF_dict['CF_Ic']), label='CF: $I_l^p$')
+            if plot_Dl:
+                private.plt.plot(private.np.log10(CF_dict['tau_ref']), CF_dict['CF_Dl'] / max(CF_dict['CF_Ic']), label='CF: $D_l$')
             if Dlp_sum / Ic_sum < 0.1:
                 private.plt.ylim(private.plt.ylim())
-            private.plt.plot(private.np.log10(CF_dict['tau_ref']), CF_dict['CF_Ic'] / max(CF_dict['CF_Ic']), c='gray', label='CF: $I_c$')
+            if plot_Ic:
+                private.plt.plot(private.np.log10(CF_dict['tau_ref']), CF_dict['CF_Ic'] / max(CF_dict['CF_Ic']), c='gray', label='CF: $I_c$')
             private.plt.xlabel(r'$\log{\tau_\mathrm{ref}}$')
             private.plt.ylabel('CF: max($I_c$) normalized as 1')
             private.plt.title('Contribution function')

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from multiprocessing.sharedctypes import Value
 import subprocess
 import numpy as np
 import re
@@ -48,7 +49,11 @@ class synth(rundir_num.rundir_num):
         self.line_list = line_list
         self.weedout = weedout
         self.prefix = prefix
-        
+
+        # Perform some sanity check
+        if del_wav < 0.001:
+            raise ValueError('del_wav cannot be smaller than 0.001; the calculation and I/O precision is not enough.')
+
     def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, vmicro=2, atmosphere=1, lines=1, smooth_para=None):
         '''
         Prepare the model, linelist and control files for MOOG.
