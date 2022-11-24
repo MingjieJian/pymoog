@@ -284,6 +284,7 @@ def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=Non
         line_index_all = linelist_all[indices].index
 
     if plot:
+
         private.plt.figure(figsize=(14, 5*len(line_index_all)), dpi=dpi)
 
     plot_index = 1
@@ -311,6 +312,7 @@ def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=Non
 
         # Calculate the EW and blending fraction
         EW = (private.np.sum(1-flux_all)*0.02 - private.np.sum(1-flux_exclude)*0.02) * 1000
+
         try:
             depth = 1 - private.np.min(flux_all[private.np.abs(wav_all-line_wavlength) <= 0.1])
         except:
@@ -343,6 +345,7 @@ def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=Non
             plot_index += 1
 
             ax = private.plt.subplot(len(line_index_all),2,plot_index)
+
             if plot_Dlp:
                 private.plt.plot(private.np.log10(CF_dict['tau_ref']), CF_dict['CF_Dlp'] / max(CF_dict['CF_Ic']), label='CF: $D_l^p$')
             if plot_Ilp:
@@ -353,6 +356,7 @@ def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=Non
                 private.plt.ylim(private.plt.ylim())
             if plot_Ic:
                 private.plt.plot(private.np.log10(CF_dict['tau_ref']), CF_dict['CF_Ic'] / max(CF_dict['CF_Ic']), c='gray', label='CF: $I_c$')
+
             private.plt.xlabel(r'$\log{\tau_\mathrm{ref}}$')
             private.plt.ylabel('CF: max($I_c$) normalized as 1')
             private.plt.title('Contribution function')

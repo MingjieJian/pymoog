@@ -254,6 +254,7 @@ def cal_blending_ratio(teff, logg, fe_h, resolution, line_list, wav_range, weedo
     return linelist_out
 
 def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=None, line_id=None, target_line_df=None, smooth_para=None, plot=True, dpi=100, plot_Dlp=True, plot_Dl=True, plot_Ilp=True, plot_Ic=True):
+
     
     if target_line_df is None and (line_wav_input is None or line_id is None):
         raise ValueError('Please provide target_line_df or both line_wav_input and line_id.')
@@ -285,6 +286,7 @@ def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=Non
 
     if plot:
         private.plt.figure(figsize=(14, 5*len(line_index_all)), dpi=dpi)
+
 
     plot_index = 1
     CF_res = []
@@ -343,6 +345,7 @@ def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=Non
             plot_index += 1
 
             ax = private.plt.subplot(len(line_index_all),2,plot_index)
+
             if plot_Dlp:
                 private.plt.plot(private.np.log10(CF_dict['tau_ref']), CF_dict['CF_Dlp'] / max(CF_dict['CF_Ic']), label='CF: $D_l^p$')
             if plot_Ilp:
@@ -353,6 +356,7 @@ def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=Non
                 private.plt.ylim(private.plt.ylim())
             if plot_Ic:
                 private.plt.plot(private.np.log10(CF_dict['tau_ref']), CF_dict['CF_Ic'] / max(CF_dict['CF_Ic']), c='gray', label='CF: $I_c$')
+
             private.plt.xlabel(r'$\log{\tau_\mathrm{ref}}$')
             private.plt.ylabel('CF: max($I_c$) normalized as 1')
             private.plt.title('Contribution function')
