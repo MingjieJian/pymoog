@@ -54,6 +54,11 @@ class synth(rundir_num.rundir_num):
         if del_wav < 0.001:
             raise ValueError('del_wav cannot be smaller than 0.001; the calculation and I/O precision is not enough.')
 
+        if start_wav >= end_wav:
+            raise ValueError('start_wav has to be smaller than end_wav.')
+        if end_wav - start_wav >= 2000:
+            raise ValueError('MOOG may provide incorrect spectra when the synthetic length is longer than 2000A. Please split the task into tasks with length <2000 and combine them later on.')
+
     def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, vmicro=2, atmosphere=1, lines=1, smooth_para=None):
         '''
         Prepare the model, linelist and control files for MOOG.
