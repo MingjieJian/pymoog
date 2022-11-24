@@ -6,7 +6,6 @@
   "directories": {
     "doc": "docs"
   },
-  "dependencies": {},
   "devDependencies": {
     "cz-conventional-changelog": "^3.2.0"
   },
