@@ -3,6 +3,8 @@ from re import sub
 import numpy as np
 import pandas as pd
 import os
+import platform
+
 from . import private
 from . import synth
 from . import weedout
@@ -61,10 +63,26 @@ def save_linelist(linelist_all, sub_ll_name, wav_start=None, wav_end=None, heade
     if len(sub_linelist.columns) == 6:
         output_format = output_format[:-6]
     np.savetxt(sub_ll_name, np.array(sub_linelist), fmt=output_format)
-    run_status = private.subprocess.run(['sed', '-i', 's/nan/   /g', sub_ll_name])
+    
+    if 'linux' in platform.system().lower():
+        run_status = private.subprocess.run(['sed', '-i', 's/nan/   /g', sub_ll_name], capture_output=True)
+    elif 'darwin' in platform.system().lower():
+        run_status = private.subprocess.run(['sed', '-i', "''", 's/nan/   /g', sub_ll_name], capture_output=True)
+    else:
+        # Same as Linux
+        run_status = private.subprocess.run(['sed', '-i', 's/nan/   /g', sub_ll_name], capture_output=True)
+    if run_status.returncode != 0:
+        raise ValueError('NaN may not be removed correctly in the line list. The stderr text is: {}'.format(run_status.stderr)) 
     if header == None:
         header = 'Linelist'
-    run_status = private.subprocess.run(['sed', '-i', '1 i\{}'.format(header), sub_ll_name])
+    if 'linux' in platform.system().lower():
+        run_status = private.subprocess.run(['sed', '-i', '1 i\{}'.format(header), sub_ll_name], capture_output=True)
+    elif 'darwin' in platform.system().lower():
+        run_status = private.subprocess.run(['sed', '-i', "''", '1 i\{}'.format(header), sub_ll_name], capture_output=True)
+    else:
+        # Same as linux
+        run_status = private.subprocess.run(['sed', '-i', '1 i\{}'.format(header), sub_ll_name], capture_output=True)
+
 
 def read_linelist(linelist_name, loggf_cut=None, mode='default'):
     '''

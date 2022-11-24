@@ -434,7 +434,7 @@ c     spectrum because of the way the equivalences were set up
             enddo
          else
             do i=1,kount
-               xsyn(i) = start + (i-1)*step
+               xsyn(i) = (start + (i-1)*step)
             enddo
          endif
 

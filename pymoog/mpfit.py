@@ -300,7 +300,6 @@ def mpfit_main(wav_in, flux_in, vmicro_in, fwhm_broad, rv_in, m_h, abun_change_i
         
     return vmicro_in, fwhm_broad, rv_in, m_h, abun_change_in, C_0, niter, para_record
 
-
 def cal_depth(line_lis_in, teff, logg, m_h, vmicro, vbroad, abun_change=None, tqdm_disable=True, prefix=''):
     
     depth_list = []
@@ -367,3 +366,4 @@ def cal_X_index(line_list, teff):
     line_list['X_index'] = X_index
     
     return line_list
+
