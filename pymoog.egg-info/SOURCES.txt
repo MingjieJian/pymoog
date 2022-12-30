@@ -26,18 +26,6 @@ pymoog.egg-info/top_level.txt
 pymoog/files/atoms.csv
 pymoog/files/dissociation_energy_list.csv
 pymoog/files/grid_points_kurucz.csv
-pymoog/files/linelist/apogee/apogee.list
-pymoog/files/linelist/ges/ges_hfs_iso.list
-pymoog/files/linelist/ges/ges_nohfs_noiso.list
-pymoog/files/linelist/kurucz/kurucz.list.tar.gz
-pymoog/files/linelist/kurucz/kurucz_winered.list.tar.gz
-pymoog/files/linelist/mb99/mb99_j.list
-pymoog/files/linelist/mb99/mb99_k.list
-pymoog/files/linelist/vald/vald_3000_24000.list.tar.gz
-pymoog/files/linelist/vald/vald_3000_24000.npy.tar.gz
-pymoog/files/linelist/vald/vald_winered.list.tar.gz
-pymoog/files/linelist/vald/vald_winered.npy.tar.gz
-pymoog/files/model/kurucz/standard/single.tar.gz
 pymoog/files/moog_nosm/README.md
 pymoog/files/moog_nosm/manual/MOOG Manual.aux
 pymoog/files/moog_nosm/manual/MOOG Manual.log

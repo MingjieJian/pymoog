@@ -102,17 +102,17 @@ def read_linelist(linelist_name, loggf_cut=None, mode='default'):
         if linelist_name == 'ges':
             linelist_name = 'ges_hfs_iso'
         if mode == 'default':
-            linelist_name_full = MOOG_file_path + 'linelist/{}/{}.npy'.format(linelist_name.split('_')[0], linelist_name)
+            linelist_name_full = MOOG_file_path + '/pymoog_lf/linelist/{}/{}.npy'.format(linelist_name.split('_')[0], linelist_name)
             mode = 'npy'
             if not(os.path.exists(linelist_name_full)):
-                linelist_name_full = MOOG_file_path + 'linelist/{}/{}.list'.format(linelist_name.split('_')[0], linelist_name)
+                linelist_name_full = MOOG_file_path + '/pymoog_lf/linelist/{}/{}.list'.format(linelist_name.split('_')[0], linelist_name)
                 mode = 'ascii'
                 if not(os.path.exists(linelist_name_full)):
                     raise ValueError('Neither npy nor ascii format of internal line list exists.')
         elif mode == 'npy':
-            linelist_name_full = MOOG_file_path + 'linelist/{}/{}.npy'.format(linelist_name.split('_')[0], linelist_name)
+            linelist_name_full = MOOG_file_path + '/pymoog_lf/linelist/{}/{}.npy'.format(linelist_name.split('_')[0], linelist_name)
         elif mode == 'ascii':
-            linelist_name_full = MOOG_file_path + 'linelist/{}/{}.list'.format(linelist_name.split('_')[0], linelist_name)
+            linelist_name_full = MOOG_file_path + '/pymoog_lf/linelist/{}/{}.list'.format(linelist_name.split('_')[0], linelist_name)
         else:
             raise ValueError('mode must be "default", "npy" or "ascii".')
     elif linelist_name[-5:] == '.list':

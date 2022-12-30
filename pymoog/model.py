@@ -186,7 +186,7 @@ def interpolate_model(teff, logg, m_h, abun_change=None, vmicro=2, kurucz_format
 
     if len(grid_kurucz_use) == 1:
         # No interpolation
-        model_path = MOOG_file_path + 'model/kurucz/standard/single/teff{:.0f}logg{:.1f}m_h{:+.1f}.dat'.format(*np.array(grid_kurucz_use.loc[0]))
+        model_path = MOOG_file_path + '/pymoog_lf/model/kurucz/standard/single/teff{:.0f}logg{:.1f}m_h{:+.1f}.dat'.format(*np.array(grid_kurucz_use.loc[0]))
         subprocess.run(['cp', model_path, to_path])
         if not kurucz_format:
             KURUCZ_convert(model_path=to_path, vmicro=vmicro, abun_change=abun_change, converted_model_path=to_path)
@@ -195,7 +195,7 @@ def interpolate_model(teff, logg, m_h, abun_change=None, vmicro=2, kurucz_format
         short_64 = np.any(grid_kurucz_use['length'] == 64)
         column_7 = np.any(grid_kurucz_use['column'] == 7)
         for i in range(len(grid_kurucz_use)):
-            model_path = MOOG_file_path + 'model/kurucz/standard/single/teff{:.0f}logg{:.1f}m_h{:+.1f}.dat'.format(*np.array(grid_kurucz_use.loc[i]))
+            model_path = MOOG_file_path + '/pymoog_lf/model/kurucz/standard/single/teff{:.0f}logg{:.1f}m_h{:+.1f}.dat'.format(*np.array(grid_kurucz_use.loc[i]))
 
             abun_single, model_line_single, pradk_single = read_Kurucz_model(model_path)
 
