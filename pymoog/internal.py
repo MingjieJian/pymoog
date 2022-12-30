@@ -225,8 +225,6 @@ def kurucz2moog(kurucz_path):
     line_data.save_linelist(kurucz_use, 'files/linelist/kurucz/kurucz.list', wav_start=2000, wav_end=7e5)
     return kurucz_use
     
-
-
 def get_species(num):
     if num <= 100:
         return num
@@ -241,7 +239,6 @@ def get_species(num):
 
 
 # Model part
-
 def value2pm(value):
     '''
     Transform the metallicity value to Kurucz format.
@@ -284,7 +281,7 @@ def search_grid_point_kurucz():
     '''
     The function to search all the grid points of Kurucz model and save the list to grid_path.
     The search is limit to standard model with microturbulent = 2.
-    Internal use
+    Internal use.
     '''
     teff_range = np.arange(3500, 50001, 250)
     logg_range = np.arange(0, 5.1, 0.5)
@@ -345,8 +342,6 @@ def plot_model_grid():
         plt.tight_layout()
         plt.savefig('../docs/img/grid_points_kurucz/m_h{:+.1f}.png'.format(m_h), dpi=250)
         plt.close()
-    
-
 
 def main():
    init_linelist_name = sys.argv[1]

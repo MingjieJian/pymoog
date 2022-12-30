@@ -97,7 +97,7 @@ def read_linelist(linelist_name, loggf_cut=None, mode='default'):
     
     available_line_list = ['ges', 'ges_hfs_iso', 'ges_nohfs_noiso', 'vald_3000_24000', 'vald_winered', 'mb99_j', 'mb99_k', 'apogee', 'kurucz', 'kurucz_winered']
 
-    if linelist_name[-5:] != '.list' and linelist_name in available_line_list:
+    if (linelist_name[-5:] != '.list' and linelist_name[-4:] != '.npy') and linelist_name in available_line_list:
         # Read built-in line list
         if linelist_name == 'ges':
             linelist_name = 'ges_hfs_iso'
@@ -118,6 +118,9 @@ def read_linelist(linelist_name, loggf_cut=None, mode='default'):
     elif linelist_name[-5:] == '.list':
         linelist_name_full = linelist_name
         mode = 'ascii'
+    elif linelist_name[-4:] == '.npy':
+        linelist_name_full = linelist_name
+        mode = 'npy'
     else:
         raise ValueError("Built in line list type not recognized. Please use one of the following:\n              'ges', 'ges_hfs_iso', 'ges_nohfs_noiso', 'vald_3000_24000', 'vald_winered', 'mb99_j', 'mb99_k', 'kurucz', 'kurucz_winered' or 'apogee'.")
     
