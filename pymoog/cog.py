@@ -8,7 +8,7 @@ MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ[
 MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
 
 class cog(rundir_num.rundir_num):
-    def __init__(self, teff, logg, m_h, line_list, vmicro=2., cog_low=-7.5, cog_up=-3.5, cog_step=0.05, lp_step=0, prefix=''):
+    def __init__(self, teff, logg, m_h, line_list, vmicro=2., mass=1, cog_low=-7.5, cog_up=-3.5, cog_step=0.05, lp_step=0, prefix=''):
         '''
         Initiate a cog Instance and read the parameters. 
         line_list muse be provided with suffix of '.list', and it can only contain one line.
@@ -44,8 +44,9 @@ class cog(rundir_num.rundir_num):
         self.cog_step = cog_step
         self.lp_step = lp_step
         self.vmicro = vmicro
+        self.mass = mass
         
-    def prepare_file(self, model_file=None, model_type='moog', abun_change=None, molecules=None, atmosphere=1, lines=1):
+    def prepare_file(self, model_file=None, model_format='moog', abun_change=None, molecules=None, atmosphere=1, lines=1, model_type='marcs', model_chem='st', model_geo='auto'):
         '''
         Prepare the model, linelist and control files for cog.
         Can either provide stellar parameters or provide file names.
@@ -56,7 +57,7 @@ class cog(rundir_num.rundir_num):
         model_file : str, optional
             The name of the model file. If not specified will use internal Kurucz model.
              
-        model_type : str, optional
+        model_format : str, optional
             The type of the model file. Default is "moog" (then no conversion of format will be done); can be "moog", "kurucz-atlas9" and "kurucz-atlas12". 
             
         abun_change : dict of pairs {int:float, ...}
@@ -65,23 +66,36 @@ class cog(rundir_num.rundir_num):
         
         if model_file == None:
             # Model file is not specified, will download Kurucz model according to stellar parameters.
-            model.interpolate_model(self.teff, self.logg, self.m_h, abun_change=abun_change, molecules=molecules, to_path=self.rundir_path + 'model.mod', vmicro=self.vmicro)
+            model.interpolate_model(self.teff, self.logg, self.m_h, vmicro=self.vmicro, mass=self.mass, abun_change=abun_change, molecules=molecules, save_name=self.rundir_path + 'model.mod', model_type=model_type, chem=model_chem, geo=model_geo)
             self.model_file = 'model.mod'
         else:
             # Model file is specified; record model file name and copy to working directory.
-            if model_type == 'moog':
+            if model_format == 'moog':
                 private.subprocess.run(['cp', model_file, self.rundir_path], encoding='UTF-8', stdout=private.subprocess.PIPE)
                 self.model_file = model_file.split('/')[-1]
-            elif model_type[:6] == 'kurucz':
-                model.KURUCZ_convert(model_path=model_file, abun_change=abun_change, model_type=model_type[7:], molecules=molecules, converted_model_path=self.rundir_path + 'model.mod')
+            elif model_format[:6] == 'kurucz':
+                model.kurucz2moog(model_path=model_file, abun_change=abun_change, model_format=model_format[7:], molecules=molecules, converted_model_path=self.rundir_path + 'model.mod')
                 self.model_file = 'model.mod'
+            elif model_format == 'marcs':
+                marcs_model = model.read_marcs_model(model_file)
+                model.marcs2moog(marcs_model, self.rundir_path + 'model.mod', abun_change=abun_change, molecules=abun_change)
+                self.model_file = 'model.mod'
+            else:
+                raise ValueError("The input model_type is not supported. Have to be either 'moog', 'kurucz' or 'marcs.")
 
         # Linelist file must be specified; record linelist file name and copy to working directory.
         # self.line_list = line_data.read_linelist(self.line_list)
         # line_data.save_linelist(self.line_list, self.rundir_path + '/line.list')
-        private.subprocess.run(['cp', self.line_list, self.rundir_path+'/line.list'], encoding='UTF-8', stdout=private.subprocess.PIPE)
-        self.line_list_name = 'line.list'
-        self.line_df = line_data.read_linelist(self.line_list)
+        if isinstance(self.line_list, str):
+            private.subprocess.run(['cp', self.line_list, self.rundir_path+'/line.list'], encoding='UTF-8', stdout=private.subprocess.PIPE)
+            self.line_list_name = 'line.list'
+            self.line_df = line_data.read_linelist(self.line_list)
+        elif isinstance(self.line_list, private.pd.DataFrame):
+            line_data.save_linelist(self.line_list, self.rundir_path + 'line.list')
+            self.line_list_name = 'line.list'
+            self.line_df = self.line_list
+        else:
+            raise TypeError('Type of input linelist have to be either str or pandas.DataFrame.')
             
         # Create parameter file.
         self.create_para_file(atmosphere=atmosphere, lines=lines)    
@@ -157,7 +171,7 @@ class cog(rundir_num.rundir_num):
         if 'ERROR' in ''.join(MOOG_run):
             raise ValueError('There is error during the running of MOOG.')
 
-    def read_output(self, unlock=True):
+    def read_output(self, remove=True):
         '''
         Read the output of cog.
 
@@ -171,20 +185,19 @@ class cog(rundir_num.rundir_num):
         self.logrw : a numpy array
             An array of log(W/lambda) for cog.
         '''
-        file = open(self.rundir_path + 'MOOG.out2', 'r')
-        cog_content = file.readlines()
+        with open(self.rundir_path + 'MOOG.out2', 'r') as file:
+            cog_content = file.readlines()
 
-        cog_single_content = [ele.replace(',', '').split() for ele in cog_content[6:]]
-        cog_single_content = [item for sublist in cog_single_content for item in sublist]
-        cog_array = private.np.array(cog_single_content, dtype=float).reshape(-1,2)
-        loggf = cog_array[:,0]
-        logrw = cog_array[:,1]
+        res_df = private.pd.read_csv(self.rundir_path + 'MOOG.out2', skiprows=6, names=['loggf', 'logrw'])
+        # cog_single_content = [ele.replace(',', '').split() for ele in cog_content[6:]]
+        # cog_single_content = [item for sublist in cog_single_content for item in sublist]
+        # cog_array = private.np.array(cog_single_content, dtype=float).reshape(-1,2)
             
-        self.loggf = loggf
-        self.logrw = logrw
+        self.loggf = res_df['loggf'].values
+        self.logrw = res_df['logrw'].values
         
-        # if unlock:
-        #     self.unlock()
+        if remove:
+            self.remove()
             
     def get_line_status(self, input_loggf=private.np.nan, plot='none'):
         
@@ -264,8 +277,8 @@ class cog(rundir_num.rundir_num):
             private.plt.ylabel('$\log{(W/\lambda)}$')
             private.plt.xlabel("$\log{(gf)}$")
             
-            private.plt.axvline(sat_loggf_sep, ls='--', c='C3', label='linear-stutared separation')
-            private.plt.axvline(dam_loggf_sep, ls='--', c='C4', label='stutared-damped separation')
+            private.plt.axvline(sat_loggf_sep, ls='--', c='C3', label='linear-saturated separation')
+            private.plt.axvline(dam_loggf_sep, ls='--', c='C4', label='saturated-damped separation')
             private.plt.axvline(input_loggf, c='C5', label='Input $\log{(gf)}$')
             private.plt.legend(fontsize=7, loc=4)
             private.plt.title('Line status: {}'.format(line_status))
@@ -286,8 +299,8 @@ class cog(rundir_num.rundir_num):
             private.plt.xlabel("$\log{(gf)}$")
 
             for ax in [ax1, ax2, ax3]:
-                ax.axvline(sat_loggf_sep, ls='--', c='C3', label='linear-stutared separation')
-                ax.axvline(dam_loggf_sep, ls='--', c='C4', label='stutared-damped separation')
+                ax.axvline(sat_loggf_sep, ls='--', c='C3', label='linear-saturated separation')
+                ax.axvline(dam_loggf_sep, ls='--', c='C4', label='saturated-damped separation')
                 ax.axvline(input_loggf, c='C5', label='Input $\log{(gf)}$')
 
             ax1.set_title('Line status: {}'.format(line_status))

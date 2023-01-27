@@ -15,7 +15,7 @@ MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ[
 MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
 
 class synth(rundir_num.rundir_num):
-    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, del_wav=0.02, line_list='vald_3000_24000', weedout=False, prefix=''):
+    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, vmicro=2, mass=1, del_wav=0.02, line_list='vald_3000_24000', weedout=False, prefix=''):
         '''
         Initiate a synth Instance and read the parameters.
         
@@ -33,15 +33,25 @@ class synth(rundir_num.rundir_num):
             The end wavelength of synthetic spectra
         resolution : float
             Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.
-        line_list : str
+        vmicro : float, default 2
+            The microturbulance velocity of the model. 
+        mass : float, default 1
+            The stellar mass of the input model. Only used when the model type is MARCS spherical.
+        del_wav : float, default 0.02
+            The wavelength step of the synthetic spectra. 
+        line_list : str or pd.DataFrame
             The name of the linelist file. If not specified will use built-in VALD linelist (vald_3000_24000).
         weedout : bool or float, default False
-            The switch for running weedout driver before synth. If False then weedout is not run; if True the weedout is run with kappa_ratio=0.01, and if a float (> 0 and < 1) is given then weedout is run with the kappa_ratio set as the number
+            The switch for running weedout driver before synth. If False then weedout is not run; if True the weedout is run with kappa_ratio=0.01, and if a float (> 0 and < 1) is given then weedout is run with the kappa_ratio set as the number.
+        prefix : str, default ''.
+            The prefix to be added to the name of rundir. Convenient when you want to find a specified rundir if there are many.
         '''
         super(synth, self).__init__('{}/.pymoog/'.format(private.os.environ['HOME']), 'synth', prefix=prefix)
         self.teff = teff
         self.logg = logg
         self.m_h = m_h
+        self.vmicro = vmicro
+        self.mass = mass
         self.start_wav = start_wav
         self.end_wav = end_wav
         self.resolution = resolution
@@ -59,7 +69,7 @@ class synth(rundir_num.rundir_num):
         if end_wav - start_wav >= 2000:
             raise ValueError('MOOG may provide incorrect spectra when the synthetic length is longer than 2000A. Please split the task into tasks with length <2000 and combine them later on.')
 
-    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, vmicro=2, atmosphere=1, lines=1, smooth_para=None):
+    def prepare_file(self, model_file=None, model_format='moog', loggf_cut=None, abun_change=None, molecules=None, atmosphere=1, lines=1, smooth_para=None, model_type='marcs', model_chem='st', model_geo='auto'):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
@@ -69,8 +79,7 @@ class synth(rundir_num.rundir_num):
         ----------
         model_file : str, optional
             The name of the model file. If not specified, the code will use internal Kurucz model.
-             
-        model_type : str, optional
+        model_format : str, optional
             The type of the model file. Default is "moog" (then no conversion of format will be done); can be "moog", "kurucz-atlas9" and "kurucz-atlas12". 
         
         loggf_cut : float, optional
@@ -87,17 +96,23 @@ class synth(rundir_num.rundir_num):
         # Create model file.
         if model_file == None:
             # Model file is not specified, will use Kurucz model according to stellar parameters.
-            model.interpolate_model(self.teff, self.logg, self.m_h, abun_change=abun_change, molecules=molecules, vmicro=vmicro, to_path=self.rundir_path + 'model.mod')
+            model.interpolate_model(self.teff, self.logg, self.m_h, vmicro=self.vmicro, mass=self.mass, abun_change=abun_change, molecules=molecules, save_name=self.rundir_path + 'model.mod', model_type=model_type, chem=model_chem, geo=model_geo)
             self.model_file = 'model.mod'
         else:
             # Model file is specified; record model file name and copy to working directory.
-            if model_type == 'moog':
+            if model_format == 'moog':
                 subprocess.run(['cp', model_file, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
                 self.model_file = model_file.split('/')[-1]
-            elif model_type[:6] == 'kurucz':
-                model.KURUCZ_convert(model_path=model_file, abun_change=abun_change, model_type=model_type[7:], molecules=molecules, converted_model_path=self.rundir_path + 'model.mod')
+            elif model_format[:6] == 'kurucz':
+                model.kurucz2moog(model_path=model_file, abun_change=abun_change, model_format=model_format[7:], molecules=molecules, converted_model_path=self.rundir_path + 'model.mod')
                 self.model_file = 'model.mod'
-                
+            elif model_format == 'marcs':
+                marcs_model = model.read_marcs_model(model_file)
+                model.marcs2moog(marcs_model, self.rundir_path + 'model.mod', abun_change=abun_change, molecules=abun_change)
+                self.model_file = 'model.mod'
+            else:
+                raise ValueError("The input model_type is not supported. Have to be either 'moog', 'kurucz' or 'marcs.")
+
         # Create line list.
         if isinstance(self.line_list, str):
             if self.line_list[-5:] != '.list':

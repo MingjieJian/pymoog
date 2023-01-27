@@ -70,7 +70,7 @@ c*****format statements
 1002  format(/'wavelength =', f9.3,5x, 'species =', f6.1,5x, 'ep =',
      .       f7.3, 'abundance =', f10.3, 5x, 'n =',i2)
 1003  format('  curve of growth in (loggf,logrw) pairs'/
-     .       (5(f7.3,',',f7.3)))
+     .       (1(f7.3,',',f7.3)))
 1004  format (10f7.3)
 
 

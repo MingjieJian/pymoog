@@ -14,7 +14,7 @@ MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(os.environ['HOME'])
 MOOG_file_path = '{}/.pymoog/files/'.format(os.environ['HOME'])
 
 class weedout(rundir_num.rundir_num):
-    def __init__(self, teff, logg, m_h, start_wav, end_wav, kappa_ratio=0.01, line_list='ges', keeplines='keep.list', tosslines='toss.list', prefix=''):
+    def __init__(self, teff, logg, m_h, start_wav, end_wav, vmicro=2, mass=1, kappa_ratio=0.01, line_list='vald_3000_24000', keeplines='keep.list', tosslines='toss.list', prefix=''):
         '''
         Initiate a weedout Instance and read the parameters.
         
@@ -43,6 +43,8 @@ class weedout(rundir_num.rundir_num):
         self.teff = teff
         self.logg = logg
         self.m_h = m_h
+        self.vmicro = vmicro
+        self.mass = mass
         self.start_wav = start_wav
         self.end_wav = end_wav
         self.kappa_ratio = kappa_ratio
@@ -50,7 +52,7 @@ class weedout(rundir_num.rundir_num):
         self.keeplines = keeplines
         self.tosslines = tosslines
         
-    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, atmosphere=1, lines=1):
+    def prepare_file(self, model_file=None, model_format='moog', loggf_cut=None, abun_change=None, molecules=None, atmosphere=1, lines=1, model_type='marcs', model_chem='st', model_geo='auto'):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
@@ -60,41 +62,50 @@ class weedout(rundir_num.rundir_num):
         ----------
         model_file : str, optional
             The name of the model file. If not specified will use internal Kurucz model.
-             
-        model_type : str, optional
+        model_format : str, optional
             The type of the model file. Default is "moog" (then no conversion of format will be done); can be "moog", "kurucz-atlas9" and "kurucz-atlas12". 
-        
         logf_cut : float, optional
             The cut in loggf; if specified will only include the lines with loggf >= loggf_cut.
-            
         abun_change : dict of pairs {int:float, ...}
             Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
         '''
         
         if model_file == None:
             # Model file is not specified, will download Kurucz model according to stellar parameters.
-            model.interpolate_model(self.teff, self.logg, self.m_h, abun_change=abun_change, molecules=molecules, to_path=self.rundir_path + 'model.mod')
+            model.interpolate_model(self.teff, self.logg, self.m_h, vmicro=self.vmicro, mass=self.mass, abun_change=abun_change, molecules=molecules, save_name=self.rundir_path + 'model.mod', model_type=model_type, chem=model_chem, geo=model_geo)
             self.model_file = 'model.mod'
         else:
             # Model file is specified; record model file name and copy to working directory.
-            if model_type == 'moog':
+            if model_format == 'moog':
                 subprocess.run(['cp', model_file, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
                 self.model_file = model_file.split('/')[-1]
-            elif model_type[:6] == 'kurucz':
-                model.KURUCZ_convert(model_path=model_file, abun_change=abun_change, model_type=model_type[7:], molecules=molecules, converted_model_path=self.rundir_path + 'model.mod')
+            elif model_format[:6] == 'kurucz':
+                model.kurucz2moog(model_path=model_file, abun_change=abun_change, model_format=model_format[7:], molecules=molecules, converted_model_path=self.rundir_path + 'model.mod')
                 self.model_file = 'model.mod'
+            elif model_format == 'marcs':
+                marcs_model = model.read_marcs_model(model_file)
+                model.marcs2moog(marcs_model, self.rundir_path + 'model.mod', abun_change=abun_change, molecules=abun_change)
+                self.model_file = 'model.mod'
+            else:
+                raise ValueError("The input model_type is not supported. Have to be either 'moog', 'kurucz' or 'marcs.")
 
-        if self.line_list[-5:] != '.list':
-            line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut, mode='npy')
-            line_data.save_linelist(line_list, self.rundir_path + 'line.list', wav_start=self.start_wav, wav_end=self.end_wav)
+        if isinstance(self.line_list, str):
+            if self.line_list[-5:] != '.list':
+                line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut, mode='npy')
+                line_data.save_linelist(line_list, self.rundir_path + 'line.list', wav_start=self.start_wav, wav_end=self.end_wav)
+                self.line_list = 'line.list'
+            elif self.line_list[-5:] == '.list':
+                # Linelist file is specified; record linelist file name and copy to working directory.
+                line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut)
+                line_data.save_linelist(line_list, self.rundir_path + 'line.list', wav_start=self.start_wav, wav_end=self.end_wav)
+                self.line_list = 'line.list'
+                # subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
+                self.line_list = self.line_list.split('/')[-1]
+        elif isinstance(self.line_list, private.pd.DataFrame):
+            line_data.save_linelist(self.line_list, self.rundir_path + 'line.list', wav_start=self.start_wav, wav_end=self.end_wav)
             self.line_list = 'line.list'
-        elif self.line_list[-5:] == '.list':
-            # Linelist file is specified; record linelist file name and copy to working directory.
-            line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut)
-            line_data.save_linelist(line_list, self.rundir_path + 'line.list', wav_start=self.start_wav, wav_end=self.end_wav)
-            self.line_list = 'line.list'
-            # subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
-            self.line_list = self.line_list.split('/')[-1]
+        else:
+            raise TypeError('Type of input linelist have to be either str or pandas.DataFrame.')
             
         # Create parameter file.
         self.create_para_file(atmosphere=atmosphere, lines=lines)    
@@ -215,7 +226,6 @@ class weedout(rundir_num.rundir_num):
             An array of wavelength for the spectra using the lines being kept.
         self.flux_keep : a numpy array
             An array of flux for the spectra using the lines being kept.
-        
         '''
         
         # run synth to get the spectra
@@ -229,5 +239,5 @@ class weedout(rundir_num.rundir_num):
         s_keep.run_moog(output=output)
         s_keep.read_spectra()
         
-        self.wav_all, self.flux_all, self.wav_keep, self.flux_keep =  s_all.wav, s_all.flux, s_keep.wav, s_keep.flux
+        self.wav_all, self.flux_all, self.wav_keep, self.flux_keep = s_all.wav, s_all.flux, s_keep.wav, s_keep.flux
         

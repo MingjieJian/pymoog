@@ -9,7 +9,7 @@ MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ[
 MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
 
 class blends(rundir_num.rundir_num):
-    def __init__(self, teff, logg, m_h, start_wav, end_wav, EW, ele, line_list='ges', prefix=''):
+    def __init__(self, teff, logg, m_h, start_wav, end_wav, EW, ele, vmicro=2, mass=1, line_list='ges', prefix=''):
         '''
         Initiate a abfind Instance and read the parameters.
         
@@ -36,13 +36,15 @@ class blends(rundir_num.rundir_num):
         self.teff = teff
         self.logg = logg
         self.m_h = m_h
+        self.vmicro = vmicro
+        self.mass = mass
         self.start_wav = start_wav
         self.end_wav = end_wav
         self.EW = EW
         self.ele = ele
         self.line_list = line_list
         
-    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, atmosphere=1, lines=1):
+    def prepare_file(self, model_file=None, model_format='moog', loggf_cut=None, abun_change=None, molecules=None, atmosphere=1, lines=1, model_type='marcs', model_chem='st', model_geo='auto'):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
@@ -53,7 +55,7 @@ class blends(rundir_num.rundir_num):
         model_file : str, optional
             The name of the model file. If not specified will use internal Kurucz model.
              
-        model_type : str, optional
+        model_format : str, optional
             The type of the model file. Default is "moog" (then no conversion of format will be done); can be "moog", "kurucz-atlas9" and "kurucz-atlas12". 
         
         logf_cut : float, optional
@@ -65,16 +67,23 @@ class blends(rundir_num.rundir_num):
         
         if model_file == None:
             # Model file is not specified, will download Kurucz model according to stellar parameters.
-            model.interpolate_model(self.teff, self.logg, self.m_h, abun_change=abun_change, molecules=molecules, to_path=self.rundir_path + 'model.mod')
+            model.interpolate_model(self.teff, self.logg, self.m_h, vmicro=self.vmicro, mass=self.mass, abun_change=abun_change, molecules=molecules, save_name=self.rundir_path + 'model.mod', model_type=model_type, chem=model_chem, geo=model_geo)
             self.model_file = 'model.mod'
         else:
             # Model file is specified; record model file name and copy to working directory.
-            if model_type == 'moog':
+            if model_format == 'moog':
                 private.subprocess.run(['cp', model_file, self.rundir_path], encoding='UTF-8', stdout=private.subprocess.PIPE)
                 self.model_file = model_file.split('/')[-1]
-            elif model_type[:6] == 'kurucz':
-                model.KURUCZ_convert(model_path=model_file, abun_change=abun_change, model_type=model_type[7:], molecules=molecules, converted_model_path=self.rundir_path + 'model.mod')
+            elif model_format[:6] == 'kurucz':
+                model.kurucz2moog(model_path=model_file, abun_change=abun_change, model_format=model_format[7:], molecules=molecules, converted_model_path=self.rundir_path + 'model.mod')
                 self.model_file = 'model.mod'
+            elif model_format == 'marcs':
+                marcs_model = model.read_marcs_model(model_file)
+                model.marcs2moog(marcs_model, self.rundir_path + 'model.mod', abun_change=abun_change, molecules=abun_change)
+                self.model_file = 'model.mod'
+            else:
+                raise ValueError("The input model_type is not supported. Have to be either 'moog', 'kurucz' or 'marcs.")
+
 
         if self.line_list[-5:] != '.list':
             # Linelist file is not specified, use internal line list;
@@ -194,7 +203,7 @@ class blends(rundir_num.rundir_num):
                 begin_index = i
             elif 'average abundance' in blends_content[i]:
                 end_index = i
-                print(begin_index, end_index)
+                # print(begin_index, end_index)
                 break
 
         blends_s_df = private.pd.DataFrame(private.np.array([ele.split() for ele in blends_content[begin_index+1:end_index]], dtype=float), columns=blends_content[begin_index].split())
