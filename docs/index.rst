@@ -7,7 +7,7 @@ Welcome to pymoog's documentation!
 ==================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    Introduction to pymoog <intro.md>

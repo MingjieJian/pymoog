@@ -25,8 +25,8 @@ source_suffix = {
 # -- Project information -----------------------------------------------------
 
 project = 'pymoog'
-copyright = '2020, Mingjie Jian, Pranav Satheesh and Kruthi Krishna'
-author = 'Mingjie Jian, Pranav Satheesh and Kruthi Krishna'
+copyright = '2023, Mingjie Jian'
+author = 'Mingjie Jian'
 master_doc = 'index'
 
 # The full version, including alpha/beta/rc tags

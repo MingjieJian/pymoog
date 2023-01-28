@@ -679,7 +679,7 @@ def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='a
         elif geo == 'p':
             marcs_model_interpolated['geometry'] = 'plane-parallel'
         for i in range(len(marcs_grid_use)):
-            marcs_model_single = read_marcs_model('marcs_model/{13}/{14}/{1}{2:.0f}_g{3:+4.1f}_m{4:3.1f}_t{5:02.0f}_{0:}_z{6:+5.2f}_a{7:+5.2f}_c{8:+5.2f}_n{9:+5.2f}_o{10:+5.2f}_r{11:+5.2f}_s{12:+5.2f}.mod'.format(*np.array(marcs_grid_use.loc[i, marcs_grid_use.columns[:-1]]), chem, geo))
+            marcs_model_single = read_marcs_model(MOOG_file_path + '/pymoog_lf/model/marcs/{13}/{14}/{1}{2:.0f}_g{3:+4.1f}_m{4:3.1f}_t{5:02.0f}_{0:}_z{6:+5.2f}_a{7:+5.2f}_c{8:+5.2f}_n{9:+5.2f}_o{10:+5.2f}_r{11:+5.2f}_s{12:+5.2f}.mod'.format(*np.array(marcs_grid_use.loc[i, marcs_grid_use.columns[:-1]]), chem, geo))
             if i == 0:
                 for name in ['teff', 'last iteration', 'flux', 'g', 'vmicro', 'mass', '[M/H]', '[alpha/Fe]', 'radius', 'luminosity', 
                              'conv:alpha', 'conv:nu', 'conv:y', 'conv:beta', 'X', 'Y', 'Z', '12C/13C',

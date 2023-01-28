@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>abfind &mdash; pymoog 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Miscellaneous" href="../miscellaneous.html" />
+    <link rel="prev" title="synth" href="synth.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> pymoog
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction to pymoog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../driver_guide.html">Guide for each driver</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="synth.html">synth</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">abfind</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../miscellaneous.html">Miscellaneous</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pymoog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../driver_guide.html">Guide for each driver</a></li>
+      <li class="breadcrumb-item active">abfind</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/driver_guide/abfind.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="abfind">
+<h1>abfind<a class="headerlink" href="#abfind" title="Permalink to this heading"></a></h1>
+<p>force-fitting abundances to match single-line equivalent widths.</p>
+<ul class="simple">
+<li><p>Flow chart
+<img alt="" src="driver_guide/img/pymoog/abfind_fc.PNG" /></p></li>
+<li><p>Example</p></li>
+</ul>
+<p>Suppose we have a list of strong lines (stored as <code class="docutils literal notranslate"><span class="pre">linelist</span></code> DataFrame) with their measured EW as follow:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>	<span class="n">wavelength</span>	<span class="nb">id</span>	<span class="n">EP</span>	<span class="n">loggf</span>	<span class="n">C6</span>	<span class="n">D0</span>	<span class="n">EW</span>
+<span class="mi">0</span>	<span class="mf">11032.103</span>	<span class="mf">12.0</span>	<span class="mf">5.9460</span>	<span class="o">-</span><span class="mf">1.801</span>	<span class="mf">0.000</span>	<span class="n">NaN</span>	<span class="mf">23.05</span>
+<span class="mi">1</span>	<span class="mf">11033.662</span>	<span class="mf">12.0</span>	<span class="mf">5.9460</span>	<span class="o">-</span><span class="mf">2.073</span>	<span class="mf">0.000</span>	<span class="n">NaN</span>	<span class="mf">13.33</span>
+<span class="mi">2</span>	<span class="mf">11034.481</span>	<span class="mf">12.0</span>	<span class="mf">5.9460</span>	<span class="o">-</span><span class="mf">2.426</span>	<span class="mf">0.000</span>	<span class="n">NaN</span>	<span class="mf">6.24</span>
+<span class="mi">3</span>	<span class="mf">11005.127</span>	<span class="mf">14.0</span>	<span class="mf">6.2228</span>	<span class="o">-</span><span class="mf">2.098</span>	<span class="o">-</span><span class="mf">7.200</span>	<span class="n">NaN</span>	<span class="mf">5.54</span>
+<span class="mi">4</span>	<span class="mf">11013.703</span>	<span class="mf">14.0</span>	<span class="mf">6.2061</span>	<span class="o">-</span><span class="mf">0.983</span>	<span class="o">-</span><span class="mf">7.320</span>	<span class="n">NaN</span>	<span class="mf">48.24</span>
+<span class="mi">5</span>	<span class="mf">11017.966</span>	<span class="mf">14.0</span>	<span class="mf">6.2061</span>	<span class="mf">0.760</span>	<span class="o">-</span><span class="mf">7.320</span>	<span class="n">NaN</span>	<span class="mf">281.02</span>
+<span class="mi">6</span>	<span class="mf">11040.405</span>	<span class="mf">14.0</span>	<span class="mf">6.2061</span>	<span class="o">-</span><span class="mf">1.449</span>	<span class="o">-</span><span class="mf">7.320</span>	<span class="n">NaN</span>	<span class="mf">22.53</span>
+<span class="mi">7</span>	<span class="mf">11019.848</span>	<span class="mf">19.0</span>	<span class="mf">2.6700</span>	<span class="o">-</span><span class="mf">0.010</span>	<span class="mf">3073.329</span>	<span class="n">NaN</span>	<span class="mf">11.13</span>
+<span class="mi">8</span>	<span class="mf">11022.653</span>	<span class="mf">19.0</span>	<span class="mf">2.6703</span>	<span class="o">-</span><span class="mf">0.161</span>	<span class="mf">3073.329</span>	<span class="n">NaN</span>	<span class="mf">7.98</span>
+<span class="mi">9</span>	<span class="mf">11015.530</span>	<span class="mf">24.0</span>	<span class="mf">3.4493</span>	<span class="o">-</span><span class="mf">0.429</span>	<span class="o">-</span><span class="mf">7.530</span>	<span class="n">NaN</span>	<span class="mf">43.10</span>
+<span class="mi">10</span>	<span class="mf">11044.610</span>	<span class="mf">24.0</span>	<span class="mf">3.0112</span>	<span class="o">-</span><span class="mf">1.930</span>	<span class="o">-</span><span class="mf">7.780</span>	<span class="n">NaN</span>	<span class="mf">5.74</span>
+<span class="mi">11</span>	<span class="mf">11013.235</span>	<span class="mf">26.0</span>	<span class="mf">4.7955</span>	<span class="o">-</span><span class="mf">1.383</span>	<span class="o">-</span><span class="mf">7.550</span>	<span class="n">NaN</span>	<span class="mf">35.22</span>
+<span class="mi">12</span>	<span class="mf">11026.788</span>	<span class="mf">26.0</span>	<span class="mf">3.9434</span>	<span class="o">-</span><span class="mf">2.805</span>	<span class="o">-</span><span class="mf">7.810</span>	<span class="n">NaN</span>	<span class="mf">11.92</span>
+<span class="mi">13</span>	<span class="mf">11045.599</span>	<span class="mf">26.0</span>	<span class="mf">5.5870</span>	<span class="o">-</span><span class="mf">0.624</span>	<span class="o">-</span><span class="mf">7.500</span>	<span class="n">NaN</span>	<span class="mf">35.73</span>
+<span class="mi">14</span>	<span class="mf">11057.772</span>	<span class="mf">26.0</span>	<span class="mf">4.8349</span>	<span class="o">-</span><span class="mf">1.967</span>	<span class="o">-</span><span class="mf">7.550</span>	<span class="n">NaN</span>	<span class="mf">11.55</span>
+<span class="mi">15</span>	<span class="mf">11069.374</span>	<span class="mf">26.0</span>	<span class="mf">6.2223</span>	<span class="o">-</span><span class="mf">1.055</span>	<span class="o">-</span><span class="mf">7.140</span>	<span class="n">NaN</span>	<span class="mf">5.06</span>
+<span class="mi">16</span>	<span class="mf">11081.595</span>	<span class="mf">26.0</span>	<span class="mf">5.6425</span>	<span class="o">-</span><span class="mf">1.419</span>	<span class="o">-</span><span class="mf">7.470</span>	<span class="n">NaN</span>	<span class="mf">7.37</span>
+<span class="mi">17</span>	<span class="mf">11088.584</span>	<span class="mf">28.0</span>	<span class="mf">4.1647</span>	<span class="o">-</span><span class="mf">1.512</span>	<span class="o">-</span><span class="mf">7.560</span>	<span class="n">NaN</span>	<span class="mf">16.36</span>
+<span class="mi">18</span>	<span class="mf">11054.253</span>	<span class="mf">30.0</span>	<span class="mf">5.7958</span>	<span class="o">-</span><span class="mf">0.300</span>	<span class="mf">0.000</span>	<span class="n">NaN</span>	<span class="mf">18.43</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The DataFrame has to be sorted in id and wavelength.</p>
+</div>
+<p>Then we can run abfind:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">pymoog</span><span class="o">.</span><span class="n">abfind</span><span class="o">.</span><span class="n">abfind</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">line_list</span><span class="o">=</span><span class="s1">&#39;line.list&#39;</span><span class="p">)</span>
+<span class="n">a</span><span class="o">.</span><span class="n">prepare_file</span><span class="p">()</span>
+<span class="n">pymoog</span><span class="o">.</span><span class="n">line_data</span><span class="o">.</span><span class="n">save_linelist</span><span class="p">(</span><span class="n">linelist</span><span class="p">,</span> <span class="n">MOOG_run_path</span> <span class="o">+</span> <span class="s1">&#39;line.list&#39;</span><span class="p">)</span>
+<span class="n">a</span><span class="o">.</span><span class="n">run_moog</span><span class="p">()</span>
+<span class="n">a</span><span class="o">.</span><span class="n">read_output</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The output of abfind will be stored as a dict with it keys as elements and values as DataFrame:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="mf">12.0</span><span class="p">:</span>    <span class="n">wavelength</span>    <span class="n">ID</span>     <span class="n">EP</span>  <span class="n">logGF</span>   <span class="n">EWin</span>  <span class="n">logRWin</span>  <span class="n">abund</span>  <span class="n">delavg</span>
+ <span class="mi">0</span>   <span class="mf">11032.103</span>  <span class="mf">12.0</span>  <span class="mf">5.946</span> <span class="o">-</span><span class="mf">1.801</span>  <span class="mf">23.05</span>   <span class="o">-</span><span class="mf">5.680</span>  <span class="mf">7.376</span>  <span class="o">-</span><span class="mf">0.002</span>
+ <span class="mi">1</span>   <span class="mf">11033.662</span>  <span class="mf">12.0</span>  <span class="mf">5.946</span> <span class="o">-</span><span class="mf">2.073</span>  <span class="mf">13.33</span>   <span class="o">-</span><span class="mf">5.918</span>  <span class="mf">7.378</span>   <span class="mf">0.000</span>
+ <span class="mi">2</span>   <span class="mf">11034.481</span>  <span class="mf">12.0</span>  <span class="mf">5.946</span> <span class="o">-</span><span class="mf">2.426</span>   <span class="mf">6.24</span>   <span class="o">-</span><span class="mf">6.248</span>  <span class="mf">7.379</span>   <span class="mf">0.001</span><span class="p">,</span>
+ <span class="mf">14.0</span><span class="p">:</span>    <span class="n">wavelength</span>    <span class="n">ID</span>     <span class="n">EP</span>  <span class="n">logGF</span>    <span class="n">EWin</span>  <span class="n">logRWin</span>  <span class="n">abund</span>  <span class="n">delavg</span>
+ <span class="mi">0</span>   <span class="mf">11005.127</span>  <span class="mf">14.0</span>  <span class="mf">6.223</span> <span class="o">-</span><span class="mf">2.098</span>    <span class="mf">5.54</span>   <span class="o">-</span><span class="mf">6.298</span>  <span class="mf">7.606</span>  <span class="o">-</span><span class="mf">0.030</span>
+ <span class="mi">1</span>   <span class="mf">11013.703</span>  <span class="mf">14.0</span>  <span class="mf">6.206</span> <span class="o">-</span><span class="mf">0.983</span>   <span class="mf">48.24</span>   <span class="o">-</span><span class="mf">5.359</span>  <span class="mf">7.639</span>   <span class="mf">0.003</span>
+ <span class="mi">2</span>   <span class="mf">11017.966</span>  <span class="mf">14.0</span>  <span class="mf">6.206</span>  <span class="mf">0.760</span>  <span class="mf">281.02</span>   <span class="o">-</span><span class="mf">4.593</span>  <span class="mf">7.667</span>   <span class="mf">0.031</span>
+ <span class="mi">3</span>   <span class="mf">11040.405</span>  <span class="mf">14.0</span>  <span class="mf">6.206</span> <span class="o">-</span><span class="mf">1.449</span>   <span class="mf">22.53</span>   <span class="o">-</span><span class="mf">5.690</span>  <span class="mf">7.632</span>  <span class="o">-</span><span class="mf">0.004</span><span class="p">,</span>
+ <span class="mf">19.0</span><span class="p">:</span>    <span class="n">wavelength</span>    <span class="n">ID</span>    <span class="n">EP</span>  <span class="n">logGF</span>   <span class="n">EWin</span>  <span class="n">logRWin</span>  <span class="n">abund</span>  <span class="n">delavg</span>
+ <span class="mi">0</span>   <span class="mf">11019.848</span>  <span class="mf">19.0</span>  <span class="mf">2.67</span> <span class="o">-</span><span class="mf">0.010</span>  <span class="mf">11.13</span>   <span class="o">-</span><span class="mf">5.996</span>  <span class="mf">4.866</span>  <span class="o">-</span><span class="mf">0.002</span>
+ <span class="mi">1</span>   <span class="mf">11022.653</span>  <span class="mf">19.0</span>  <span class="mf">2.67</span> <span class="o">-</span><span class="mf">0.161</span>   <span class="mf">7.98</span>   <span class="o">-</span><span class="mf">6.140</span>  <span class="mf">4.871</span>   <span class="mf">0.002</span><span class="p">,</span>
+ <span class="mf">24.0</span><span class="p">:</span>    <span class="n">wavelength</span>    <span class="n">ID</span>     <span class="n">EP</span>  <span class="n">logGF</span>   <span class="n">EWin</span>  <span class="n">logRWin</span>  <span class="n">abund</span>  <span class="n">delavg</span>
+ <span class="mi">0</span>    <span class="mf">11015.53</span>  <span class="mf">24.0</span>  <span class="mf">3.449</span> <span class="o">-</span><span class="mf">0.429</span>  <span class="mf">43.10</span>   <span class="o">-</span><span class="mf">5.408</span>  <span class="mf">5.044</span>   <span class="mf">0.002</span>
+ <span class="mi">1</span>    <span class="mf">11044.61</span>  <span class="mf">24.0</span>  <span class="mf">3.011</span> <span class="o">-</span><span class="mf">1.930</span>   <span class="mf">5.74</span>   <span class="o">-</span><span class="mf">6.284</span>  <span class="mf">5.040</span>  <span class="o">-</span><span class="mf">0.002</span><span class="p">,</span>
+ <span class="mf">26.0</span><span class="p">:</span>    <span class="n">wavelength</span>    <span class="n">ID</span>     <span class="n">EP</span>  <span class="n">logGF</span>   <span class="n">EWin</span>  <span class="n">logRWin</span>  <span class="n">abund</span>  <span class="n">delavg</span>
+ <span class="mi">0</span>   <span class="mf">11013.235</span>  <span class="mf">26.0</span>  <span class="mf">4.795</span> <span class="o">-</span><span class="mf">1.383</span>  <span class="mf">35.22</span>   <span class="o">-</span><span class="mf">5.495</span>  <span class="mf">7.129</span>  <span class="o">-</span><span class="mf">0.076</span>
+ <span class="mi">1</span>   <span class="mf">11026.788</span>  <span class="mf">26.0</span>  <span class="mf">3.943</span> <span class="o">-</span><span class="mf">2.805</span>  <span class="mf">11.92</span>   <span class="o">-</span><span class="mf">5.966</span>  <span class="mf">7.046</span>  <span class="o">-</span><span class="mf">0.159</span>
+ <span class="mi">2</span>   <span class="mf">11045.599</span>  <span class="mf">26.0</span>  <span class="mf">5.587</span> <span class="o">-</span><span class="mf">0.624</span>  <span class="mf">35.73</span>   <span class="o">-</span><span class="mf">5.490</span>  <span class="mf">7.242</span>   <span class="mf">0.037</span>
+ <span class="mi">3</span>   <span class="mf">11057.772</span>  <span class="mf">26.0</span>  <span class="mf">4.835</span> <span class="o">-</span><span class="mf">1.967</span>  <span class="mf">11.55</span>   <span class="o">-</span><span class="mf">5.981</span>  <span class="mf">7.171</span>  <span class="o">-</span><span class="mf">0.033</span>
+ <span class="mi">4</span>   <span class="mf">11069.374</span>  <span class="mf">26.0</span>  <span class="mf">6.222</span> <span class="o">-</span><span class="mf">1.055</span>   <span class="mf">5.06</span>   <span class="o">-</span><span class="mf">6.340</span>  <span class="mf">7.359</span>   <span class="mf">0.154</span>
+ <span class="mi">5</span>   <span class="mf">11081.595</span>  <span class="mf">26.0</span>  <span class="mf">5.643</span> <span class="o">-</span><span class="mf">1.419</span>   <span class="mf">7.37</span>   <span class="o">-</span><span class="mf">6.177</span>  <span class="mf">7.282</span>   <span class="mf">0.077</span><span class="p">,</span>
+ <span class="mf">28.0</span><span class="p">:</span>    <span class="n">wavelength</span>    <span class="n">ID</span>     <span class="n">EP</span>  <span class="n">logGF</span>   <span class="n">EWin</span>  <span class="n">logRWin</span>  <span class="n">abund</span>  <span class="n">delavg</span>
+ <span class="mi">0</span>   <span class="mf">11088.584</span>  <span class="mf">28.0</span>  <span class="mf">4.165</span> <span class="o">-</span><span class="mf">1.512</span>  <span class="mf">16.36</span>   <span class="o">-</span><span class="mf">5.831</span>  <span class="mf">6.009</span>     <span class="mf">0.0</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><img alt="" src="driver_guide/img/pymoog/abfind.png" /></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="synth.html" class="btn btn-neutral float-left" title="synth" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../miscellaneous.html" class="btn btn-neutral float-right" title="Miscellaneous" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Mingjie Jian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

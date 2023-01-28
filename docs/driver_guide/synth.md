@@ -25,12 +25,13 @@ The following parameters are:
 Parameters in `s.prepare_file`:
 - `model_file`: If specified then use the model file.
 - `model_format`: 
-- `loggf_cut`:
-- `abun_change`: 
-- `molecules`:
-- `atmosphere`:
+- `loggf_cut`: The cut in loggf. If specified as a float number, then the 
+- `abun_change`: Apply change in abundance ratios using dict, `{}`
+- `molecules`: Molecules switch in MOOG. Controls molecular equlibrium calculations. 0: do not do; 1: do calculations. 
+- `atmosphere`: 
 - `lines`:
 - `smooth_para`:
-- `model_type`:
+- `model_type`: 
 - `model_chem`:
 - `model_geo`:
+ 
