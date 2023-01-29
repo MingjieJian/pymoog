@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keywords &mdash; pymoog 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Line lists" href="line_lists.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> pymoog
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">What is pymoog?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../driver_guide.html">Guide for each driver</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../miscellaneous.html">Miscellaneous</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="grid_points.html">Model grid points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="line_lists.html">Line lists</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Keywords</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#freeform">freeform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run">RUN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#standard-out">standard_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#summary-out">summary_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hardpost-out">hardpost_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#speccomp-out">speccomp_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bin-raw-out">bin_raw_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bin-smo-out">bin_smo_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#summary-in">summary_in</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#smoothed-out">smoothed_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#keeplines-out">keeplines_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tosslines-out">tosslines_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#iraf-out">iraf_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model-in">model_in</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lines-in">lines_in</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stronglines-in">stronglines_in</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#observed-in">observed_in</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#table-in">table_in</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#table-out">table_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#popsyn-out">popsyn_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rawbin-out">rawbin_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#smoobin-out">smoobin_out</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#atmosphere">atmosphere</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#molecules">molecules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#molset">molset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deviations">deviations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lines">lines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gfstyle">gfstyle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contnorm">contnorm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plotpars">plotpars</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#trudamp">trudamp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#veladjust">veladjust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#units">units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#iraf">iraf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scat">scat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flux-int">flux/int</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#damping">damping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#obspectrum">obspectrum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#histogram">histogram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#terminal">terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plot">plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#abundances">abundances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#isotopes">isotopes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lumratio">lumratio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deltaradvel">deltaradvel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synlimits">synlimits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fluxlimits">fluxlimits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#blenlimits">blenlimits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#coglimits">coglimits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limits">limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#strong">strong</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#opacit">opacit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pymoog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../miscellaneous.html">Miscellaneous</a></li>
+      <li class="breadcrumb-item active">Keywords</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/miscellaneous/keywords.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="keywords">
+<h1>Keywords<a class="headerlink" href="#keywords" title="Permalink to this heading"></a></h1>
+<section id="freeform">
+<h2>freeform<a class="headerlink" href="#freeform" title="Permalink to this heading"></a></h2>
+<p>indicates whether or not the linelist will be read in under format control (7e10.3) or will be free-form.  If freeform = 0, the default value, then the old-style formatted input will be used; If freeform = 1, unformatted read will be used, BUT the user must then give values for all quantities (that is, explicit zeros will need to be put instead of blank spaces.</p>
+</section>
+<section id="run">
+<h2>RUN<a class="headerlink" href="#run" title="Permalink to this heading"></a></h2>
+<p>signals that there are either multiple syntheses being done or multiple comparisons with observed spectra.</p>
+</section>
+<section id="standard-out">
+<h2>standard_out<a class="headerlink" href="#standard-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of the verbose standard output.</p>
+</section>
+<section id="summary-out">
+<h2>summary_out<a class="headerlink" href="#summary-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of either the EW summary or the raw synthesis output.</p>
+</section>
+<section id="hardpost-out">
+<h2>hardpost_out<a class="headerlink" href="#hardpost-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of a postscript plot output.</p>
+</section>
+<section id="speccomp-out">
+<h2>speccomp_out<a class="headerlink" href="#speccomp-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of a text file containing the comparisons (wavelength shifts, sigmas, etc.) between observed and synthetic spectra</p>
+</section>
+<section id="bin-raw-out">
+<h2>bin_raw_out<a class="headerlink" href="#bin-raw-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of a file containing the raw synthesis of a spectroscopic binary, with an appropriate velocity  difference and luminosity ratio dialed in</p>
+</section>
+<section id="bin-smo-out">
+<h2>bin_smo_out<a class="headerlink" href="#bin-smo-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of a file containing the smoothed synthesis of a spectroscopic binary</p>
+</section>
+<section id="summary-in">
+<h2>summary_in<a class="headerlink" href="#summary-in" title="Permalink to this heading"></a></h2>
+<p>controls the name of the raw synthesis file, created previously, that will be read in for plotting purposes</p>
+</section>
+<section id="smoothed-out">
+<h2>smoothed_out<a class="headerlink" href="#smoothed-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of the smoothed synthesis output</p>
+</section>
+<section id="keeplines-out">
+<h2>keeplines_out<a class="headerlink" href="#keeplines-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of the list of kept lines for future synthetic spectrum runs</p>
+</section>
+<section id="tosslines-out">
+<h2>tosslines_out<a class="headerlink" href="#tosslines-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of the list of discarded lines that are too weak to keep in future synthetic spectrum runs</p>
+</section>
+<section id="iraf-out">
+<h2>iraf_out<a class="headerlink" href="#iraf-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of the optional IRAF output</p>
+</section>
+<section id="model-in">
+<h2>model_in<a class="headerlink" href="#model-in" title="Permalink to this heading"></a></h2>
+<p>controls the name of input model atmosphere file</p>
+</section>
+<section id="lines-in">
+<h2>lines_in<a class="headerlink" href="#lines-in" title="Permalink to this heading"></a></h2>
+<p>controls the name of the input line list</p>
+</section>
+<section id="stronglines-in">
+<h2>stronglines_in<a class="headerlink" href="#stronglines-in" title="Permalink to this heading"></a></h2>
+<p>controls the name of the input strong line list</p>
+</section>
+<section id="observed-in">
+<h2>observed_in<a class="headerlink" href="#observed-in" title="Permalink to this heading"></a></h2>
+<p>controls the name of the input observed spectrum</p>
+</section>
+<section id="table-in">
+<h2>table_in<a class="headerlink" href="#table-in" title="Permalink to this heading"></a></h2>
+<p>controls the name of the extra input instruction file</p>
+</section>
+<section id="table-out">
+<h2>table_out<a class="headerlink" href="#table-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of the extra input instruction file</p>
+</section>
+<section id="popsyn-out">
+<h2>popsyn_out<a class="headerlink" href="#popsyn-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of the extra input instruction file</p>
+</section>
+<section id="rawbin-out">
+<h2>rawbin_out<a class="headerlink" href="#rawbin-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of the input observed spectrum</p>
+</section>
+<section id="smoobin-out">
+<h2>smoobin_out<a class="headerlink" href="#smoobin-out" title="Permalink to this heading"></a></h2>
+<p>controls the name of the input observed spectrum</p>
+</section>
+<section id="atmosphere">
+<h2>atmosphere<a class="headerlink" href="#atmosphere" title="Permalink to this heading"></a></h2>
+<p>controls the output of atmosphere quantities:</p>
+<ul class="simple">
+<li><p>0 = do not print out the atmosphere</p></li>
+<li><p>1 = print out the standard things about an atmsophere</p></li>
+<li><p>2 = print standard things and additional stuff like continuous opacities, etc.</p></li>
+</ul>
+</section>
+<section id="molecules">
+<h2>molecules<a class="headerlink" href="#molecules" title="Permalink to this heading"></a></h2>
+<p>controls the molecular equilibrium calculations:</p>
+<ul class="simple">
+<li><p>0 = do not do molecular equilibrium</p></li>
+<li><p>1 = do molecular equilibrium but do not print results</p></li>
+<li><p>2 = do molecular equilibrium and print results</p></li>
+</ul>
+</section>
+<section id="molset">
+<h2>molset<a class="headerlink" href="#molset" title="Permalink to this heading"></a></h2>
+<p>controls the choice of which set of molecules will be used in molecular equilibrium calculations.</p>
+<ul class="simple">
+<li><p>1 = the small set involving H, C, N, O, Mg, Ti (DEFAULT)</p></li>
+<li><p>2 = the large set more useful for very cool stars</p></li>
+</ul>
+</section>
+<section id="deviations">
+<h2>deviations<a class="headerlink" href="#deviations" title="Permalink to this heading"></a></h2>
+<p>controls whether, for synthetic spectrum computations, an ‘obs-comp
+plot will be made in addition to the normal spectrum plot</p>
+<ul class="simple">
+<li><p>0 = do not plot the obs-comp plot</p></li>
+<li><p>1 = plot the obs-comp plot</p></li>
+</ul>
+</section>
+<section id="lines">
+<h2>lines<a class="headerlink" href="#lines" title="Permalink to this heading"></a></h2>
+<p>controls the output of line data</p>
+<ul class="simple">
+<li><p>0 = print out nothing about the input lines</p></li>
+<li><p>1 = print out standard information about the input line list</p></li>
+<li><p>2 = gory line data print (usually for diagnostic purposes)</p></li>
+</ul>
+</section>
+<section id="gfstyle">
+<h2>gfstyle<a class="headerlink" href="#gfstyle" title="Permalink to this heading"></a></h2>
+<p>controls the output of line data</p>
+<ul class="simple">
+<li><p>0 = base-10 logarithms of the gf values (DEFAULT)</p></li>
+<li><p>1 = straight gf values</p></li>
+</ul>
+</section>
+<section id="contnorm">
+<h2>contnorm<a class="headerlink" href="#contnorm" title="Permalink to this heading"></a></h2>
+<p>allows multiplicative adjustment of the continuum; useful probably only for batch syntheses the numbers employed should be around 1.0; default is 1.000000.</p>
+</section>
+<section id="plotpars">
+<h2>plotpars<a class="headerlink" href="#plotpars" title="Permalink to this heading"></a></h2>
+<p>allows you to set all of the plotting parameters if you know them in advance:</p>
+<ul class="simple">
+<li><p>0 = none set (default); user can change in plotting routine</p></li>
+<li><p>1 = given in following lines as follows</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">xlow</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">xhi</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">ylo</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">yhi</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vshift</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">lamshift</span>&#160;&#160;&#160; <span class="pre">obsadd</span>&#160;&#160;&#160; <span class="pre">obsmult</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smooth-type</span>&#160; <span class="pre">FWHM-Gauss</span>&#160; <span class="pre">vsini</span>&#160;&#160;&#160;&#160; <span class="pre">L.D.C.</span>&#160;&#160;&#160; <span class="pre">FWHM-Macro</span>&#160;&#160;&#160;&#160; <span class="pre">FWHM-Loren</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="trudamp">
+<h2>trudamp<a class="headerlink" href="#trudamp" title="Permalink to this heading"></a></h2>
+<p>should moog use the detailed line damping for those transitions that have information stored in subroutine trudamp? (Default is <em>no</em>)</p>
+</section>
+<section id="veladjust">
+<h2>veladjust<a class="headerlink" href="#veladjust" title="Permalink to this heading"></a></h2>
+<p>shoud moog try to do a cross-correlation between observed and synthetic spectra and use that to align the spectra better in wavelength (Default is <em>no</em>)</p>
+</section>
+<section id="units">
+<h2>units<a class="headerlink" href="#units" title="Permalink to this heading"></a></h2>
+<p>controls the units in which moog outputs the final spectrum:</p>
+<ul class="simple">
+<li><p>0 = angs</p></li>
+<li><p>1 = microns</p></li>
+<li><p>2 = 1/cm</p></li>
+</ul>
+</section>
+<section id="iraf">
+<h2>iraf<a class="headerlink" href="#iraf" title="Permalink to this heading"></a></h2>
+<p>allows the user to output a raw spectrum in a form suitable for IRAF’s rtext input command</p>
+<ul class="simple">
+<li><p>0 = don’t do this, make output the normal way.</p></li>
+<li><p>1 = make an IRAF-compatible output</p></li>
+</ul>
+</section>
+<section id="scat">
+<h2>scat<a class="headerlink" href="#scat" title="Permalink to this heading"></a></h2>
+<p>allows the user to employ a source function which has both scattering and absorption components</p>
+<ul class="simple">
+<li><p>0 = NO scattering</p></li>
+<li><p>1 = scattering</p></li>
+</ul>
+</section>
+<section id="flux-int">
+<h2>flux/int<a class="headerlink" href="#flux-int" title="Permalink to this heading"></a></h2>
+<p>choses integrated flux or central intensity</p>
+<ul class="simple">
+<li><p>0 = integrated flux calculations</p></li>
+<li><p>1 = central intensity calculations</p></li>
+</ul>
+</section>
+<section id="damping">
+<h2>damping<a class="headerlink" href="#damping" title="Permalink to this heading"></a></h2>
+<p>here are the calculations to set up the damping; dampingopt is the damping parameter, and dampnum is the damping value read from the line list.
+For atomic lines there are several options:</p>
+<ul class="simple">
+<li><p>dampingopt = 0 and dampnum &lt; 0 —&gt; gammav = 10^{dampnum(i)}<em>(T/10000K)^0.3</em>n_HI</p></li>
+<li><p>dampingopt = 0 and dampnum = 0 —&gt; c6 = Unsold formula</p></li>
+<li><p>dampingopt = 0 and dampnum &gt; 10^(-10) —&gt; c6 =  (Unsold formula)*dampnum(i)</p></li>
+<li><p>dampingopt = 0 and dampnum(i) &lt; 10^(-10) —&gt; c6 = dampnum(i)</p></li>
+<li><p>dampingopt = 1 —&gt; gammav = gamma_Barklem if possible, otherwise use dampingopt=0 options</p></li>
+<li><p>dampingopt = 2 —&gt; c6 = c6_Blackwell-group</p></li>
+<li><p>dampingopt = 3 and dampnum &lt;= 10^(-10) —&gt; c6 = c6_NEXTGEN for H I, He I, H2</p></li>
+<li><p>dampingopt = 3 and dampnum &gt; 10^(-10) —&gt; c6 = (c6_NEXTGEN for H I, He I, H2)*dampnum
+For molecular lines (lacking a better idea) —&gt; c6 done as in dampingopt = 0</p></li>
+</ul>
+</section>
+<section id="obspectrum">
+<h2>obspectrum<a class="headerlink" href="#obspectrum" title="Permalink to this heading"></a></h2>
+<p>controls the file type of the observed spectrum</p>
+<ul class="simple">
+<li><p>0 = no observed spectrum is to be input</p></li>
+<li><p>1 = read a true FITS file with internal read statements</p></li>
+<li><p>-1 = as if obspectrum = 1, but on a byte-swapping machine</p></li>
+<li><p>2 = (not implemented yet)</p></li>
+<li><p>3 = read a true Fits file with the FITSIO package</p></li>
+<li><p>4 = (not implemented yet)</p></li>
+<li><p>5 = read a special MONGO style (wavelength, flux pair) file</p></li>
+</ul>
+</section>
+<section id="histogram">
+<h2>histogram<a class="headerlink" href="#histogram" title="Permalink to this heading"></a></h2>
+<p>makes histogram plots of observed spectra if histoyes = 1</p>
+</section>
+<section id="terminal">
+<h2>terminal<a class="headerlink" href="#terminal" title="Permalink to this heading"></a></h2>
+<p>gives the sm plotting window type smterm = a character string of the sm window type (see the appropriate sm manual for a list)</p>
+</section>
+<section id="plot">
+<h2>plot<a class="headerlink" href="#plot" title="Permalink to this heading"></a></h2>
+<p>decides whether or not to make a plot of results
+c           0 = do not make a plot
+c           For syntheses: 1 = plot only synthetic spectra
+c                          2 = plot synthetic and observed spectra
+c                          3 = smooth the syntheses but don’t plot
+c           For line analyses: # = the minimum number of lines of a
+c                                  species necessary to trigger a plot
+c           For curves-of-growth: 1 = make plots
+c           For flux curves: 1 = make plots</p>
+</section>
+<section id="abundances">
+<h2>abundances<a class="headerlink" href="#abundances" title="Permalink to this heading"></a></h2>
+<p>gives the changes to be applied to the abundances
+c           # = the number of different syntheses to run
+c               (the next line gives the different abundance factors
+c               to use)
+c  minimum error check:  numatomsyn must equal numisosyn or code will stop</p>
+</section>
+<section id="isotopes">
+<h2>isotopes<a class="headerlink" href="#isotopes" title="Permalink to this heading"></a></h2>
+<p>gives the isotopes used in the line list and their abundance relative to the parent spiecies. minimum error check:  numatomsyn must equal numisosyn or code will stop</p>
+</section>
+<section id="lumratio">
+<h2>lumratio<a class="headerlink" href="#lumratio" title="Permalink to this heading"></a></h2>
+<p>gives the ratio of the luminosity of two stars at a specific wavelength in a binary star system (used only with driver “binary”)</p>
+</section>
+<section id="deltaradvel">
+<h2>deltaradvel<a class="headerlink" href="#deltaradvel" title="Permalink to this heading"></a></h2>
+<p>gives the velocity difference between the stars binary star system (used only with driver “binary”)</p>
+</section>
+<section id="synlimits">
+<h2>synlimits<a class="headerlink" href="#synlimits" title="Permalink to this heading"></a></h2>
+<p>gives the wavelength parameters for syntheses; start and sstop are beginning and ending wavelengths, step is the step size in the syntheses, and delta is the wavelength range to either side of a synthesis point to consider for line opacity calculations</p>
+</section>
+<section id="fluxlimits">
+<h2>fluxlimits<a class="headerlink" href="#fluxlimits" title="Permalink to this heading"></a></h2>
+<p>gives the wavelength parameters for flux curves; start and sstop are beginning and ending wavelengths, and step is the step size in the flux curve</p>
+</section>
+<section id="blenlimits">
+<h2>blenlimits<a class="headerlink" href="#blenlimits" title="Permalink to this heading"></a></h2>
+<p>gives the parameters for blended line abundance matches.  delwave is the wavelength offset  to the blue of first and to the red of the  last line in the blend to extend the syntheses;  step is the wavelength step size in the  computations; cogatom is the name of the element whose abundance should be varied to achieve an EW match with observations.</p>
+</section>
+<section id="coglimits">
+<h2>coglimits<a class="headerlink" href="#coglimits" title="Permalink to this heading"></a></h2>
+<p>gives the log(W/lambda) limits for curves-of-growth rwlow and rwhigh are the beginning and ending points of the log(red.width) values, rwstep is the step in log(red.width), cogatom is the declaration of which element will have its abundance varied (necessary only for spectrum synthesis curves-of-growth, and wavestep is a forced (if desired) step size in wavelength along the line (this applies to single line computations only</p>
+</section>
+<section id="limits">
+<h2>limits<a class="headerlink" href="#limits" title="Permalink to this heading"></a></h2>
+<p>old limits format…tell the user to change the keyword and quit.</p>
+</section>
+<section id="strong">
+<h2>strong<a class="headerlink" href="#strong" title="Permalink to this heading"></a></h2>
+<p>for lines which are to be considered for all of the synthesis</p>
+</section>
+<section id="opacit">
+<h2>opacit<a class="headerlink" href="#opacit" title="Permalink to this heading"></a></h2>
+<p>which takes the continuus opacity and scales it with the form of kaplam(i)= kaplam(i)<em>((factor</em>10000)/t(i)) in Opacit.f after it calulates the normal kaplam if value is &lt;= 0 then it does not do it.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="line_lists.html" class="btn btn-neutral float-left" title="Line lists" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Mingjie Jian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

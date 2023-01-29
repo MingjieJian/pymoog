@@ -268,30 +268,32 @@ c     options concerning what is seen on the plot
 
 c*****now the option will be to redo the molecular equilibrium and redo
 c     the last species, at the user's option.
-      if (neq .ne. 0) then
-         do n=1,neq
-            if (iatom .eq. iorder(n)) then
-               write (array,1004)
-               ikount = min0(nlines+11,maxline)
-               nchars = 70
-35             call getasci (nchars,ikount)
-               choice = chinfo(1:1)
-               if (choice.eq.'y' .or. nchars.le.0) then
-                  xabund(iatom) = 10.**(average-12.)
-                  call eqlib
-                  call nearly (1)
-                  lim1line = 0
-                  lim2line = 0
-                  rewind nf2out
-                  go to 30
-               elseif (choice .eq. 'n') then
-                  call finish (0)
-               else
-                  go to 35
-                endif
-            endif
-         enddo
-      endif
+c     This function is temporary disabled since the keyboard input is 
+c     not allowed in pymoog. -- Mingjie (2023.1)
+!       if (neq .ne. 0) then
+!          do n=1,neq
+!             if (iatom .eq. iorder(n)) then
+!                write (array,1004)
+!                ikount = min0(nlines+11,maxline)
+!                nchars = 70
+! 35             call getasci (nchars,ikount)
+!                choice = chinfo(1:1)
+!                if (choice.eq.'y' .or. nchars.le.0) then
+!                   xabund(iatom) = 10.**(average-12.)
+!                   call eqlib
+!                   call nearly (1)
+!                   lim1line = 0
+!                   lim2line = 0
+!                   rewind nf2out
+!                   go to 30
+!                elseif (choice .eq. 'n') then
+!                   call finish (0)
+!                else
+!                   go to 35
+!                 endif
+!             endif
+!          enddo
+!       endif
  
 
 c*****exit the program

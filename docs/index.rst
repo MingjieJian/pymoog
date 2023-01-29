@@ -7,10 +7,13 @@ Welcome to pymoog's documentation!
 ==================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
-   pymoog
+   What is pymoog? <intro.md>
+   Installation <install.md>
+   Quickstart <quickstart.md>
+   Guide for each driver <driver_guide>
    Miscellaneous <miscellaneous>
 
 

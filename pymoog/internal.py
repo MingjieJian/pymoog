@@ -5,8 +5,8 @@
 
 import numpy as np
 import pandas as pd
-import os 
-from pymoog import model
+import os, pickle
+from . import model
 import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
 from pymoog import line_data
@@ -225,8 +225,6 @@ def kurucz2moog(kurucz_path):
     line_data.save_linelist(kurucz_use, 'files/linelist/kurucz/kurucz.list', wav_start=2000, wav_end=7e5)
     return kurucz_use
     
-
-
 def get_species(num):
     if num <= 100:
         return num
@@ -241,7 +239,6 @@ def get_species(num):
 
 
 # Model part
-
 def value2pm(value):
     '''
     Transform the metallicity value to Kurucz format.
@@ -284,7 +281,7 @@ def search_grid_point_kurucz():
     '''
     The function to search all the grid points of Kurucz model and save the list to grid_path.
     The search is limit to standard model with microturbulent = 2.
-    Internal use
+    Internal use.
     '''
     teff_range = np.arange(3500, 50001, 250)
     logg_range = np.arange(0, 5.1, 0.5)
@@ -345,8 +342,41 @@ def plot_model_grid():
         plt.tight_layout()
         plt.savefig('../docs/img/grid_points_kurucz/m_h{:+.1f}.png'.format(m_h), dpi=250)
         plt.close()
-    
 
+# Here we calculate the Delaunay triangulation for MRACS models, and sotre them into corredponding folders.
+def save_marcs_delaunay(folder_path, tri_columns=['teff', 'g', '[M/H]', 'vmicro', 'mass']):
+    '''
+    Generate the DataFrame of grid points and Delaunay triangulation for MARCS models, and save it to the same folder. For internal use.
+    
+    Parameters
+    ----------
+    folder_path : str
+        The folder path for generating the grid points DataFrame and Delaunay triangulation.
+    tri_columns : list
+        List of columns to be used for Delaunay triangulation.
+    '''
+    marcs_name_list = os.listdir(folder_path)
+    marcs_name_list = [i for i in marcs_name_list if 'mod' in i]
+    marcs_grid = []
+
+    for marcs_model in marcs_name_list:
+        marcs_grid.append(list(model.marcs_filename2para(marcs_model)))
+
+    marcs_grid = pd.DataFrame(marcs_grid, columns=['chem', 'geo', 'teff', 'logg', 'mass', 'vmicro', '[M/H]', '[alpha/Fe]', 
+                                                           '[C/Fe]', '[N/Fe]', '[O/Fe]', 'r', 's'])    
+    marcs_grid['g'] = 10**marcs_grid['logg']
+    
+    # Sanity check: chem and geo have to be the same in the dataframe.
+    if len(marcs_grid.groupby(['chem', 'geo']).size()) > 1:
+        raise ValueError('Chemical composition or model geometry is not unique in the folder. Please limit them to only one.')
+        
+    grid_matrix = np.array(marcs_grid[tri_columns])
+    tri = Delaunay(grid_matrix)
+    
+    marcs_grid.to_csv(folder_path + '/grid_points.csv', index=False)
+    pickle.dump(tri, open(folder_path + '/tri.pkl', 'wb'))
+    
+    pass
 
 def main():
    init_linelist_name = sys.argv[1]

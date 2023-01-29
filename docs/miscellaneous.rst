@@ -2,7 +2,7 @@ Miscellaneous
 =============
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    Model grid points <miscellaneous/grid_points>
    Line lists <miscellaneous/line_lists>

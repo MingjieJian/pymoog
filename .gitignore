@@ -1,6 +1,5 @@
 .vscode/
 __pycache__/
-node_modules
-../docs/_build/
+docs/_build/
 *.pyc
 dist/

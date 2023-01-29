@@ -6,3 +6,4 @@ scipy >= 1.4.0
 astropy >= 4.0
 spectres
 tqdm
+zenodo_get
