@@ -65,7 +65,7 @@ with open("README.md", "r") as fh:
 if os.environ.get('READTHEDOCS') != 'True':
     setuptools.setup(
         name='pymoog',
-        version='0.0.28',
+        version='0.1.0',
         description='The python wrapper to run LTE spectra synthesis code MOOG.',
         long_description=long_description,
         long_description_content_type="text/markdown",
@@ -99,7 +99,7 @@ if os.environ.get('READTHEDOCS') != 'True':
 else:
         setuptools.setup(
         name='pymoog',
-        version='0.0.28',
+        version='0.1.0',
         description='The python wrapper to run LTE spectra synthesis code MOOG.',
         long_description=long_description,
         long_description_content_type="text/markdown",
