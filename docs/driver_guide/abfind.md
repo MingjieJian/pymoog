@@ -1,10 +1,4 @@
-# abfind
-
-force-fitting abundances to match single-line equivalent widths.
-
-- Flow chart
-![](img/pymoog/abfind_fc.PNG)
-- Example
+# abfind: force-fitting abundances to match single-line equivalent widths.
 
 Suppose we have a list of strong lines (stored as `linelist` DataFrame) with their measured EW as follow:
 
@@ -35,7 +29,7 @@ Suppose we have a list of strong lines (stored as `linelist` DataFrame) with the
 The DataFrame has to be sorted in id and wavelength.
 ```
 
-Then we can run abfind:
+Then abfind can run as:
 ```py
 a = pymoog.abfind.abfind(5000, 4.0, 0.0, line_list='line.list')
 a.prepare_file()

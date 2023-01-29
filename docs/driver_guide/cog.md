@@ -1,6 +1,6 @@
-# cog
+# cog: curve-of-growth creation for individual line
 
-## Example
+The `cog` driver generate the curve-of-growth for individual line.
 
 Let’s look at a Si line with following parameters (and stored in file `use.list`):
 

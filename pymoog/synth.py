@@ -21,7 +21,7 @@ class synth(rundir_num.rundir_num):
         
         Parameters
         ----------
-        teff : int
+        teff : float
             The effective temperature of the model
         logg : float
             logg value of the model

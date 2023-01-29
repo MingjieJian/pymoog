@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>abfind &mdash; pymoog 0.0.1 documentation</title>
+  <title>abfind: force-fitting abundances to match single-line equivalent widths. &mdash; pymoog 0.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="blends" href="blends.html" />
-    <link rel="prev" title="weedout" href="weedout.html" /> 
+    <link rel="next" title="blends: force-fitting abundances to match blended-line equivalent widths" href="blends.html" />
+    <link rel="prev" title="weedout: removing weak lines" href="weedout.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,7 +41,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction to pymoog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">What is pymoog?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../driver_guide.html">Guide for each driver</a><ul class="current">
@@ -50,6 +50,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">abfind</a></li>
 <li class="toctree-l2"><a class="reference internal" href="blends.html">blends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cog.html">cog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="find_dominant_line.html">find dominant line</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contri_func.html">contribution function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mpfit.html">mpfit</a></li>
 </ul>
@@ -72,7 +73,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a></li>
           <li class="breadcrumb-item"><a href="../driver_guide.html">Guide for each driver</a></li>
-      <li class="breadcrumb-item active">abfind</li>
+      <li class="breadcrumb-item active">abfind: force-fitting abundances to match single-line equivalent widths.</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/driver_guide/abfind.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -82,14 +83,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="abfind">
-<h1>abfind<a class="headerlink" href="#abfind" title="Permalink to this heading"></a></h1>
-<p>force-fitting abundances to match single-line equivalent widths.</p>
-<ul class="simple">
-<li><p>Flow chart
-<img alt="" src="driver_guide/img/pymoog/abfind_fc.PNG" /></p></li>
-<li><p>Example</p></li>
-</ul>
+  <section id="abfind-force-fitting-abundances-to-match-single-line-equivalent-widths">
+<h1>abfind: force-fitting abundances to match single-line equivalent widths.<a class="headerlink" href="#abfind-force-fitting-abundances-to-match-single-line-equivalent-widths" title="Permalink to this heading"></a></h1>
 <p>Suppose we have a list of strong lines (stored as <code class="docutils literal notranslate"><span class="pre">linelist</span></code> DataFrame) with their measured EW as follow:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>	<span class="n">wavelength</span>	<span class="nb">id</span>	<span class="n">EP</span>	<span class="n">loggf</span>	<span class="n">C6</span>	<span class="n">D0</span>	<span class="n">EW</span>
 <span class="mi">0</span>	<span class="mf">11032.103</span>	<span class="mf">12.0</span>	<span class="mf">5.9460</span>	<span class="o">-</span><span class="mf">1.801</span>	<span class="mf">0.000</span>	<span class="n">NaN</span>	<span class="mf">23.05</span>
@@ -117,7 +112,7 @@
 <p class="admonition-title">Note</p>
 <p>The DataFrame has to be sorted in id and wavelength.</p>
 </div>
-<p>Then we can run abfind:</p>
+<p>Then abfind can run as:</p>
 <div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">pymoog</span><span class="o">.</span><span class="n">abfind</span><span class="o">.</span><span class="n">abfind</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">line_list</span><span class="o">=</span><span class="s1">&#39;line.list&#39;</span><span class="p">)</span>
 <span class="n">a</span><span class="o">.</span><span class="n">prepare_file</span><span class="p">()</span>
 <span class="n">pymoog</span><span class="o">.</span><span class="n">line_data</span><span class="o">.</span><span class="n">save_linelist</span><span class="p">(</span><span class="n">linelist</span><span class="p">,</span> <span class="n">MOOG_run_path</span> <span class="o">+</span> <span class="s1">&#39;line.list&#39;</span><span class="p">)</span>
@@ -159,8 +154,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="weedout.html" class="btn btn-neutral float-left" title="weedout" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="blends.html" class="btn btn-neutral float-right" title="blends" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="weedout.html" class="btn btn-neutral float-left" title="weedout: removing weak lines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="blends.html" class="btn btn-neutral float-right" title="blends: force-fitting abundances to match blended-line equivalent widths" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -151,12 +151,42 @@ def find_lines(linelist_keep, linelist_all, max_del_wav=0.05):
             line_index_keep.append(linelist_all[indice].index.values[0])
     return line_index_keep
 
-def find_single_dominant_line(line_wav_input, teff, logg, fe_h, resolution, r_d_blend_thre=0.1, line_list='ges', weedout_switch=False, search_half_width=0.5, linelist_serach=False, abun_change=None):
+def find_single_dominant_line(line_wav_input, teff, logg, m_h, resolution, line_list='ges', weedout_switch=False, search_half_width=0.5, include_strong_linelist=False, r_blen_thres=0.1, abun_change=None):
 
     '''
     Find the dominant line from a line list.
 
-    
+    Parameters
+    ----------
+    line_wav_input : float
+        Central wavelength for the searching.
+    teff : float
+        The effective temperature of the model
+    logg : float
+        logg value of the model
+    m_h : float
+        [M/H] value (overall metallicity) of the model
+    resolution : float
+        Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.
+    line_list : str or pd.DataFrame, default vald_3000_24000 
+        The name of the linelist file.
+    weedout_switch : bool or float, default False
+        The switch for running weedout driver before synth. If False then weedout is not run; if True the weedout is run with kappa_ratio=0.01, and if a float (> 0 and < 1) is given then weedout is run with the kappa_ratio set as the number.
+    search_half_width : float, default 0.5
+        The +- width for searching the dominant line.
+    include_strong_linelist : bool, default False
+        Whether include all the linelist after weedout as a separate output.
+    r_blen_thres : float, default 0.1
+        The threshold of blending ratio. Only the line with blending ratio smaller than r_blen_thres can be selected as dominant line.
+    abun_change : dict of pairs {int:float, ...}
+            Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
+
+    Returns
+    ----------
+    dominant_line : pandas.DataFrame 
+        The dataframe containing the dominant line.
+    linelist_keep : pandas.DataFrame, optional
+        The line list after weedout. Only appear when include_strong_linelist is True.
     '''
 
     # Establish the linelist
@@ -164,7 +194,7 @@ def find_single_dominant_line(line_wav_input, teff, logg, fe_h, resolution, r_d_
     linelist_all = linelist_all[np.abs(linelist_all['wavelength']-line_wav_input) < search_half_width]
 
     # Calculate the blending ratio
-    s = synth.synth(teff, logg, fe_h, line_wav_input-search_half_width-1, line_wav_input+search_half_width+1, resolution, line_list=line_list)
+    s = synth.synth(teff, logg, m_h, line_wav_input-search_half_width-1, line_wav_input+search_half_width+1, resolution, line_list=line_list)
     s.prepare_file(abun_change=abun_change)
     # Whole spectra 
     s.run_moog()
@@ -173,7 +203,7 @@ def find_single_dominant_line(line_wav_input, teff, logg, fe_h, resolution, r_d_
 
     # weedout lines
     if weedout_switch != False:
-        w = weedout.weedout(teff, logg, fe_h, line_wav_input-search_half_width, line_wav_input+search_half_width, line_list=line_list)
+        w = weedout.weedout(teff, logg, m_h, line_wav_input-search_half_width, line_wav_input+search_half_width, line_list=line_list, kappa_ratio=weedout_switch)
         w.prepare_file()
         w.run_moog()
         
@@ -184,16 +214,11 @@ def find_single_dominant_line(line_wav_input, teff, logg, fe_h, resolution, r_d_
     else:
         linelist_keep = linelist_all
     
-    # Unlock runs
-    # s.remove()
-    # if weedout_switch != False:
-    #     w.unlock()
-    
     line_index_keep = find_lines(linelist_keep, linelist_all)
 
     r_blend_ratio_list = []
     for line_index in line_index_keep:
-        s = synth.synth(teff, logg, fe_h, line_wav_input-search_half_width-1, line_wav_input+search_half_width+1, 
+        s = synth.synth(teff, logg, m_h, line_wav_input-search_half_width-1, line_wav_input+search_half_width+1, 
                         resolution, line_list=line_list)
         s.prepare_file(abun_change=abun_change)
         linelist_exclude = linelist_all.drop(line_index).reset_index(drop=True)
@@ -223,22 +248,22 @@ def find_single_dominant_line(line_wav_input, teff, logg, fe_h, resolution, r_d_
 
         r_blend_ratio_list.append(r_blend_ratio)
 
-    linelist_keep['r_blend_ratio'] = r_blend_ratio_list
+    linelist_keep['r_blend_depth'] = r_blend_ratio_list
 
     if len(line_index_keep) > 0:
         try:
-            target_line_index = np.abs(linelist_keep.loc[linelist_keep['r_blend_ratio'] < 0.1, 'wavelength'] - line_wav_input).sort_values().index[0]
-            target_line = linelist_keep.loc[target_line_index:target_line_index].reset_index(drop=True)
+            dominant_line_index = np.abs(linelist_keep.loc[linelist_keep['r_blend_depth'] < r_blen_thres, 'wavelength'] - line_wav_input).sort_values().index[0]
+            dominant_line = linelist_keep.loc[dominant_line_index:dominant_line_index].reset_index(drop=True)
         except IndexError:
             # No dominant line is found
-            target_line = pd.DataFrame(np.array([np.nan]*8)).T
-            target_line.columns = ['wavelength', 'id', 'EP', 'loggf', 'C6', 'D0', 'EW', 'r_blend_ratio']
+            dominant_line = pd.DataFrame(np.array([np.nan]*8)).T
+            dominant_line.columns = ['wavelength', 'id', 'EP', 'loggf', 'C6', 'D0', 'EW', 'r_blend_depth']
     else:
         # No line is found
-        target_line = pd.DataFrame(np.array([np.nan]*8)).T
-        target_line.columns = ['wavelength', 'id', 'EP', 'loggf', 'C6', 'D0', 'EW', 'r_blend_ratio']
+        dominant_line = pd.DataFrame(np.array([np.nan]*8)).T
+        dominant_line.columns = ['wavelength', 'id', 'EP', 'loggf', 'C6', 'D0', 'EW', 'r_blend_depth']
 
-    if linelist_serach:
-        return target_line, linelist_keep
+    if include_strong_linelist:
+        return dominant_line, linelist_keep
     else:
-        return target_line
+        return dominant_line

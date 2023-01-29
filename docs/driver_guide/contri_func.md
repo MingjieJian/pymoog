@@ -34,6 +34,6 @@ Then we can derive their expression and contribution as follow ($\eta = \kappa_l
 |$I_l^c$|$\int_0^\infty S_c e^{-(\tau_c+\tau_l)} d\tau_c$|$S_c e^{-(\tau_c+\tau_l)}$|
 |$I_l$|$\int_0^\infty (S_c + \eta S_l) e^{-(\tau_c+\tau_l)} d\tau_c$|$(S_c + \eta S_l) e^{-(\tau_c+\tau_l)}$|
 
-As an example, the following figure shows the three ocntribution function calculated by pymoog:
+As an example, the following figure shows the three contribution function calculated by pymoog:
 
 ![](../img/contribution_function/cf_example.jpg)

@@ -86,6 +86,6 @@ Only the keywords worth attention will be descripbed, and please refer to the he
    abfind <driver_guide/abfind>
    blends <driver_guide/blends>
    cog <driver_guide/cog>
+   find dominant line<driver_guide/find_dominant_line>
    contribution function <driver_guide/contri_func>
    mpfit <driver_guide/mpfit>
-   Advanced usage <driver_guide/advanced_usage>

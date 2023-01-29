@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>synth &mdash; pymoog 0.0.1 documentation</title>
+  <title>synth: create synthetic spectra &mdash; pymoog 0.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="weedout" href="weedout.html" />
+    <link rel="next" title="weedout: removing weak lines" href="weedout.html" />
     <link rel="prev" title="Guide for each driver" href="../driver_guide.html" /> 
 </head>
 
@@ -41,18 +41,21 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction to pymoog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">What is pymoog?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../driver_guide.html">Guide for each driver</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">synth</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#changing-elemental-abundance-ratios">Changing elemental abundance ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#providing-your-own-model-file">Providing your own model file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#specifying-the-smoothing-parameters">Specifying the smoothing parameters</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="weedout.html">weedout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="abfind.html">abfind</a></li>
 <li class="toctree-l2"><a class="reference internal" href="blends.html">blends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cog.html">cog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="find_dominant_line.html">find dominant line</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contri_func.html">contribution function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mpfit.html">mpfit</a></li>
 </ul>
@@ -75,7 +78,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a></li>
           <li class="breadcrumb-item"><a href="../driver_guide.html">Guide for each driver</a></li>
-      <li class="breadcrumb-item active">synth</li>
+      <li class="breadcrumb-item active">synth: create synthetic spectra</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/driver_guide/synth.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -85,59 +88,55 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="synth">
-<h1>synth<a class="headerlink" href="#synth" title="Permalink to this heading"></a></h1>
+  <section id="synth-create-synthetic-spectra">
+<h1>synth: create synthetic spectra<a class="headerlink" href="#synth-create-synthetic-spectra" title="Permalink to this heading"></a></h1>
 <p>Now let’s see what we can control in <code class="docutils literal notranslate"><span class="pre">synth</span></code>, the core part of <code class="docutils literal notranslate"><span class="pre">pymoog</span></code>.</p>
-<p>The following code lists all parameters which can be changed</p>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">pymoog</span><span class="o">.</span><span class="n">synth</span><span class="o">.</span><span class="n">synth</span><span class="p">(</span><span class="mi">5060</span><span class="p">,</span> <span class="mf">4.7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10540</span><span class="p">,</span> <span class="mi">10620</span><span class="p">,</span> <span class="mi">50000</span><span class="p">,</span> <span class="n">vmicro</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mass</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">del_wav</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> 
-                       <span class="n">line_list</span><span class="o">=</span><span class="s1">&#39;vald_3000_24000&#39;</span><span class="p">,</span> <span class="n">weedout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="n">s</span><span class="o">.</span><span class="n">prepare_file</span><span class="p">(</span><span class="n">model_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_format</span><span class="o">=</span><span class="s1">&#39;moog&#39;</span><span class="p">,</span> <span class="n">loggf_cut</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">abun_change</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">molecules</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-               <span class="n">atmosphere</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">lines</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">smooth_para</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;marcs&#39;</span><span class="p">,</span> <span class="n">model_chem</span><span class="o">=</span><span class="s1">&#39;st&#39;</span><span class="p">,</span> <span class="n">model_geo</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
-<span class="n">s</span><span class="o">.</span><span class="n">run_moog</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">s</span><span class="o">.</span><span class="n">read_spectra</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>The first 5 parameters in <code class="docutils literal notranslate"><span class="pre">pymoog.synth.synth</span></code> refers to effective temperature $T_\mathrm{eff}$, logrithm of surface gravity $\log{g}$, metallicity $\mathrm{[M/H]}$, the start and end wavelength, and resolution of the synthetic spectra.
-The following parameters are:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">vmicro</span></code>: mircotrubulance velocity. Different treatment will be implemented depending on the <code class="docutils literal notranslate"><span class="pre">model_type</span></code>; see <a class="reference internal" href="../driver_guide.html"><span class="doc std std-doc">the model page</span></a> for more detail.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mass</span></code>: the mass of the star. Only valid when <code class="docutils literal notranslate"><span class="pre">model_type</span></code> is <code class="docutils literal notranslate"><span class="pre">marcs</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">del_wav</span></code>: the wavelength step of synthetic spectra.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">line_list</span></code>: the line list to be used. It can be either the internal line lists (), a file or a line list object.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">weedout</span></code>: if set to a value from 0 to 1, then perform the weedout task to remove weak lines (see <a class="reference internal" href="../driver_guide.html"><span class="doc std std-doc">weedout</span></a>); if False then do not weedout.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">prefix</span></code>: I don’t think this parameter is used now.</p></li>
-</ul>
-<p>Parameters in <code class="docutils literal notranslate"><span class="pre">s.prepare_file</span></code>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">model_file</span></code>: If specified then use the model file.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">model_format</span></code>:</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">loggf_cut</span></code>: The cut in loggf. If specified as a float number, then the</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">abun_change</span></code>: Apply change in abundance ratios using dict, <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">molecules</span></code>: Molecules switch in MOOG. Controls molecular equlibrium calculations. 0: do not do; 1: do calculations.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">atmosphere</span></code>:</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lines</span></code>:</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">smooth_para</span></code>:</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">model_type</span></code>:</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">model_chem</span></code>:</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">model_geo</span></code>:</p></li>
-</ul>
-<section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h2>
-<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">pymoog</span><span class="o">.</span><span class="n">synth</span><span class="o">.</span><span class="n">synth</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">10840</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span>     <span class="mi">10840</span><span class="o">+</span><span class="mi">20</span><span class="p">,</span>    <span class="mi">28000</span><span class="p">,</span>
-<span class="c1">#                      Teff, logg, [Fe/H], wav_start(A), wav_end(A), resolution, </span>
-   <span class="n">line_list</span><span class="o">=</span><span class="s1">&#39;vald_3000_24000&#39;</span><span class="p">)</span>
-<span class="c1">#  line_list</span>
-<span class="n">s</span><span class="o">.</span><span class="n">prepare_file</span><span class="p">()</span>
-<span class="c1"># Any change of model and line list file can be done in this step, </span>
-<span class="c1">#   and there are functions to deal with these files.</span>
+<p>The example shown in quickstart only involve a few stellar parameters, i.e., $T_\mathrm{eff}$, $\log{g}$ and metallicity.</p>
+<section id="changing-elemental-abundance-ratios">
+<h2>Changing elemental abundance ratios<a class="headerlink" href="#changing-elemental-abundance-ratios" title="Permalink to this heading"></a></h2>
+<p>The elemental abundance ratios are altered thruough <code class="docutils literal notranslate"><span class="pre">abun_change</span></code> keyword in <code class="docutils literal notranslate"><span class="pre">s.prepare_file</span></code>:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">pymoog</span><span class="o">.</span><span class="n">synth</span><span class="o">.</span><span class="n">synth</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>       <span class="mi">6000</span><span class="p">,</span>     <span class="mi">6200</span><span class="p">,</span>          <span class="mi">30000</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">prepare_file</span><span class="p">(</span><span class="n">abun_change</span><span class="o">=</span><span class="p">{</span><span class="mi">14</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">28</span><span class="p">:</span><span class="o">-</span><span class="mf">0.4</span><span class="p">})</span>
 <span class="n">s</span><span class="o">.</span><span class="n">run_moog</span><span class="p">()</span>
 <span class="n">s</span><span class="o">.</span><span class="n">read_spectra</span><span class="p">()</span>
-
-<span class="c1"># Plot the synthesized spectra</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">wav</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">flux</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><img alt="" src="../_images/synth.png" /></p>
+<p><code class="docutils literal notranslate"><span class="pre">abun_change</span></code> is a dictionary with the keys as the atomic number, and value as the [X/Fe] value of the element.</p>
+</section>
+<section id="providing-your-own-model-file">
+<h2>Providing your own model file<a class="headerlink" href="#providing-your-own-model-file" title="Permalink to this heading"></a></h2>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">pymoog</span><span class="o">.</span><span class="n">synth</span><span class="o">.</span><span class="n">synth</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>       <span class="mi">6000</span><span class="p">,</span>     <span class="mi">6200</span><span class="p">,</span>          <span class="mi">30000</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">prepare_file</span><span class="p">(</span><span class="n">model_file</span><span class="o">=</span><span class="s1">&#39;Yourmodel.mod&#39;</span><span class="p">,</span> <span class="n">model_format</span><span class="o">=</span><span class="s1">&#39;moog&#39;</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">run_moog</span><span class="p">()</span>
+<span class="n">s</span><span class="o">.</span><span class="n">read_spectra</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You can provide your own model file into pymoog by specifying the <code class="docutils literal notranslate"><span class="pre">model_file</span></code> as your model file name.
+Note that the model file must be in the format of MOOG, ATLAS9, ATLAS12 or MARCS, and the <code class="docutils literal notranslate"><span class="pre">model_format</span></code> must be specified accordingly as “moog”, “kurucz-atlas9”, “kurucz-atlas12” or “marcs”.</p>
+</section>
+<section id="specifying-the-smoothing-parameters">
+<h2>Specifying the smoothing parameters<a class="headerlink" href="#specifying-the-smoothing-parameters" title="Permalink to this heading"></a></h2>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">pymoog</span><span class="o">.</span><span class="n">synth</span><span class="o">.</span><span class="n">synth</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>       <span class="mi">6000</span><span class="p">,</span>     <span class="mi">6200</span><span class="p">,</span>          <span class="mi">30000</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">prepare_file</span><span class="p">(</span><span class="n">smooth_para</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">s</span><span class="o">.</span><span class="n">run_moog</span><span class="p">()</span>
+<span class="n">s</span><span class="o">.</span><span class="n">read_spectra</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">smooth_para</span></code> kayword in <code class="docutils literal notranslate"><span class="pre">s.prepare_file</span></code> is used for specifying the smoothing parameters.
+The arrangement of <code class="docutils literal notranslate"><span class="pre">smooth_para</span></code> follows the third line of <code class="docutils literal notranslate"><span class="pre">plotpars</span></code> in <code class="docutils literal notranslate"><span class="pre">batch.par</span></code> (refer to page 9 of MOOG Manual).
+The first value is a one-character smoothing type for the synthetic spectra.
+Possible types are: g (Gaussian), l (Lorentzian), v (rotational), m (macroturbulent), c=g+v, d=g+m, r=g+m+v
+The following values are:</p>
+<ul class="simple">
+<li><p>the full-width-at-half-maximum of a Gaussian smoothing function</p></li>
+<li><p>vsini of a rotational broadening function</p></li>
+<li><p>limb darkening coefficient of a rotational broadening function</p></li>
+<li><p>macroturbulence veloxity</p></li>
+<li><p>the full-width-at-half-maximum of a Lorentzian smoothing function</p></li>
+</ul>
+<p>Note that if a type is specified, then only the value of this (or these) type(s) are valid.</p>
+<p><code class="docutils literal notranslate"><span class="pre">pymoog</span></code> use the full-width-at-half-maximum of a Gaussian smoothing function as the line-spread-function, and calculate the width from the input resolution.
+If the second value in <code class="docutils literal notranslate"><span class="pre">smooth_para</span></code> is set as 0, then it will be over-written by the width, othewise not over-written.</p>
 </section>
 </section>
 
@@ -146,7 +145,7 @@ The following parameters are:</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../driver_guide.html" class="btn btn-neutral float-left" title="Guide for each driver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="weedout.html" class="btn btn-neutral float-right" title="weedout" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="weedout.html" class="btn btn-neutral float-right" title="weedout: removing weak lines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

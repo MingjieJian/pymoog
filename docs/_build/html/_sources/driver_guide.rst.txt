@@ -74,6 +74,9 @@ There are two more functions which are available in `pymoog`:
 - Contribution function: a function indicating where the lines are formed in the atmosphere
 - MPFIT: an algorithm for self-consistent multi-parameter fitting for spectra, by [Takeda (1995)](https://ui.adsabs.harvard.edu/abs/1995PASJ...47..287T).
 
+The following links provide the usage of each driver and function listed above. 
+Only the keywords worth attention will be descripbed, and please refer to the help docstring for detail description of each keyword.
+
 .. toctree::
    :maxdepth: 1
    :caption: Contents:
@@ -83,6 +86,6 @@ There are two more functions which are available in `pymoog`:
    abfind <driver_guide/abfind>
    blends <driver_guide/blends>
    cog <driver_guide/cog>
+   find dominant line<driver_guide/find_dominant_line>
    contribution function <driver_guide/contri_func>
    mpfit <driver_guide/mpfit>
-   Advanced usage <driver_guide/advanced_usage>
