@@ -62,36 +62,70 @@ if os.environ.get('READTHEDOCS') != 'True':
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setuptools.setup(
-      name='pymoog',
-      version='0.0.28',
-      description='The python wrapper to run LTE spectra synthesis code MOOG.',
-      long_description=long_description,
-      long_description_content_type="text/markdown",
-      url='https://github.com/MingjieJian/pymoog',
-      author='Mingjie Jian, Pranav Satheesh and Kruthi Krishna',
-      author_email='ssaajianmingjie@gmail.com',
-      classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Framework :: IPython",
-        "Operating System :: OS Independent",
-        "Development Status :: 2 - Pre-Alpha",
-        "Topic :: Scientific/Engineering :: Astronomy"
-      ],
-      python_requires=">=3.5",
-      packages=setuptools.find_packages(),
-      install_requires=[
-          'numpy >= 1.18.0',
-          'pandas >= 1.0.0',
-          'matplotlib >= 3.1.0',
-          'mendeleev >= 0.6.0',
-          'scipy >= 1.4.0',
-          'astropy >= 4.0',
-          'spectres',
-          'tqdm',
-          'zenodo_get'
-      ],
-      include_package_data=True,  
-    #   package_data={'': ['moog_nosm/moog_nosm_FEB2017/']},
-      zip_safe=False)
+if os.environ.get('READTHEDOCS') != 'True':
+    setuptools.setup(
+        name='pymoog',
+        version='0.0.28',
+        description='The python wrapper to run LTE spectra synthesis code MOOG.',
+        long_description=long_description,
+        long_description_content_type="text/markdown",
+        url='https://github.com/MingjieJian/pymoog',
+        author='Mingjie Jian, Pranav Satheesh and Kruthi Krishna',
+        author_email='ssaajianmingjie@gmail.com',
+        classifiers=[
+            "Programming Language :: Python :: 3",
+            "License :: OSI Approved :: MIT License",
+            "Framework :: IPython",
+            "Operating System :: OS Independent",
+            "Development Status :: 2 - Pre-Alpha",
+            "Topic :: Scientific/Engineering :: Astronomy"
+        ],
+        python_requires=">=3.5",
+        packages=setuptools.find_packages(),
+        install_requires=[
+            'numpy >= 1.18.0',
+            'pandas >= 1.0.0',
+            'matplotlib >= 3.1.0',
+            'mendeleev >= 0.6.0',
+            'scipy >= 1.4.0',
+            'astropy >= 4.0',
+            'spectres',
+            'tqdm',
+            'zenodo_get'
+        ],
+        include_package_data=True,  
+        #   package_data={'': ['moog_nosm/moog_nosm_FEB2017/']},
+        zip_safe=False)
+else:
+        setuptools.setup(
+        name='pymoog',
+        version='0.0.28',
+        description='The python wrapper to run LTE spectra synthesis code MOOG.',
+        long_description=long_description,
+        long_description_content_type="text/markdown",
+        url='https://github.com/MingjieJian/pymoog',
+        author='Mingjie Jian, Pranav Satheesh and Kruthi Krishna',
+        author_email='ssaajianmingjie@gmail.com',
+        classifiers=[
+            "Programming Language :: Python :: 3",
+            "License :: OSI Approved :: MIT License",
+            "Framework :: IPython",
+            "Operating System :: OS Independent",
+            "Development Status :: 2 - Pre-Alpha",
+            "Topic :: Scientific/Engineering :: Astronomy"
+        ],
+        python_requires=">=3.5",
+        packages=setuptools.find_packages(),
+        install_requires=[
+            'numpy >= 1.18.0',
+            'pandas >= 1.0.0',
+            'matplotlib >= 3.1.0',
+            'mendeleev >= 0.6.0',
+            'scipy >= 1.4.0',
+            'spectres',
+            'tqdm',
+            'zenodo_get'
+        ],
+        include_package_data=True,  
+        #   package_data={'': ['moog_nosm/moog_nosm_FEB2017/']},
+        zip_safe=False)
