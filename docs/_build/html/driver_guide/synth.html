@@ -20,7 +20,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="abfind" href="abfind.html" />
+    <link rel="next" title="weedout" href="weedout.html" />
     <link rel="prev" title="Guide for each driver" href="../driver_guide.html" /> 
 </head>
 
@@ -45,8 +45,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../driver_guide.html">Guide for each driver</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">synth</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">synth</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="weedout.html">weedout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="abfind.html">abfind</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blends.html">blends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cog.html">cog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contri_func.html">contribution function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mpfit.html">mpfit</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../miscellaneous.html">Miscellaneous</a></li>
@@ -105,7 +113,7 @@ The following parameters are:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">model_format</span></code>:</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">loggf_cut</span></code>: The cut in loggf. If specified as a float number, then the</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">abun_change</span></code>: Apply change in abundance ratios using dict, <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">molecules</span></code>:</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">molecules</span></code>: Molecules switch in MOOG. Controls molecular equlibrium calculations. 0: do not do; 1: do calculations.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">atmosphere</span></code>:</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">lines</span></code>:</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">smooth_para</span></code>:</p></li>
@@ -113,6 +121,24 @@ The following parameters are:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">model_chem</span></code>:</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">model_geo</span></code>:</p></li>
 </ul>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h2>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">pymoog</span><span class="o">.</span><span class="n">synth</span><span class="o">.</span><span class="n">synth</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>    <span class="mi">10840</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span>     <span class="mi">10840</span><span class="o">+</span><span class="mi">20</span><span class="p">,</span>    <span class="mi">28000</span><span class="p">,</span>
+<span class="c1">#                      Teff, logg, [Fe/H], wav_start(A), wav_end(A), resolution, </span>
+   <span class="n">line_list</span><span class="o">=</span><span class="s1">&#39;vald_3000_24000&#39;</span><span class="p">)</span>
+<span class="c1">#  line_list</span>
+<span class="n">s</span><span class="o">.</span><span class="n">prepare_file</span><span class="p">()</span>
+<span class="c1"># Any change of model and line list file can be done in this step, </span>
+<span class="c1">#   and there are functions to deal with these files.</span>
+<span class="n">s</span><span class="o">.</span><span class="n">run_moog</span><span class="p">()</span>
+<span class="n">s</span><span class="o">.</span><span class="n">read_spectra</span><span class="p">()</span>
+
+<span class="c1"># Plot the synthesized spectra</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">wav</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">flux</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><img alt="" src="../_images/synth.png" /></p>
+</section>
 </section>
 
 
@@ -120,7 +146,7 @@ The following parameters are:</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../driver_guide.html" class="btn btn-neutral float-left" title="Guide for each driver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="abfind.html" class="btn btn-neutral float-right" title="abfind" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="weedout.html" class="btn btn-neutral float-right" title="weedout" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -35,3 +35,20 @@ Parameters in `s.prepare_file`:
 - `model_chem`:
 - `model_geo`:
  
+## Example
+
+```py
+s = pymoog.synth.synth(5000, 4.0,    0,    10840-10,     10840+20,    28000,
+#                      Teff, logg, [Fe/H], wav_start(A), wav_end(A), resolution, 
+   line_list='vald_3000_24000')
+#  line_list
+s.prepare_file()
+# Any change of model and line list file can be done in this step, 
+#   and there are functions to deal with these files.
+s.run_moog()
+s.read_spectra()
+
+# Plot the synthesized spectra
+plt.plot(s.wav, s.flux)
+```
+![](../img/driver_guide/synth.png)

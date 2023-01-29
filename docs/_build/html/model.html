@@ -70,8 +70,33 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="model">
-<h1>model<a class="headerlink" href="#model" title="Permalink to this heading"></a></h1>
+  <section id="module-model">
+<span id="model"></span><h1>model<a class="headerlink" href="#module-model" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="model.interpolate_model">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">interpolate_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">teff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmicro</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abun_change</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molecules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'marcs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'st'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#model.interpolate_model" title="Permalink to this definition"></a></dt>
+<dd><p>Interpolate Kurucz model or MARCS model and convert to moog format.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="model.read_Kurucz_model">
+<span class="sig-prename descclassname"><span class="pre">model.</span></span><span class="sig-name descname"><span class="pre">read_Kurucz_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#model.read_Kurucz_model" title="Permalink to this definition"></a></dt>
+<dd><p>Read the Kurucz model and save it as np.array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>model_path</strong> (<em>str</em>) – The path of Kurucz model.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>abun</strong> (<em>np.array</em>) – The ‘ABUNDANCE CHANGE’ part of Kurucz model. The first column is element number and second column is the abundance change.</p></li>
+<li><p><strong>model_lines</strong> (<em>np.array</em>) – The array of Kurucz model.</p></li>
+<li><p><strong>pradk</strong> (<em>float</em>) – The pradk number in Kurucz model.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

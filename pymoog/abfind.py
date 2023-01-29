@@ -24,6 +24,8 @@ class abfind(rundir_num.rundir_num):
             [M/H] value (overall metallicity) of the model
         line_list : str, default 'ges'
             The name of the linelist file. If not specified will use built-in VALD linelist.
+        prefix : str, default ''.
+            The prefix to be added to the name of rundir. Convenient when you want to find a specified rundir if there are many.
         '''
         super(abfind, self).__init__('{}/.pymoog/'.format(private.os.environ['HOME']), 'abfind', prefix=prefix)
         self.teff = teff
@@ -33,7 +35,7 @@ class abfind(rundir_num.rundir_num):
         self.mass = mass
         self.line_list = line_list
         
-    def prepare_file(self, model_file=None, model_format='moog', loggf_cut=None, abun_change=None, molecules=None, atmosphere=1, lines=1, model_type='marcs', model_chem='st', model_geo='auto'):
+    def prepare_file(self, model_file=None, model_format='moog', abun_change=None, atmosphere=1, lines=1, molecules=1, molecules_include=None, model_type='marcs', model_chem='st', model_geo='auto'):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
@@ -42,21 +44,30 @@ class abfind(rundir_num.rundir_num):
         Parameters
         ----------
         model_file : str, optional
-            The name of the model file. If not specified will use internal Kurucz model.
-             
+            The name of the model file. If not specified, the code will use internal model.
         model_format : str, optional
-            The type of the model file. Default is "moog" (then no conversion of format will be done); can be "moog", "kurucz-atlas9" and "kurucz-atlas12". 
-        
-        logf_cut : float, optional
-            The cut in loggf; if specified will only include the lines with loggf >= loggf_cut.
-            
+            The type of the INPUT model file. Default is "moog" (then no conversion of format will be done); can be "moog", "kurucz-atlas9", "kurucz-atlas12" or "marcs". Should left as it is when not providing the input model file.
         abun_change : dict of pairs {int:float, ...}
-            Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
+            Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values. 
+        atmosphere : int, default 1
+            The atmosphere value described in MOOG documention, section III.
+        lines : int, default 1
+            The lines value described in MOOG documention, section III.
+        molecules : int, default 1
+            The molecules value described in MOOG documention, section III.  
+        molecules_include : list, default None
+            Molecules to be included to molecular calculation. Follows the MOOG notation.          
+        model_type : str, default marcs
+            The type of internal atmosphere model. Must be kurucz or marcs.
+        model_chem : str, default st
+            The chemical composition of marcs model. Only valid when model_type is marcs. 
+        model_geo : str, default auto
+            The geometry of MARCS model, either 's' for spherical, 'p' for plane-parallel or 'auto'.
         '''
         
         if model_file == None:
             # Model file is not specified, will download Kurucz model according to stellar parameters.
-            model.interpolate_model(self.teff, self.logg, self.m_h, vmicro=self.vmicro, mass=self.mass, abun_change=abun_change, molecules=molecules, save_name=self.rundir_path + 'model.mod', model_type=model_type, chem=model_chem, geo=model_geo)
+            model.interpolate_model(self.teff, self.logg, self.m_h, vmicro=self.vmicro, mass=self.mass, abun_change=abun_change, molecules_include=molecules_include, save_name=self.rundir_path + 'model.mod', model_type=model_type, chem=model_chem, geo=model_geo)
             self.model_file = 'model.mod'
         else:
             # Model file is specified; record model file name and copy to working directory.
@@ -64,11 +75,11 @@ class abfind(rundir_num.rundir_num):
                 private.subprocess.run(['cp', model_file, self.rundir_path], encoding='UTF-8', stdout=private.subprocess.PIPE)
                 self.model_file = model_file.split('/')[-1]
             elif model_format[:6] == 'kurucz':
-                model.kurucz2moog(model_path=model_file, abun_change=abun_change, model_format=model_format[7:], molecules=molecules, converted_model_path=self.rundir_path + 'model.mod')
+                model.kurucz2moog(model_path=model_file, abun_change=abun_change, model_format=model_format[7:], molecules_include=molecules_include, converted_model_path=self.rundir_path + 'model.mod')
                 self.model_file = 'model.mod'
             elif model_format == 'marcs':
                 marcs_model = model.read_marcs_model(model_file)
-                model.marcs2moog(marcs_model, self.rundir_path + 'model.mod', abun_change=abun_change, molecules=abun_change)
+                model.marcs2moog(marcs_model, self.rundir_path + 'model.mod', abun_change=abun_change, molecules_include=molecules_include)
                 self.model_file = 'model.mod'
             else:
                 raise ValueError("The input model_type is not supported. Have to be either 'moog', 'kurucz' or 'marcs.")
@@ -94,7 +105,12 @@ class abfind(rundir_num.rundir_num):
         
         Parameters
         ----------
-        
+        atmosphere : int, default 1
+            The atmosphere value described in MOOG documention, section III.
+        lines : int, default 1
+            The lines value described in MOOG documention, section III.
+        molecules : int, default 1
+            The molecules value described in MOOG documention, section III.
         '''
         MOOG_para_file = open(self.rundir_path + '/batch.par', 'w')
         # Parameter list of MOOG: standard output file (1), summary output file (2), smoothed output file (3),
@@ -115,7 +131,7 @@ class abfind(rundir_num.rundir_num):
         MOOG_para_file.writelines(MOOG_contant)
         MOOG_para_file.close()
     
-    def run_moog(self, output=False, unlock=False):
+    def run_moog(self, output=False):
         '''
         Run MOOG and print the reuslt if required.
 
@@ -160,7 +176,8 @@ class abfind(rundir_num.rundir_num):
 
         Parameters
         ----------
-        None.
+        remove : bool, default True
+            Whether remove the working folder after this function.
 
         Returns
         ---------

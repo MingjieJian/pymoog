@@ -127,7 +127,7 @@ def save_kurucz_interpo_model(teff, logg, m_h, abun, model_line, pradk, to_path)
     with open(to_path, 'w') as file:
         file.writelines(content)
 
-def interpolate_kurucz_model(teff, logg, m_h, vmicro=2, abun_change=None, molecules=None, kurucz_format=False, abun_scale='kurucz', to_path=None):
+def interpolate_kurucz_model(teff, logg, m_h, vmicro=2, abun_change=None, molecules_include=None, kurucz_format=False, abun_scale='kurucz', to_path=None):
     '''
     Interpolate the model in Kurucz format according to given stellar paraeters when necessary.
     
@@ -143,7 +143,7 @@ def interpolate_kurucz_model(teff, logg, m_h, vmicro=2, abun_change=None, molecu
         The microtrubulance velocity of the synthesized spectra (this is different from the v_micro of the atmosphere model which is always 2)
     abun_change : dict of pairs {int:float, ...}
         Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.   
-    molecules : list
+    molecules_include : list
         Molecules to be included to molecular calculation. Follows the MOOG notation.
     kurucz_format : bool, default False
         If False then the model in MOOG format will be saved; if True then the initial Kurucz format will be saved.
@@ -226,11 +226,11 @@ def interpolate_kurucz_model(teff, logg, m_h, vmicro=2, abun_change=None, molecu
             save_kurucz_interpo_model(teff, logg, m_h, abun, model_line, pradk, to_path)
         if not kurucz_format:
             if abun_scale == 'kurucz':
-                kurucz2moog(model_path=to_path, vmicro=vmicro, abun_change=abun_change, molecules=molecules, m_h_model=m_h, converted_model_path=to_path)
+                kurucz2moog(model_path=to_path, vmicro=vmicro, abun_change=abun_change, molecules_include=molecules_include, m_h_model=m_h, converted_model_path=to_path)
             else:
-                kurucz2moog(model_path=to_path, vmicro=vmicro, abun_change=abun_change, molecules=molecules, converted_model_path=to_path)
+                kurucz2moog(model_path=to_path, vmicro=vmicro, abun_change=abun_change, molecules_include=molecules_include, converted_model_path=to_path)
         
-def kurucz2moog(model_path=None, vmicro=2.0, abun_change=None, converted_model_path=None, model_format='atlas9', molecules=None, m_h_model=None):
+def kurucz2moog(model_path=None, vmicro=2.0, abun_change=None, converted_model_path=None, model_format='atlas9', molecules_include=None, m_h_model=None):
     '''
     Convert the model file from Kurucz format in to MOOG format.
 
@@ -246,7 +246,7 @@ def kurucz2moog(model_path=None, vmicro=2.0, abun_change=None, converted_model_p
         The name of converted model. Default will be saved into MOOG working folder.
     type : str, default 'atlas9'
         The type if input model, either 'atlas9' or 'atlas12'.
-    molecules : list
+    molecules_include : list
         Molecules to be included to molecular calculation. Follows the MOOG notation.
     '''
     if model_path == None:
@@ -330,10 +330,10 @@ def kurucz2moog(model_path=None, vmicro=2.0, abun_change=None, converted_model_p
         c_model_file.writelines('NATOMS      0   {}\n'.format(m_h))
     
     # Molecular line switches
-    if molecules != None:
-        molecules_num = len(molecules)
+    if molecules_include != None:
+        molecules_num = len(molecules_include)
         c_model_file.writelines('NMOL        {}\n'.format(molecules_num))
-        molecules_str = ['{:11.1f}'.format(i) for i in molecules]
+        molecules_str = ['{:11.1f}'.format(i) for i in molecules_include]
         molecules_str = ''.join(molecules_str)
         c_model_file.writelines(molecules_str)
     else:
@@ -450,7 +450,7 @@ def save_marcs_model(marcs_model, save_name):
     
     pass
 
-def marcs2moog(marcs_model, save_name, abun_change=None, molecules=None):
+def marcs2moog(marcs_model, save_name, abun_change=None, molecules_include=None):
     '''
     Convert MARCS format model to MOOG format.
     
@@ -462,7 +462,7 @@ def marcs2moog(marcs_model, save_name, abun_change=None, molecules=None):
         The name to save the model.
     abun_change : dict of pairs {int:float, ...}
         Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
-    molecules : list
+    molecules_include : list
         Molecules to be included to molecular calculation. Follows the MOOG notation.
     '''
     
@@ -500,10 +500,10 @@ def marcs2moog(marcs_model, save_name, abun_change=None, molecules=None):
         moog_model_content.append('NATOMS      0   {}'.format(marcs_model['[M/H]']))
 
     # Molecular line switches
-    if molecules != None:
-        molecules_num = len(molecules)
+    if molecules_include != None:
+        molecules_num = len(molecules_include)
         moog_model_content.append('NMOL        {}'.format(molecules_num))
-        molecules_str = ['{:11.1f}'.format(i) for i in molecules]
+        molecules_str = ['{:11.1f}'.format(i) for i in molecules_include]
         molecules_str = ''.join(molecules_str)
         moog_model_content.append(molecules_str)
     else:
@@ -669,7 +669,7 @@ def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='a
 
     if len(marcs_grid_use) == 1:
         # No interpolation
-        marcs_model_interpolated = read_marcs_model('marcs_model/{13}/{14}/{1}{2:.0f}_g{3:+4.1f}_m{4:3.1f}_t{5:02.0f}_{0:}_z{6:+5.2f}_a{7:+5.2f}_c{8:+5.2f}_n{9:+5.2f}_o{10:+5.2f}_r{11:+5.2f}_s{12:+5.2f}.mod'.format(*np.array(marcs_grid_use.loc[0, marcs_grid_use.columns[:-1]]), chem, geo))
+        marcs_model_interpolated = read_marcs_model(MOOG_file_path + '/pymoog_lf/model/marcs/{13}/{14}/{1}{2:.0f}_g{3:+4.1f}_m{4:3.1f}_t{5:02.0f}_{0:}_z{6:+5.2f}_a{7:+5.2f}_c{8:+5.2f}_n{9:+5.2f}_o{10:+5.2f}_r{11:+5.2f}_s{12:+5.2f}.mod'.format(*np.array(marcs_grid_use.loc[0, marcs_grid_use.columns[:-1]]), chem, geo))
     else:
         marcs_model_interpolated = {}
         # Interpolation
@@ -700,15 +700,15 @@ def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='a
 
     return marcs_model_interpolated
 
-def interpolate_model(teff, logg, m_h, vmicro=2, mass=1, abun_change=None, molecules=None, save_name=None, model_type='marcs', chem='st', geo='auto'):
+def interpolate_model(teff, logg, m_h, vmicro=2, mass=1, abun_change=None, molecules_include=None, save_name=None, model_type='marcs', chem='st', geo='auto'):
     '''
     Interpolate Kurucz model or MARCS model and convert to moog format.
     '''
 
     if model_type == 'kurucz':
-        interpolate_kurucz_model(teff, logg, m_h, vmicro=vmicro, abun_change=abun_change, molecules=molecules, to_path=save_name)
+        interpolate_kurucz_model(teff, logg, m_h, vmicro=vmicro, abun_change=abun_change, molecules_include=molecules_include, to_path=save_name)
     elif model_type == 'marcs':
         marcs_model_interpolated = interpolate_marcs_model(teff, logg, m_h, vmicro=vmicro, mass=mass, chem=chem, geo=geo)
-        marcs2moog(marcs_model_interpolated, save_name, abun_change=abun_change, molecules=molecules)
+        marcs2moog(marcs_model_interpolated, save_name, abun_change=abun_change, molecules_include=molecules_include)
 
     pass

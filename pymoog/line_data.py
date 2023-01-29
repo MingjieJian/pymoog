@@ -153,6 +153,12 @@ def find_lines(linelist_keep, linelist_all, max_del_wav=0.05):
 
 def find_single_dominant_line(line_wav_input, teff, logg, fe_h, resolution, r_d_blend_thre=0.1, line_list='ges', weedout_switch=False, search_half_width=0.5, linelist_serach=False, abun_change=None):
 
+    '''
+    Find the dominant line from a line list.
+
+    
+    '''
+
     # Establish the linelist
     linelist_all = read_linelist(line_list)
     linelist_all = linelist_all[np.abs(linelist_all['wavelength']-line_wav_input) < search_half_width]

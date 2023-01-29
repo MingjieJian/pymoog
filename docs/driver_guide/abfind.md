@@ -71,4 +71,4 @@ The output of abfind will be stored as a dict with it keys as elements and value
  0   11088.584  28.0  4.165 -1.512  16.36   -5.831  6.009     0.0}
 ```
 
-![](img/pymoog/abfind.png)
+![](../img/driver_guide/abfind.png)

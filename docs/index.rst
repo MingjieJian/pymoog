@@ -10,7 +10,7 @@ Welcome to pymoog's documentation!
    :maxdepth: 1
    :caption: Contents:
 
-   Introduction to pymoog <intro.md>
+   What is pymoog? <intro.md>
    Installation <install.md>
    Quickstart <quickstart.md>
    Guide for each driver <driver_guide>
