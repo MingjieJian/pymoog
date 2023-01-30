@@ -1,6 +1,6 @@
 # pymoog
 
-[![DOI](https://zenodo.org/badge/10543633.svg)](https://zenodo.org/badge/latestdoi/10543633) [![Documentation Status](https://readthedocs.org/projects/pymoog/badge/?version=latest)](https://pymoog.readthedocs.io/en/latest/?badge=latest)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7582434.svg)](https://doi.org/10.5281/zenodo.7582434) [![Documentation Status](https://readthedocs.org/projects/pymoog/badge/?version=latest)](https://pymoog.readthedocs.io/en/latest/?badge=latest)
 
 `pymoog` is a python3 wrapper for running the LTE spectrum synthesis part of the code [MOOG](https://www.as.utexas.edu/~chris/moog.html) written by Chris Sneden.
 It wraps up the (a bit) teidous steps for generating a synthetic spectra into four python commands, while retaining the functions provided by MOOG.

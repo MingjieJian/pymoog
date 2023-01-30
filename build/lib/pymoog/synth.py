@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from multiprocessing.sharedctypes import Value
 import subprocess
 import numpy as np
 import re
@@ -14,13 +15,13 @@ MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ[
 MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
 
 class synth(rundir_num.rundir_num):
-    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, del_wav=0.02, line_list='vald_3000_24000', weedout=False, prefix=''):
+    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, vmicro=2, mass=1, del_wav=0.02, line_list='vald_3000_24000', weedout=False, prefix=''):
         '''
         Initiate a synth Instance and read the parameters.
         
         Parameters
         ----------
-        teff : int
+        teff : float
             The effective temperature of the model
         logg : float
             logg value of the model
@@ -32,15 +33,25 @@ class synth(rundir_num.rundir_num):
             The end wavelength of synthetic spectra
         resolution : float
             Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.
-        line_list : str
+        vmicro : float, default 2
+            The microturbulance velocity of the model. 
+        mass : float, default 1
+            The stellar mass of the input model. Only used when the model type is MARCS spherical.
+        del_wav : float, default 0.02
+            The wavelength step of the synthetic spectra. 
+        line_list : str or pd.DataFrame
             The name of the linelist file. If not specified will use built-in VALD linelist (vald_3000_24000).
         weedout : bool or float, default False
-            The switch for running weedout driver before synth. If False then weedout is not run; if True the weedout is run with kappa_ratio=0.01, and if a float (> 0 and < 1) is given then weedout is run with the kappa_ratio set as the number
+            The switch for running weedout driver before synth. If False then weedout is not run; if True the weedout is run with kappa_ratio=0.01, and if a float (> 0 and < 1) is given then weedout is run with the kappa_ratio set as the number.
+        prefix : str, default ''.
+            The prefix to be added to the name of rundir. Convenient when you want to find a specified rundir if there are many.
         '''
         super(synth, self).__init__('{}/.pymoog/'.format(private.os.environ['HOME']), 'synth', prefix=prefix)
         self.teff = teff
         self.logg = logg
         self.m_h = m_h
+        self.vmicro = vmicro
+        self.mass = mass
         self.start_wav = start_wav
         self.end_wav = end_wav
         self.resolution = resolution
@@ -48,8 +59,17 @@ class synth(rundir_num.rundir_num):
         self.line_list = line_list
         self.weedout = weedout
         self.prefix = prefix
-        
-    def prepare_file(self, model_file=None, model_type='moog', loggf_cut=None, abun_change=None, molecules=None, vmicro=2, atmosphere=1, lines=1, smooth_para=None):
+
+        # Perform some sanity check
+        if del_wav < 0.001:
+            raise ValueError('del_wav cannot be smaller than 0.001; the calculation and I/O precision is not enough.')
+
+        if start_wav >= end_wav:
+            raise ValueError('start_wav has to be smaller than end_wav.')
+        if end_wav - start_wav >= 2000:
+            raise ValueError('MOOG may provide incorrect spectra when the synthetic length is longer than 2000A. Please split the task into tasks with length <2000 and combine them later on.')
+
+    def prepare_file(self, model_file=None, model_format='moog', loggf_cut=None, abun_change=None, atmosphere=1, lines=1, molecules=1, molecules_include=None, smooth_para=None, model_type='marcs', model_chem='st', model_geo='auto'):
         '''
         Prepare the model, linelist and control files for MOOG.
         Can either provide stellar parameters and wavelengths or provide file names.
@@ -58,16 +78,29 @@ class synth(rundir_num.rundir_num):
         Parameters
         ----------
         model_file : str, optional
-            The name of the model file. If not specified, the code will use internal Kurucz model.
-             
-        model_type : str, optional
-            The type of the model file. Default is "moog" (then no conversion of format will be done); can be "moog", "kurucz-atlas9" and "kurucz-atlas12". 
-        
+            The name of the model file. If not specified, the code will use internal model.
+        model_format : str, optional
+            The type of the INPUT model file. Default is "moog" (then no conversion of format will be done); can be "moog", "kurucz-atlas9", "kurucz-atlas12" or "marcs". Should left as it is when not providing the input model file. 
         loggf_cut : float, optional
             The cut in loggf; if specified will only include the lines with loggf >= loggf_cut.
-            
         abun_change : dict of pairs {int:float, ...}
             Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
+        atmosphere : int, default 1
+            The atmosphere value described in MOOG documention, section III.
+        lines : int, default 1
+            The lines value described in MOOG documention, section III.
+        molecules : int, default 1
+            The molecules value described in MOOG documention, section III.
+        molecules_include : list, default None
+            Molecules to be included to molecular calculation. Follows the MOOG notation.
+        smooth_para : None or list, default None
+            The smoothing parameter list of the synthetic spectra.
+        model_type : str, default marcs
+            The type of internal atmosphere model. Must be kurucz or marcs.
+        model_chem : str, default st
+            The chemical composition of marcs model. Only valid when model_type is marcs. 
+        model_geo : str, default auto
+            The geometry of MARCS model, either 's' for spherical, 'p' for plane-parallel or 'auto'.
         '''
         
         # Use defaule smooth parameter if not specified. 
@@ -77,17 +110,23 @@ class synth(rundir_num.rundir_num):
         # Create model file.
         if model_file == None:
             # Model file is not specified, will use Kurucz model according to stellar parameters.
-            model.interpolate_model(self.teff, self.logg, self.m_h, abun_change=abun_change, molecules=molecules, vmicro=vmicro, to_path=self.rundir_path + 'model.mod')
+            model.interpolate_model(self.teff, self.logg, self.m_h, vmicro=self.vmicro, mass=self.mass, abun_change=abun_change, molecules_include=molecules_include, save_name=self.rundir_path + 'model.mod', model_type=model_type, chem=model_chem, geo=model_geo)
             self.model_file = 'model.mod'
         else:
             # Model file is specified; record model file name and copy to working directory.
-            if model_type == 'moog':
+            if model_format == 'moog':
                 subprocess.run(['cp', model_file, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
                 self.model_file = model_file.split('/')[-1]
-            elif model_type[:6] == 'kurucz':
-                model.KURUCZ_convert(model_path=model_file, abun_change=abun_change, model_type=model_type[7:], molecules=molecules, converted_model_path=self.rundir_path + 'model.mod')
+            elif model_format[:6] == 'kurucz':
+                model.kurucz2moog(model_path=model_file, abun_change=abun_change, model_format=model_format[7:], molecules_include=molecules_include, converted_model_path=self.rundir_path + 'model.mod')
                 self.model_file = 'model.mod'
-                
+            elif model_format == 'marcs':
+                marcs_model = model.read_marcs_model(model_file)
+                model.marcs2moog(marcs_model, self.rundir_path + 'model.mod', abun_change=abun_change, molecules_include=molecules_include)
+                self.model_file = 'model.mod'
+            else:
+                raise ValueError("The input model_type is not supported. Have to be either 'moog', 'kurucz' or 'marcs.")
+
         # Create line list.
         if isinstance(self.line_list, str):
             if self.line_list[-5:] != '.list':
@@ -118,7 +157,7 @@ class synth(rundir_num.rundir_num):
             self.keep_list = w.keep_list
                 
         # Create parameter file.
-        self.create_para_file(atmosphere=atmosphere, lines=lines, del_wav=self.del_wav, smooth_para=smooth_para)    
+        self.create_para_file(atmosphere=atmosphere, lines=lines, molecules=molecules, del_wav=self.del_wav, smooth_para=smooth_para)
         
     def create_para_file(self, del_wav=0.02, del_wav_opac=1.0, smooth_para=['g', 0.0, 0.0, 0.0, 0.0, 0.0], atmosphere=1, lines=1, molecules=2):
         '''
@@ -208,14 +247,16 @@ class synth(rundir_num.rundir_num):
         if 'ERROR' in ''.join(MOOG_run):
             raise ValueError('There is error during the running of MOOG.')
         
-    def read_spectra(self, type='smooth', remove=True):
+    def read_spectra(self, spec_type='smooth', remove=True):
         '''
         Read the output spectra of MOOG.
 
         Parameters
         ----------
-        type : str, default 'smooth'
+        spec_type : str, default 'smooth'
             Decide the type of spectra to be read. 'smooth' will read the smoothed spectra (MOOG.out3), and 'standard' will read the un-smoothed one (MOOG.out2).
+        remove : bool, default True
+            Whether remove the working folder after this function.
 
         Returns
         ---------
@@ -224,7 +265,7 @@ class synth(rundir_num.rundir_num):
         flux : a numpy array
             An array of flux
         '''
-        if type == 'standard':
+        if spec_type == 'standard':
             models_file = open(self.rundir_path+'MOOG.out2')
             models = models_file.readline()
             models = models_file.readline()
@@ -236,7 +277,7 @@ class synth(rundir_num.rundir_num):
                 model_wav.append(models[0] + models[2]*i)
             model_flux = np.array(models[4:])
             self.wav, self.flux = np.array(model_wav), np.array(model_flux)
-        elif type == 'smooth':
+        elif spec_type == 'smooth':
             models_file = open(self.rundir_path+'MOOG.out3')
             models = models_file.readline()
             models = models_file.readline()
@@ -263,7 +304,8 @@ class synth(rundir_num.rundir_num):
 
         Parameters
         ----------
-        
+        remove : bool, default True
+            Whether remove the working folder after this function.
 
         Returns
         ---------
