@@ -1,6 +1,7 @@
 from . import private
 from . import synth
 from . import line_data
+from . import weedout
 import spectres
 
 def cal_partial_f_v(teff, logg, m_h, wav_start, wav_end, fwhm_broad, vmicro_in, rv_in, wav_in, mode, abun_change=None, diff_v=0.01, line_list='vald_winered', prefix=''):
@@ -20,16 +21,16 @@ def cal_partial_f_v(teff, logg, m_h, wav_start, wav_end, fwhm_broad, vmicro_in, 
     # convert rv to wavelength
     del_wav = private.np.abs(rv_in / 3e5 * private.np.mean(wav_in))
 
-    s = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix)
-    s.prepare_file(vmicro=vmicro_in+diff_v_dict['vmicro'], smooth_para=['g', fwhm_broad+diff_v_dict['vbroad'], 0, 0, 0, 0],
+    s = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix, vmicro=vmicro_in+diff_v_dict['vmicro'])
+    s.prepare_file(smooth_para=['g', fwhm_broad+diff_v_dict['vbroad'], 0, 0, 0, 0],
                    abun_change=abun_change)
     s.run_moog()
     s.read_spectra()
     s.wav = s.wav * (1 + rv_in/3e5)
     flux_p = spectres.spectres(wav_in, s.wav, s.flux)
 
-    s_ = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix)
-    s_.prepare_file(vmicro=vmicro_in-diff_v_dict['vmicro'], smooth_para=['g', fwhm_broad-diff_v_dict['vbroad'], 0, 0, 0, 0],
+    s_ = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix, vmicro=vmicro_in-diff_v_dict['vmicro'])
+    s_.prepare_file(smooth_para=['g', fwhm_broad-diff_v_dict['vbroad'], 0, 0, 0, 0],
                     abun_change=abun_change)
     s_.run_moog()
     s_.read_spectra()
@@ -52,8 +53,8 @@ def cal_partial_f_abun(teff, logg, m_h, wav_start, wav_end, fwhm_broad, vmicro_i
     del_wav = private.np.abs(rv_in / 3e5 * private.np.mean(wav_in))
         
     abun_change[diff_abun] = abun_change[diff_abun] + diff_value
-    s = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix)
-    s.prepare_file(vmicro=vmicro_in, smooth_para=['g', fwhm_broad, 0, 0, 0, 0],
+    s = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix, vmicro=vmicro_in)
+    s.prepare_file(smooth_para=['g', fwhm_broad, 0, 0, 0, 0],
                    abun_change=abun_change)
     s.run_moog()
     s.read_spectra()
@@ -61,8 +62,8 @@ def cal_partial_f_abun(teff, logg, m_h, wav_start, wav_end, fwhm_broad, vmicro_i
     flux_p = spectres.spectres(wav_in, s.wav, s.flux)
 
     abun_change[diff_abun] = abun_change[diff_abun] - 2*diff_value
-    s_ = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix)
-    s_.prepare_file(vmicro=vmicro_in, smooth_para=['g', fwhm_broad, 0, 0, 0, 0],
+    s_ = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix, vmicro=vmicro_in)
+    s_.prepare_file(smooth_para=['g', fwhm_broad, 0, 0, 0, 0],
                     abun_change=abun_change)
     s_.run_moog()
     s_.read_spectra() 
@@ -80,16 +81,16 @@ def cal_partial_f_m_h(teff, logg, m_h, wav_start, wav_end, fwhm_broad, vmicro_in
     # convert rv to wavelength
     del_wav = private.np.abs(rv_in / 3e5 * private.np.mean(wav_in))
     
-    s = synth.synth(teff, logg, m_h+diff_m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix)
-    s.prepare_file(vmicro=vmicro_in, smooth_para=['g', fwhm_broad, 0, 0, 0, 0],
+    s = synth.synth(teff, logg, m_h+diff_m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix, vmicro=vmicro_in)
+    s.prepare_file(smooth_para=['g', fwhm_broad, 0, 0, 0, 0],
                    abun_change=abun_change)
     s.run_moog()
     s.read_spectra()
     s.wav = s.wav * (1 + rv_in/3e5)
     flux_p = spectres.spectres(wav_in, s.wav, s.flux)
 
-    s_ = synth.synth(teff, logg, m_h-diff_m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix)
-    s_.prepare_file(vmicro=vmicro_in, smooth_para=['g', fwhm_broad, 0, 0, 0, 0],
+    s_ = synth.synth(teff, logg, m_h-diff_m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix, vmicro=vmicro_in)
+    s_.prepare_file(smooth_para=['g', fwhm_broad, 0, 0, 0, 0],
                     abun_change=abun_change)
     s_.run_moog()
     s_.read_spectra() 
@@ -106,16 +107,16 @@ def cal_partial_f_rv(teff, logg, m_h, wav_start, wav_end, fwhm_broad, vmicro_in,
     # convert rv to wavelength
     del_wav = private.np.abs(rv_in / 3e5 * private.np.mean(wav_in))
     
-    s = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix)
-    s.prepare_file(vmicro=vmicro_in, smooth_para=['g', fwhm_broad, 0, 0, 0, 0],
+    s = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix, vmicro=vmicro_in)
+    s.prepare_file(smooth_para=['g', fwhm_broad, 0, 0, 0, 0],
                    abun_change=abun_change)
     s.run_moog()
     s.read_spectra()
     s.wav = s.wav * (1 + (rv_in + diff_rv)/3e5)
     flux_p = spectres.spectres(wav_in, s.wav, s.flux)
 
-    s_ = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix)
-    s_.prepare_file(vmicro=vmicro_in, smooth_para=['g', fwhm_broad, 0, 0, 0, 0],
+    s_ = synth.synth(teff, logg, m_h, wav_start-0.75-del_wav, wav_end+0.75+del_wav, 20000, line_list=line_list, weedout=True, prefix=prefix, vmicro=vmicro_in)
+    s_.prepare_file(smooth_para=['g', fwhm_broad, 0, 0, 0, 0],
                     abun_change=abun_change)
     s_.run_moog()
     s_.read_spectra() 
@@ -128,7 +129,7 @@ def cal_partial_f_rv(teff, logg, m_h, wav_start, wav_end, fwhm_broad, vmicro_in,
     return partial_flux
 
 def mpfit_main(wav_in, flux_in, vmicro_in, fwhm_broad, rv_in, m_h, abun_change_in, fit_paras_list, teff, logg, 
-               line_list='vald_winered', niter_max=30, iter_printout=False, fitting_boundary=None, boundary_mode='back', boundary_printout=False, prefix=''):
+               line_list='vald_3000_24000', niter_max=30, iter_printout=False, fitting_boundary=None, boundary_mode='back', boundary_printout=False, prefix=''):
     '''
     Fit the stellar parameters using the process from MPFIT.
     '''
@@ -176,8 +177,8 @@ def mpfit_main(wav_in, flux_in, vmicro_in, fwhm_broad, rv_in, m_h, abun_change_i
             break
         
         # Calculate F_0
-        s = synth.synth(teff, logg, m_h, wav_in[0]-0.75, wav_in[-1]+0.75, 20000, line_list=line_list, weedout=True, prefix=prefix)
-        s.prepare_file(vmicro=vmicro_in, smooth_para=['g', fwhm_broad, 0, 0, 0, 0], abun_change=abun_change_in)
+        s = synth.synth(teff, logg, m_h, wav_in[0]-0.75, wav_in[-1]+0.75, 20000, line_list=line_list, weedout=True, prefix=prefix, vmicro=vmicro_in)
+        s.prepare_file(smooth_para=['g', fwhm_broad, 0, 0, 0, 0], abun_change=abun_change_in)
         s.run_moog()
         s.read_spectra()
         s.wav = s.wav * (1 + rv_in/3e5)
@@ -300,7 +301,6 @@ def mpfit_main(wav_in, flux_in, vmicro_in, fwhm_broad, rv_in, m_h, abun_change_i
         
     return vmicro_in, fwhm_broad, rv_in, m_h, abun_change_in, C_0, niter, para_record
 
-
 def cal_depth(line_lis_in, teff, logg, m_h, vmicro, vbroad, abun_change=None, tqdm_disable=True, prefix=''):
     
     depth_list = []
@@ -312,8 +312,8 @@ def cal_depth(line_lis_in, teff, logg, m_h, vmicro, vbroad, abun_change=None, tq
         # Save the linelist
         line_data.save_linelist(line_lis_in.iloc[i:i+1], 'use.list')
         
-        s = synth.synth(teff, logg, m_h, line_wav-2, line_wav+2, 20000, line_list='use.list', weedout=False, prefix=prefix)
-        s.prepare_file(vmicro=vmicro, smooth_para=['g', vbroad, 0, 0, 0, 0], abun_change=abun_change)
+        s = synth.synth(teff, logg, m_h, line_wav-2, line_wav+2, 20000, line_list='use.list', weedout=False, prefix=prefix, vmicro=vmicro)
+        s.prepare_file(smooth_para=['g', vbroad, 0, 0, 0, 0], abun_change=abun_change)
         s.run_moog()
         s.read_spectra()
         
@@ -330,12 +330,12 @@ def cal_depth_blending_ratio(line_lis_in, teff, logg, m_h, vmicro, vbroad, abun_
     
         line_wav = line_lis_in.iloc[i]['wavelength']
         s = synth.synth(teff, logg, m_h, line_wav-del_wav, line_wav+del_wav, 50000, 
-                               line_list='vald_3000_24000', weedout=False, prefix=prefix)
+                               line_list='vald_3000_24000', weedout=False, prefix=prefix, vmicro=vmicro)
         if i == 0:
-            s.prepare_file(vmicro=vmicro, smooth_para=['g', vbroad, 0, 0, 0, 0], abun_change=abun_change)
+            s.prepare_file(smooth_para=['g', vbroad, 0, 0, 0, 0], abun_change=abun_change)
             private.copyfile(s.rundir_path + 'model.mod', './model.mod')
         else:
-            s.prepare_file(model_file='model.mod', vmicro=vmicro, smooth_para=['g', vbroad, 0, 0, 0, 0], abun_change=abun_change)
+            s.prepare_file(model_file='model.mod', smooth_para=['g', vbroad, 0, 0, 0, 0], abun_change=abun_change)
         s.run_moog()
         s.read_spectra(remove=False)
         wav_all, flux_all = s.wav, s.flux
@@ -367,3 +367,148 @@ def cal_X_index(line_list, teff):
     line_list['X_index'] = X_index
     
     return line_list
+
+def find_isolated_lines(teff, logg, m_h, wav_range_list, ele_index, resolution, obs_spec=None, line_list_in='vald_3000_24000', x_index_thres=-6, depth_obs_thres=0.05):
+
+    '''
+    Find the isolated lines of one element within a wavelength range.
+
+    Parameters
+    ----------
+    teff : float
+        The effective temperature of the model
+    logg : float
+        logg value of the model
+    m_h : float
+        [M/H] value (overall metallicity) of the model
+    wav_range_list : list, [[wav_start_1, wav_end_1], [wav_start_2, wav_end_2], ...]
+        List of wavelength range to search
+    ele_index : int
+        The atomic number of element for the lines to be searched.
+    resolution : float
+        Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.
+    obs_spec : list of [wav, flux], optional
+        The observed spectra.
+    line_list_in : str or pd.DataFrame
+        The name of the linelist file. If not specified will use built-in VALD linelist (vald_3000_24000).
+    x_index_thres : float, default -6
+        The threshold of lines to be included (with x-index < x_index_thres)
+    depth_obs_thres : float, default 0.05
+        The threshold of lines to be included (with obsered depth >= depth_obs_thres)
+
+    Returns
+    ----------
+    line_list_ele_all : pandas.DataFrame
+        The isolated lines list.
+    '''
+
+    # Only the Fe lines with depth > depth_lower_limit and blending ratio < blending_limit will be selected.
+    depth_lower_limit = 0.05
+    blending_limit = 0.2
+
+    j = 0
+    for wav_range in wav_range_list:
+    # for wav_range in tqdm(wav_range_list[0:1]):
+
+        wav_start, wav_end = wav_range[0], wav_range[1]
+
+        if isinstance(line_list_in, str):
+            # Linelist file is not specified, use internal line list;
+            line_list = line_data.read_linelist(line_list_in)
+        elif isinstance(line_list_in, private.pd.DataFrame):
+            line_list = line_list_in
+        else:
+            raise TypeError('Type of input linelist have to be either str or pandas.DataFrame.')
+        
+        indices = (line_list['id'] == ele_index) & (line_list['wavelength'] >= wav_start) & (line_list['wavelength'] <= wav_end)
+        line_list_ele = line_list[indices].reset_index(drop=True)
+    #     pymoog.line_data.save_linelist(line_list_ele, '{}/vald_fe_use.list'.format(folder_name))
+
+        w = weedout.weedout(teff, logg, m_h, 
+                                   private.np.min(line_list_ele['wavelength']), np.max(line_list_ele['wavelength']), 
+                                   line_list=line_list_ele, kappa_ratio=0.1)
+        w.prepare_file()
+        w.run_moog()
+        w.read_linelist()
+
+        line_list_ele = w.keep_list
+
+        line_list_ele = cal_depth(line_list_ele, teff, logg, m_h, 2, private.np.mean(wav_range)/resolution, tqdm_disable=False)
+        line_list_ele = line_list_ele[line_list_ele['depth'] > depth_lower_limit].reset_index(drop=True)
+
+        line_list_ele = cal_depth_blending_ratio(line_list_ele, teff, logg, m_h, 2, private.np.mean(wav_range)/resolution, tqdm_disable=False)
+        line_list_ele = line_list_ele[line_list_ele['f_d_blend'] < blending_limit].reset_index(drop=True)
+
+        if j == 0:
+            line_list_ele_all = line_list_ele
+        else:
+            line_list_ele_all = private.pd.concat([line_list_ele_all, line_list_ele])
+        j += 1
+
+    line_list_ele_all = line_list_ele_all.reset_index(drop=True)
+
+    # TODO: Calculate the tel_blending ratio
+    t = []
+    obs_depth = []
+
+    obs_spec = private.pd.read_csv('solar_spec.txt', sep=' ', names=['wav', 'obs_spec'])
+    obs_spec['obs_spec'] /= private.np.median(obs_spec['obs_spec'])
+
+    wavs = line_list_ele_all['wavelength'].values
+    for wav in wavs:
+        obs_indices = private.np.abs(obs_spec['wav']-wav) <= 0.2
+        obs_depth.append(1 - private.np.min(obs_spec.loc[obs_indices, 'obs_spec']))
+        t.append(wav)
+
+    line_list_ele_all['depth_obs'] = obs_depth
+
+    line_list_ele_all = cal_X_index(line_list_ele_all, teff)
+    line_list_ele_all = line_list_ele_all[line_list_ele_all['X_index'] < x_index_thres].reset_index(drop=True)
+
+    line_list_ele_all = line_list_ele_all[line_list_ele_all['depth_obs'] > depth_obs_thres].reset_index(drop=True)
+    
+    return line_list_ele_all
+
+
+def determine_vmicro_m_h(spline_res, x_index_dict):
+    '''
+    Determine the microturbulence and [M/H] from the MPFIT result.
+    '''
+    slope_list = []
+    
+    vmicro_list = private.np.linspace(0.5, 2.5, 20)
+    for vmicro_index in range(len(vmicro_list)):
+
+        m_h_list = []
+        x_index_list = []
+
+        for i in range(len(spline_res)):
+
+            m_h = spline_res[i][1](vmicro_list[vmicro_index])
+            x_index = x_index_dict[i][1]
+
+            m_h_list.append(m_h)
+            x_index_list.append(x_index)
+
+        x_index_list, m_h_list = private.np.array(x_index_list), private.np.array(m_h_list)    
+
+        fit_res = private.np.polyfit(x_index_list[~private.np.isnan(m_h_list)], m_h_list[~private.np.isnan(m_h_list)], 1)
+        slope = fit_res[0]
+        slope_list.append(slope)
+
+    slope_list = private.np.array(slope_list)
+    
+    slope_spline = private.scipy.interpolate.UnivariateSpline(vmicro_list, slope_list, k=3, s=10**-4)
+        
+    # Calculte vmicro
+    vmicro_final = slope_spline.roots()[0]
+
+    # Calculate [M/H] using the determined vmicro.
+    m_h_list = []
+    for i in range(len(spline_res)):
+        m_h = spline_res[i][1](vmicro_final)
+        m_h_list.append(m_h)
+
+    m_h_final = private.np.mean(m_h_list)
+    
+    return vmicro_final, m_h_final, slope_spline

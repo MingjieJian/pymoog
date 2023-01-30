@@ -254,6 +254,7 @@ def cal_blending_ratio(teff, logg, fe_h, resolution, line_list, wav_range, weedo
     return linelist_out
 
 def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=None, line_id=None, target_line_df=None, smooth_para=None, plot=True, dpi=100, plot_Dlp=True, plot_Dl=True, plot_Ilp=True, plot_Ic=True):
+
     
     if target_line_df is None and (line_wav_input is None or line_id is None):
         raise ValueError('Please provide target_line_df or both line_wav_input and line_id.')
@@ -284,8 +285,8 @@ def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=Non
         line_index_all = linelist_all[indices].index
 
     if plot:
-
         private.plt.figure(figsize=(14, 5*len(line_index_all)), dpi=dpi)
+
 
     plot_index = 1
     CF_res = []
@@ -312,7 +313,6 @@ def plot_contri_func(teff, logg, fe_h, resolution, line_list, line_wav_input=Non
 
         # Calculate the EW and blending fraction
         EW = (private.np.sum(1-flux_all)*0.02 - private.np.sum(1-flux_exclude)*0.02) * 1000
-
         try:
             depth = 1 - private.np.min(flux_all[private.np.abs(wav_all-line_wavlength) <= 0.1])
         except:
