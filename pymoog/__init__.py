@@ -9,4 +9,4 @@ from . import binary
 from . import internal
 from . import mpfit
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
