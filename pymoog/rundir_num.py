@@ -13,9 +13,9 @@ class rundir_num(object):
         # file_list = str(file_list.stdout, encoding = "utf-8").split('\n')
         # file_list = [i for i in file_list if '.lock' in i]
         if prefix == '':
-            self.rundir_path = '{}/{}-{}/'.format(self.pymoog_path, run_type, private.datetime.now().strftime("%H:%M:%S.%f"))
+            self.rundir_path = '{}/{}-{}-{}/'.format(self.pymoog_path, run_type, private.datetime.now().strftime("%H:%M:%S.%f"), ''.join(private.secrets.choice(private.string.ascii_uppercase + private.string.ascii_lowercase) for i in range(9)))
         else:
-            self.rundir_path = '{}/{}-{}-{}/'.format(self.pymoog_path, prefix, run_type, private.datetime.now().strftime("%H:%M:%S.%f"))
+            self.rundir_path = '{}/{}-{}-{}-{}/'.format(self.pymoog_path, prefix, run_type, private.datetime.now().strftime("%H:%M:%S.%f"), ''.join(private.secrets.choice(private.string.ascii_uppercase + private.string.ascii_lowercase) for i in range(9)))
 
         private.subprocess.run(['mkdir', '-p', self.rundir_path])
                   
