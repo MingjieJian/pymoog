@@ -10,6 +10,9 @@ from shutil import copyfile
 from tqdm.notebook import tqdm
 from itertools import compress
 from datetime import datetime
+import secrets
+import string
+
 
 from scipy.spatial import Delaunay
 from astropy import units as u

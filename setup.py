@@ -1,21 +1,11 @@
 import subprocess
 import os
 import setuptools
+import atexit
 
-if os.environ.get('READTHEDOCS') != 'True':
-    # Define MOOGMODELING_path. This path will store the code of moog and any other temporary files in the calculation.
-    MOOGMODELING_path = '{}/.pymoog/'.format(os.environ['HOME'])
+def download_lfs_at_exit():
 
-    # Create the folder according to MOOGMODELING_path
-    if not(os.path.isdir(MOOGMODELING_path)):
-        os.mkdir(MOOGMODELING_path)
-        
-    # Copy the files folder into working directory
-    if not(os.path.isdir(MOOGMODELING_path + 'files')):
-        os.mkdir(MOOGMODELING_path + 'files')
-    cp_status = subprocess.run(['cp', '-r', 'pymoog/files', MOOGMODELING_path], stdout=subprocess.PIPE)
-
-    # Download large files from Zenodo 
+    # Download large files from Zenodo. This need to be done at exti, after zenodo_get is installed. 
     zenodo_status = subprocess.run(['zenodo_get', '10.5281/zenodo.7495246', '-o', os.path.expanduser('~') + '/.pymoog/files/'])
     # Find the latest version of pymoog_lf
     version_list = [i for i in os.listdir(os.path.expanduser('~') + '/.pymoog/files/') if '.tar.gz' in i]
@@ -35,6 +25,21 @@ if os.environ.get('READTHEDOCS') != 'True':
         rm_status = subprocess.run(['rm', MOOGMODELING_path + '/files/' + version], stdout=subprocess.PIPE)
     # unzip latest version
     tar_status = subprocess.run(['tar', '-xzvf', MOOGMODELING_path + 'files/' + latest_version, '-C', MOOGMODELING_path + 'files/'], stdout=subprocess.PIPE)
+
+    print("Large files download/renew finished.")
+
+if os.environ.get('READTHEDOCS') != 'True':
+    # Define MOOGMODELING_path. This path will store the code of moog and any other temporary files in the calculation.
+    MOOGMODELING_path = '{}/.pymoog/'.format(os.environ['HOME'])
+
+    # Create the folder according to MOOGMODELING_path
+    if not(os.path.isdir(MOOGMODELING_path)):
+        os.mkdir(MOOGMODELING_path)
+        
+    # Copy the files folder into working directory
+    if not(os.path.isdir(MOOGMODELING_path + 'files')):
+        os.mkdir(MOOGMODELING_path + 'files')
+    cp_status = subprocess.run(['cp', '-r', 'pymoog/files', MOOGMODELING_path], stdout=subprocess.PIPE)
 
     # Copy the moog_nosm folder to MOOGMODELING_path; if the folder already exist it will be removed first.
     if os.path.isdir(MOOGMODELING_path + '/moog_nosm'):
@@ -57,6 +62,8 @@ if os.environ.get('READTHEDOCS') != 'True':
     else:
         print('Successfully installed MOOG!')
     
+atexit.register(download_lfs_at_exit)
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
