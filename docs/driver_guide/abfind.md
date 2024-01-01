@@ -1,6 +1,6 @@
 # abfind: force-fitting abundances to match single-line equivalent widths.
 
-Suppose we have a list of strong lines (stored as `linelist` DataFrame) with their measured EW as follow:
+Suppose we have a list of lines (stored as as a DataFrame called `linelist`) with their measured EW as follow (appended to the line list as the last column):
 
 ```
 	wavelength	id	EP	loggf	C6	D0	EW
@@ -31,13 +31,12 @@ The DataFrame has to be sorted in id and wavelength.
 
 Then abfind can run as:
 ```py
-a = pymoog.abfind.abfind(5000, 4.0, 0.0, line_list='line.list')
+a = pymoog.abfind.abfind(5000, 4.0, 0.0, line_list=linelist)
 a.prepare_file()
-pymoog.line_data.save_linelist(linelist, MOOG_run_path + 'line.list')
 a.run_moog()
 a.read_output()
 ```
-The output of abfind will be stored as a dict with it keys as elements and values as DataFrame:
+The output of abfind, `a.abfind_res` will be stored as a dict with it keys as elements and values as DataFrame:
 ```
 {12.0:    wavelength    ID     EP  logGF   EWin  logRWin  abund  delavg
  0   11032.103  12.0  5.946 -1.801  23.05   -5.680  7.376  -0.002

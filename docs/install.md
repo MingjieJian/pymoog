@@ -38,6 +38,7 @@ I have no experience on using Mac so, finger crossed.
     - `pip install .`
 
 Note that `pymoog` requires some large files (atmosphere models and line lists, stored in [here](https://zenodo.org/record/7495246#.Y9Vh_cmSljE)) to run , and they will be downloaded during `pip install`.
+Please test your conntection to Zenodo by accessing the link first.
 Thus the installation may takes 10 or 20 minutes without anything prompting in the command line.
 When upgrading `pymoog`, the program check if there is any newer version of the large files.
 If the local files are up-to-date, then the download will be skipped to speed up the installation process. 

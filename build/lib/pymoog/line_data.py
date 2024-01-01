@@ -267,3 +267,91 @@ def find_single_dominant_line(line_wav_input, teff, logg, m_h, resolution, line_
         return dominant_line, linelist_keep
     else:
         return dominant_line
+
+def cal_d_blending_ratio(teff, logg, m_h, start_wav, end_wav, resolution, linelist_all='vald_3000_24000', weedout_switch=0.01,  abun_change=None):
+    '''
+    Calculate the depth blending ratio of the lines in the line list.
+    The depth blending ratio is defined as d(other lines) / d(other lines + target line).  
+
+    Parameters
+    ----------
+    teff : float
+        The effective temperature of the model
+    logg : float
+        logg value of the model
+    m_h : float
+        [M/H] value (overall metallicity) of the model
+    start_wav : float
+        The start wavelength of the line list
+    end_wav : float
+        The end wavelength of the line list
+    resolution : float
+        Resolution of the synthetic spectra; this will passed to MOOG and convolute with initial spectra.
+    line_list : str or pd.DataFrame, default vald_3000_24000 
+        The name of the linelist file.
+    weedout_switch : bool or float, default 0.01
+        The switch for running weedout driver before synth. If False then weedout is not run; if True the weedout is run with kappa_ratio=0.01, and if a float (> 0 and < 1) is given then weedout is run with the kappa_ratio set as the number.
+    abun_change : dict of pairs {int:float, ...}
+            Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
+
+    Returns
+    ----------
+    linelist_all : pandas.DataFrame, optional
+        The line list with blending ratio stored in d_blend_ratio.
+    '''
+
+    # Establish the linelist
+    if isinstance(linelist_all, str):
+        linelist_all = read_linelist(linelist_all)
+    elif isinstance(linelist_all, private.pd.DataFrame):
+        pass
+    else:
+        raise TypeError('Type of input linelist have to be either str or pandas.DataFrame.')
+    
+    linelist_all = linelist_all[(linelist_all['wavelength'] >= start_wav) & (linelist_all['wavelength'] <= end_wav)]
+
+    # Calculate the blending ratio
+    s = synth.synth(teff, logg, m_h, start_wav, end_wav, resolution, line_list=linelist_all)
+    s.prepare_file(abun_change=abun_change)
+    # Whole spectra 
+    s.run_moog()
+    s.read_spectra()
+    wav_all, flux_all = s.wav, s.flux
+
+    # weedout lines
+    if weedout_switch != False:
+        w = weedout.weedout(teff, logg, m_h, start_wav, end_wav, line_list=linelist_all, kappa_ratio=weedout_switch)
+        w.prepare_file()
+        w.run_moog()
+
+    # Target line exclude
+    if weedout_switch:
+        w.read_linelist()
+        linelist_keep = w.keep_list
+        line_index_keep = find_lines(linelist_keep, linelist_all)
+    else:
+        line_index_keep = linelist_all.index
+
+    d_blend_ratio_list = []
+    for line_index in linelist_all.index:
+        
+        if line_index in line_index_keep:
+            target_wav = linelist_all.loc[line_index, 'wavelength']
+            linelist_exclude = linelist_all.drop(line_index).reset_index(drop=True)
+            s = synth.synth(teff, logg, m_h, target_wav-1, target_wav+1, resolution, line_list=linelist_exclude)
+            s.prepare_file(abun_change=abun_change)
+            s.run_moog()
+            s.read_spectra(remove=False)
+            wav_exclude, flux_exclude = s.wav, s.flux
+            
+            # Calculate the blending fraction
+            r_blend_ratio = (1-flux_exclude[np.argmin(np.abs(wav_exclude-target_wav))]) / (1-flux_all[np.argmin(np.abs(wav_all-target_wav))])
+            if r_blend_ratio > 1 and np.abs((1-flux_exclude[np.argmin(np.abs(wav_exclude-target_wav))])-(1-flux_all[np.argmin(np.abs(wav_all-target_wav))])) < 0.001:
+                r_blend_ratio = 1
+            d_blend_ratio_list.append(r_blend_ratio)
+        else:
+            d_blend_ratio_list.append(np.nan)
+
+    linelist_all['d_blend_ratio'] = d_blend_ratio_list
+
+    return linelist_all
