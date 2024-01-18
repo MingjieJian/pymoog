@@ -11,7 +11,7 @@
 
 path=`pwd`'/'
 
-chunk_length=60
+chunk_length=55
 
 if [ ${#path} -gt $chunk_length ]; then
     
