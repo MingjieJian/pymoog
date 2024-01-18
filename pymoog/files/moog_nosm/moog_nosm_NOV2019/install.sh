@@ -29,38 +29,38 @@ else
 fi
 
 sed -i "22s#.*#$replacement_string#" Moog.f
-# sed -i "22s#.*#$replacement_string#" Moogsilent.f
+sed -i "22s#.*#$replacement_string#" Moogsilent.f
 
-# # Change the machine to user specified type.
-# machine='None'
-# while [ $machine == 'None' ]
-# do
-# 	machine=`uname`
-# 	if [[ -z "$machine" ]] || [ $machine == 'Linux' ] 
-# 	then
-# 		machine='pcl'
-# 		break
-# 	elif [ $machine == 'Darwin' ]
-# 	then
-# 		machine='mac'
-# 		break
-# 	else 
-# 		machine='pcl'
-# 	fi
-# done
+# Change the machine to user specified type.
+machine='None'
+while [ $machine == 'None' ]
+do
+	machine=`uname`
+	if [[ -z "$machine" ]] || [ $machine == 'Linux' ] 
+	then
+		machine='pcl'
+		break
+	elif [ $machine == 'Darwin' ]
+	then
+		machine='mac'
+		break
+	else 
+		machine='pcl'
+	fi
+done
 
-# # machine='pcl'
-# sed -i "29s/'.*'/'$machine'/" Moog.f
-# sed -i "29s/'.*'/'$machine'/" Moogsilent.f
+# machine='pcl'
+sed -i "29s/'.*'/'$machine'/" Moog.f
+sed -i "29s/'.*'/'$machine'/" Moogsilent.f
 
-# # Install MOOG and MOOGSILENT
+# Install MOOG and MOOGSILENT
 
-# if [ $machine == 'pcl' ]
-# then
-# 	make -f Makefile.rh64 
-# 	make -f Makefile.rh64silent 
-# elif [ $machine == 'mac' ]
-# then
-# 	make -f Makefile.maclap 
-# 	make -f Makefile.maclapsilent 
-# fi
+if [ $machine == 'pcl' ]
+then
+	make -f Makefile.rh64 
+	make -f Makefile.rh64silent 
+elif [ $machine == 'mac' ]
+then
+	make -f Makefile.maclap 
+	make -f Makefile.maclapsilent 
+fi
