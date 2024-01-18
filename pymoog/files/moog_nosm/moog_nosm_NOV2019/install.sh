@@ -10,23 +10,7 @@
 # Note that the code will break the path to multiple lines if it is longer than 60.
 
 path=`pwd`'/'
-
-chunk_length=55
-
-if [ ${#path} -gt $chunk_length ]; then
-    
-    num_lines=$(((${#path} + $chunk_length - 1) / $chunk_length + 1))
-
-    for ((i=1; i<num_lines; i++)); do
-        start=$((($i - 1) * $chunk_length))
-        replacement_string+="     .  '${path:start:$chunk_length}'"
-		replacement_string+=" //"
-        replacement_string+=$'\\n'
-    done
-	replacement_string=${replacement_string::-4}
-else 
-	replacement_string="     .  '${path}'"
-fi
+replacement_string="     .  '${path}'"
 
 sed -i "22s#.*#$replacement_string#" Moog.f
 sed -i "22s#.*#$replacement_string#" Moogsilent.f
