@@ -2,11 +2,33 @@
 
 # Bash program to modify the USER SETUP AREA of Moog.f and Moogsilent.f.
 
+#!/bin/bash
+
+# Bash program to modify the USER SETUP AREA of Moog.f and Moogsilent.f.
+
 # Change the moogpath from '/Users/chris/CODES/moogfeb2017/' to `pwd` or user specified path 
+# Note that the code will break the path to multiple lines if it is longer than 60.
 
 path=`pwd`'/'
-sed "22s?'.*'?'$path'?" Moog_bak.f > Moog.f
-sed "22s?'.*'?'$path'?" Moogsilent_bak.f > Moogsilent.f
+
+chunk_length=60
+
+if [ ${#path} -gt $chunk_length ]; then
+    
+    num_lines=$(((${#path} + $chunk_length - 1) / $chunk_length + 1))
+
+    for ((i=1; i<num_lines; i++)); do
+        start=$((($i - 1) * $chunk_length))
+        replacement_string+="     .  '${path:start:$chunk_length}'"
+		replacement_string+=" //"
+        replacement_string+=$'\\n'
+    done
+else 
+	replacement_string="     .  '${path}'"
+fi
+
+sed -i "22s#.*#$replacement_string#" Moog.f
+sed -i "22s#.*#$replacement_string#" Moogsilent.f
 
 # Change the machine to user specified type.
 machine='None'
