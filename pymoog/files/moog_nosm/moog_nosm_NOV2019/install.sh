@@ -10,7 +10,6 @@
 # Note that the code will break the path to multiple lines if it is longer than 60.
 
 path=`pwd`'/'
-path='asdfadsfasdfweadfasfcasdfasdfaewfawsefasdfawefagasdfgasdfawefawefawefawfdasdgasgawsgewfaew'
 
 chunk_length=55
 
