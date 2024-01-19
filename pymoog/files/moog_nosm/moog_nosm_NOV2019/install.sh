@@ -33,7 +33,6 @@ do
 	fi
 done
 
-# machine='pcl'
 sed -i "29s/'.*'/'$machine'/" Moog.f
 sed -i "29s/'.*'/'$machine'/" Moogsilent.f
 

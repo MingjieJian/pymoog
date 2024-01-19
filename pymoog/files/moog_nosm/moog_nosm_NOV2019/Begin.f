@@ -10,6 +10,8 @@ c***************************************************************************
       include 'Pstuff.com'
       character*80 line, systemcall
       integer num
+      character*300 c_moogpath
+      common /m/ c_moogpath
 
 
 c*****define the number of text screen lines for silent mode;
@@ -68,26 +70,26 @@ c*****clear the text screen
 
 c*****open data files carried with the source code: Barklem damping
       nfbarklem = 35
-      num = 60
-      call getcount (num,moogpath)
-      if (moogpath(num:num) .ne. '/') then
+      num = len_trim(c_moogpath)
+      ! call getcount (num,c_moogpath)
+      if (c_moogpath(num:num) .ne. '/') then
          num = num + 1
-         moogpath(num:num) = '/'
+         c_moogpath(num:num) = '/'
       endif
-      fbarklem(1:num) = moogpath(1:num)
+      fbarklem(1:num) = c_moogpath(1:num)
       fbarklem(num+1:num+11) = 'Barklem.dat'
       open (nfbarklem,file=fbarklem)
 
 
 c*****open data files carried with the source code: Barklem UV damping
       nfbarklemUV = 36
-      num = 60
-      call getcount (num,moogpath)
-      if (moogpath(num:num) .ne. '/') then
+      num = len_trim(c_moogpath)
+      ! call getcount (num,c_moogpath)
+      if (c_moogpath(num:num) .ne. '/') then
          num = num + 1
-         moogpath(num:num) = '/'
+         c_moogpath(num:num) = '/'
       endif
-      fbarklemUV(1:num) = moogpath(1:num)
+      fbarklemUV(1:num) = c_moogpath(1:num)
       fbarklemUV(num+1:num+13) = 'BarklemUV.dat'
       open (nfbarklemUV,file=fbarklemUV)
  
