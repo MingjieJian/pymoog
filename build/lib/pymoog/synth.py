@@ -15,7 +15,7 @@ MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ[
 MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
 
 class synth(rundir_num.rundir_num):
-    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, vmicro=2, mass=1, del_wav=0.02, line_list='vald_3000_24000', weedout=False, prefix=''):
+    def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, vmicro=2, mass=1, del_wav=0.02, line_list='vald_3000_24000', weedout=False, prefix='', vmicro_mode='fix'):
         '''
         Initiate a synth Instance and read the parameters.
         
@@ -45,6 +45,8 @@ class synth(rundir_num.rundir_num):
             The switch for running weedout driver before synth. If False then weedout is not run; if True the weedout is run with kappa_ratio=0.01, and if a float (> 0 and < 1) is given then weedout is run with the kappa_ratio set as the number.
         prefix : str, default ''.
             The prefix to be added to the name of rundir. Convenient when you want to find a specified rundir if there are many.
+        vmicro_mode : str, default 'fix'
+            The mode of the vmicro in calculation. If 'fixed', will use the same vmicro in model interpolation and synthesis; if 'flexible', then will use the cloest vmicro in model interpolation if the given vmicro is outside the grid. 
         '''
         super(synth, self).__init__('{}/.pymoog/'.format(private.os.environ['HOME']), 'synth', prefix=prefix)
         self.teff = teff
@@ -59,6 +61,7 @@ class synth(rundir_num.rundir_num):
         self.line_list = line_list
         self.weedout = weedout
         self.prefix = prefix
+        self.vmicro_mode = vmicro_mode
 
         # Perform some sanity check
         if del_wav < 0.001:
@@ -109,9 +112,10 @@ class synth(rundir_num.rundir_num):
         
         # Create model file.
         if model_file == None:
-            # Model file is not specified, will use Kurucz model according to stellar parameters.
-            model.interpolate_model(self.teff, self.logg, self.m_h, vmicro=self.vmicro, mass=self.mass, abun_change=abun_change, molecules_include=molecules_include, save_name=self.rundir_path + 'model.mod', model_type=model_type, chem=model_chem, geo=model_geo)
+            # Model file is not specified, will use builtin model according to stellar parameters.
+            vmicro_model = model.interpolate_model(self.teff, self.logg, self.m_h, vmicro=self.vmicro, vmicro_mode=self.vmicro_mode, mass=self.mass, abun_change=abun_change, molecules_include=molecules_include, save_name=self.rundir_path + 'model.mod', model_type=model_type, chem=model_chem, geo=model_geo)
             self.model_file = 'model.mod'
+            self.vmicro_model = vmicro_model
         else:
             # Model file is specified; record model file name and copy to working directory.
             if model_format == 'moog':

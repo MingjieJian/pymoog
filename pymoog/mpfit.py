@@ -128,7 +128,7 @@ def cal_partial_f_rv(teff, logg, m_h, wav_start, wav_end, fwhm_broad, vmicro_in,
     
     return partial_flux
 
-def mpfit_main(wav_in, flux_in, vmicro_in, fwhm_broad, rv_in, m_h, abun_change_in, fit_paras_list, teff, logg, 
+def mpfit_main(wav_in, flux_in, vmicro_in, fwhm_broad, rv_in, m_h, abun_change_in, fit_paras_list, teff, logg, R,
                line_list='vald_3000_24000', niter_max=30, iter_printout=False, fitting_boundary=None, boundary_mode='back', boundary_printout=False, prefix=''):
     '''
     Fit the stellar parameters using the process from MPFIT.
@@ -177,7 +177,8 @@ def mpfit_main(wav_in, flux_in, vmicro_in, fwhm_broad, rv_in, m_h, abun_change_i
             break
         
         # Calculate F_0
-        s = synth.synth(teff, logg, m_h, wav_in[0]-0.75, wav_in[-1]+0.75, 20000, line_list=line_list, weedout=True, prefix=prefix, vmicro=vmicro_in)
+        s = synth.synth(teff, logg, m_h, wav_in[0]-0.75, wav_in[-1]+0.75, R, line_list=line_list, weedout=True, prefix=prefix, vmicro=vmicro_in)
+        print(teff, logg, m_h, R, vmicro_in)
         s.prepare_file(smooth_para=['g', fwhm_broad, 0, 0, 0, 0], abun_change=abun_change_in)
         s.run_moog()
         s.read_spectra()
