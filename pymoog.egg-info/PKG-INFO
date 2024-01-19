@@ -14,6 +14,15 @@ Classifier: Topic :: Scientific/Engineering :: Astronomy
 Requires-Python: >=3.5
 Description-Content-Type: text/markdown
 License-File: LICENCE
+Requires-Dist: numpy>=1.18.0
+Requires-Dist: pandas>=1.0.0
+Requires-Dist: matplotlib>=3.1.0
+Requires-Dist: mendeleev>=0.6.0
+Requires-Dist: scipy>=1.4.0
+Requires-Dist: astropy>=4.0
+Requires-Dist: spectres
+Requires-Dist: tqdm
+Requires-Dist: zenodo_get
 
 # pymoog
 
