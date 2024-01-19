@@ -3,5 +3,4 @@ __pycache__/
 docs/_build/
 build/
 *.pyc
-dist/
 node_modeules/

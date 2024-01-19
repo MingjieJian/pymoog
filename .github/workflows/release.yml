@@ -1,13 +1,43 @@
+name: pypi-publish
+
+on: push
+
 jobs:
-  pypi-publish:
-    name: upload release to PyPI
+  build:
+    name: Build distribution
     runs-on: ubuntu-latest
-    # Specifying a GitHub environment is optional, but strongly encouraged
-    environment: release
-    permissions:
-      # IMPORTANT: this permission is mandatory for trusted publishing
-      id-token: write
     steps:
       # retrieve your distributions here
-      - name: Publish package distributions to PyPI
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - name: Install required packages
+        run: pip install setuptools zenodo_get
+      - name: Build a source tarball
+        run: python3 setup.py sdist
+      - name: Upload all the dists
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  publish-to-pypi:
+    name: Publish to PyPI
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pymoog  # Replace <package-name> with your PyPI project name
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
