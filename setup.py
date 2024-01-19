@@ -86,7 +86,7 @@ if os.environ.get('READTHEDOCS') != 'True':
             "Topic :: Scientific/Engineering :: Astronomy"
         ],
         python_requires=">=3.5",
-        packages=setuptools.find_packages(),
+        packages=setuptools.find_packages(exclude=['files']),
         install_requires=[
             'numpy >= 1.18.0',
             'pandas >= 1.0.0',
@@ -120,7 +120,7 @@ else:
             "Topic :: Scientific/Engineering :: Astronomy"
         ],
         python_requires=">=3.5",
-        packages=setuptools.find_packages(),
+        packages=setuptools.find_packages(exclude=['files']),
         install_requires=[
             'numpy >= 1.18.0',
             'pandas >= 1.0.0',

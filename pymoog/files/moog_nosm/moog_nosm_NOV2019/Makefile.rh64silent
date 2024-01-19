@@ -27,7 +27,7 @@ COMMON =  Atmos.com Dummy.com Equivs.com Factor.com Kappa.com Linex.com \
         Quants.com Multimod.com Dampdat.com
 
 CC = cc
-FC = gfortran -ff2c -Wall -std=legacy -ffixed-line-length-none
+FC = gfortran -ff2c -Wno-conversion -Wno-argument-mismatch -std=legacy -ffixed-line-length-none
 
 # the following lines point to some needed libraries
 X11LIB = /usr/lib64
