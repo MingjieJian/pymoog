@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: "3.x"
       - name: Install required packages
-        run: pip install setuptools
+        run: pip install setuptools zenodo_get
       - name: Build a source tarball
         run: python3 setup.py sdist
       - name: Upload all the dists
@@ -22,8 +22,6 @@ jobs:
         with:
           name: python-package-distributions
           path: dist/
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
 
   publish-to-pypi:
     name: Publish to PyPI
