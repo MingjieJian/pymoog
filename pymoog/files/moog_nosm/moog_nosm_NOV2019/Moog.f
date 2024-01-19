@@ -10,18 +10,18 @@ c******************************************************************************
       include 'Atmos.com'
       include 'Pstuff.com'
       character yesno*1
-
+      character*300 c_moogpath
+      common /m/ c_moogpath
 
 c$$$$$$$$$$$$$$$$$$$$$$$$ USER SETUP AREA $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 c*****in compiling MOOG, here the various machine-specific things are 
 c     declared.  First, define the directory where MOOG lives, in order to 
 c     be able to pull in auxiliary data files; executing 'make' will 
 c     generate a reminder of this necessity
-      write (moogpath,1001)
-      moogpath = 
+      c_moogpath = 
      .  '/media/disk/py-package/pymoog/pymoog/files/moog_nosm/moog_nosm_NOV2019/'
 
-
+     
 c*****What kind of machine are you using?  Possible ones are:
 c     "mac" = Intel-based Apple Mac 
 c     "pcl" = a PC or desktop running some standard linux like Redhat
@@ -105,7 +105,6 @@ c*****or else you are out of luck!
 
 
 c*****format statements
-1001  format (60(' '))
 1003  format (22x,'MOOG IS CONTROLLED BY DRIVER ',a7)
 1017  format ('x11 -bg black -title MOOGplot -geom 700x800+650+000')
 1018  format ('x11 -bg black -title MOOGplot -geom 1200x350+20+450')
