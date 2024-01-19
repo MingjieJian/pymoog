@@ -13,10 +13,10 @@ jobs:
       id-token: write
     steps:
       # retrieve your distributions here
-      - name: Download all the dists
-        uses: actions/download-artifact@v3
+      - name: Upload all the dists
+        uses: actions/upload-artifact@v4
         with:
-          name: pymoog-0.1.3.tar.gz
+          name: python-package-distributions
           path: dist/
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
