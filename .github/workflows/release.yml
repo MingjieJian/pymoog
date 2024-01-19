@@ -7,16 +7,16 @@ jobs:
     name: Build distribution
     runs-on: ubuntu-latest
     steps:
-  #     # retrieve your distributions here
-  #     - uses: actions/checkout@v4
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: "3.x"
-  #     - name: Install required packages
-  #       run: pip install setuptools zenodo_get
-  #     - name: Build a source tarball
-  #       run: python3 setup.py sdist
+      # retrieve your distributions here
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - name: Install required packages
+        run: pip install setuptools zenodo_get
+      - name: Build a source tarball
+        run: python3 setup.py sdist
       - name: Upload all the dists
         uses: actions/upload-artifact@v4
         with:
