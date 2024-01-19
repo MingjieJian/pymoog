@@ -370,7 +370,7 @@ def read_marcs_model(model_path):
     marcs_model['last iteration'] = model_contents[1].split()[-1][-8:]
     marcs_model['flux'] = float(model_contents[2].split()[0])
     marcs_model['g'] = float(model_contents[3].split()[0])
-    marcs_model['vmicro'] = float(model_contents[4].split()[0])
+    marcs_model['vmicro_model'] = float(model_contents[4].split()[0])
     marcs_model['mass'] = float(model_contents[5].split()[0])
     marcs_model['[M/H]'] = float(model_contents[6].split()[0])
     marcs_model['[alpha/Fe]'] = float(model_contents[6].split()[1])
@@ -479,11 +479,11 @@ def marcs2moog(marcs_model, save_name, abun_change=None, molecules_include=None)
             -5.00,-0.54,-5.00,-5.00,-5.00]    
     
     moog_model_content = ['KURUCZ']
-    moog_model_content.append('TEFF={:.0f}, LOGG={:.1f}, [M/H]={:.2f}, [alpha/Fe]={:.2f}, Vmicro={:.1f}, mass={:.2f}'.format(marcs_model['teff'], np.log10(marcs_model['g']), marcs_model['[M/H]'], marcs_model['[alpha/Fe]'], marcs_model['vmicro'], marcs_model['mass']))
+    moog_model_content.append('TEFF={:.0f}, LOGG={:.1f}, [M/H]={:.2f}, [alpha/Fe]={:.2f}, Vmicro={:.1f}, mass={:.2f}'.format(marcs_model['teff'], np.log10(marcs_model['g']), marcs_model['[M/H]'], marcs_model['[alpha/Fe]'], marcs_model['vmicro_model'], marcs_model['mass']))
     moog_model_content.append('ntau=       ' + str(marcs_model['number of depth points']))
     ms_formatters = ['{:15.8E}'.format, '{:8.1f}'.format, '{:10.3E}'.format, '{:10.3E}'.format, '{:10.3E}'.format]
     moog_model_content.append(marcs_model['model structure'][['RHOX', 'T', 'Pg', 'Pe', 'KappaRoss']].to_string(formatters=ms_formatters, index=False, header=False))
-    moog_model_content.append('    {:8.2E}'.format(marcs_model['vmicro']))
+    moog_model_content.append('    {:8.2E}'.format(marcs_model['vmicro_input']))
 
     # Element shift part
     if abun_change != None:
@@ -597,7 +597,7 @@ def para2marcs_filename(para_list):
     '''
     return '{1}{2:.0f}_g{3:+4.1f}_m{4:3.1f}_t{5:02.0f}_{0}_z{6:+5.2f}_a{7:+5.2f}_c{8:+5.2f}_n{9:+5.2f}_o{10:+5.2f}_r{11:+5.2f}_s{12:+5.2f}.mod'.format(*para_list)
 
-def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='auto'):
+def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='auto', vmicro_mode='fixed'):
     '''
     Interpolate the MARCS model.
     
@@ -618,6 +618,8 @@ def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='a
     geo : str
         The geometry of the model. Either 's' for spherical, 'p' for plane-parallel or 'auto'. 
         If auto then the code will determine the geometry automatically according to stellar parameters.
+    vmicro_mode : str, default 'fix'
+        The mode of the vmicro in calculation. If 'fixed', will use the same vmicro in model interpolation and synthesis; if 'flexible', then will use the cloest vmicro in model interpolation if the given vmicro is outside the grid. 
     '''
 
     g = 10**logg
@@ -641,11 +643,27 @@ def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='a
 
     a, o = z2ao(p[2], out_type='other')
 
-    tri_simplex = marcs_tri.find_simplex(p)
-    if tri_simplex == -1:
-            raise ValueError('The given stellar parameters are outside grid points, failed to interpolate.')
-    else:
+    if vmicro_mode == 'flexible':
+        vmicro_grid = np.array([0, 1, 2, 5])
+        absolute_diff = np.abs(vmicro - vmicro_grid) 
+        sorted_vmicro_grid = vmicro_grid[np.argsort(absolute_diff)]
+
+        for vmicro_flexiable in sorted_vmicro_grid:
+            p[3] = vmicro_flexiable
+            tri_simplex = marcs_tri.find_simplex(p)
+            if tri_simplex != -1:
+                tri_index = marcs_tri.simplices[tri_simplex]
+                break
+        if tri_simplex == -1:
+            raise ValueError('The given stellar parameters are outside grid points, failed to interpolate.')   
+    elif vmicro_mode == 'fix':
+        tri_simplex = marcs_tri.find_simplex(p)
+        if tri_simplex == -1:
+            raise ValueError('The given stellar parameters are outside grid points, failed to interpolate.')   
         tri_index = marcs_tri.simplices[tri_simplex]
+    else:
+        raise ValueError('Wrong vmicro_mode. It have to be either "flexible" or "fix".')
+        
 
     marcs_grid_sub = marcs_grid.loc[tri_index].reset_index(drop=True)
 
@@ -655,21 +673,29 @@ def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='a
         b = marcs_tri.transform[tri_simplex][:4].dot(np.transpose(p - marcs_tri.transform[tri_simplex][4]))
     b = np.concatenate([b, [1-sum(b)]])
 
-    marcs_grid_use = marcs_grid_sub[b != 0].reset_index(drop=True)
+    marcs_grid_use = marcs_grid_sub[b > 0.01].reset_index(drop=True)
 
     # Judge if the grid space is too large for interpolation
     teff_space_bad = np.ptp(marcs_grid_use['teff']) > 1500
     logg_space_bad = np.ptp(marcs_grid_use['logg']) > 0.5
     m_h_space_bad = np.ptp(marcs_grid_use['[M/H]']) > 0.5
 
-    if np.any([teff_space_bad, logg_space_bad, m_h_space_bad]):
-        raise ValueError('The separation between grid points is too large, failed to interpolate.')
-
     b = b[b != 0]
+
+    if np.any([teff_space_bad, logg_space_bad, m_h_space_bad]):
+        bad_string = ''
+        if teff_space_bad:
+            bad_string += 'Teff, '
+        if logg_space_bad:
+            bad_string += 'logg, '
+        if m_h_space_bad:
+            bad_string += '[M/H]'
+        raise ValueError('The separation between {} grid points is too large, failed to interpolate.'.format(bad_string))
 
     if len(marcs_grid_use) == 1:
         # No interpolation
         marcs_model_interpolated = read_marcs_model(MOOG_file_path + '/pymoog_lf/model/marcs/{13}/{14}/{1}{2:.0f}_g{3:+4.1f}_m{4:3.1f}_t{5:02.0f}_{0:}_z{6:+5.2f}_a{7:+5.2f}_c{8:+5.2f}_n{9:+5.2f}_o{10:+5.2f}_r{11:+5.2f}_s{12:+5.2f}.mod'.format(*np.array(marcs_grid_use.loc[0, marcs_grid_use.columns[:-1]]), chem, geo))
+        marcs_model_interpolated['vmicro_input'] = vmicro
     else:
         marcs_model_interpolated = {}
         # Interpolation
@@ -681,7 +707,7 @@ def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='a
         for i in range(len(marcs_grid_use)):
             marcs_model_single = read_marcs_model(MOOG_file_path + '/pymoog_lf/model/marcs/{13}/{14}/{1}{2:.0f}_g{3:+4.1f}_m{4:3.1f}_t{5:02.0f}_{0:}_z{6:+5.2f}_a{7:+5.2f}_c{8:+5.2f}_n{9:+5.2f}_o{10:+5.2f}_r{11:+5.2f}_s{12:+5.2f}.mod'.format(*np.array(marcs_grid_use.loc[i, marcs_grid_use.columns[:-1]]), chem, geo))
             if i == 0:
-                for name in ['teff', 'last iteration', 'flux', 'g', 'vmicro', 'mass', '[M/H]', '[alpha/Fe]', 'radius', 'luminosity', 
+                for name in ['teff', 'last iteration', 'flux', 'g', 'vmicro_model', 'mass', '[M/H]', '[alpha/Fe]', 'radius', 'luminosity', 
                              'conv:alpha', 'conv:nu', 'conv:y', 'conv:beta', 'X', 'Y', 'Z', '12C/13C',
                              'log abundance', 'model structure', 'logarithmic partial pressures']:
                     if name == 'last iteration':
@@ -691,24 +717,25 @@ def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='a
                 N_depth = marcs_model_single['number of depth points']
                 marcs_model_interpolated['number of depth points'] = N_depth
             else:
-                for name in ['teff','flux', 'g', 'vmicro', 'mass', '[M/H]', '[alpha/Fe]', 'radius', 'luminosity', 
+                for name in ['teff','flux', 'g', 'vmicro_model', 'mass', '[M/H]', '[alpha/Fe]', 'radius', 'luminosity', 
                              'conv:alpha', 'conv:nu', 'conv:y', 'conv:beta', 'X', 'Y', 'Z', '12C/13C',
                              'log abundance', 'model structure', 'logarithmic partial pressures']:
                     marcs_model_interpolated[name] += marcs_model_single[name] * b[i]
                 if marcs_model_single['number of depth points'] != N_depth:
                     raise ValueError('N-depth not consistent')
+        marcs_model_interpolated['vmicro_input'] = vmicro
 
     return marcs_model_interpolated
 
-def interpolate_model(teff, logg, m_h, vmicro=2, mass=1, abun_change=None, molecules_include=None, save_name=None, model_type='marcs', chem='st', geo='auto'):
+def interpolate_model(teff, logg, m_h, vmicro=2, mass=1, abun_change=None, molecules_include=None, save_name=None, model_type='marcs', chem='st', geo='auto', vmicro_mode='flexible'):
     '''
     Interpolate Kurucz model or MARCS model and convert to moog format.
     '''
 
     if model_type == 'kurucz':
         interpolate_kurucz_model(teff, logg, m_h, vmicro=vmicro, abun_change=abun_change, molecules_include=molecules_include, to_path=save_name)
+        return 2
     elif model_type == 'marcs':
-        marcs_model_interpolated = interpolate_marcs_model(teff, logg, m_h, vmicro=vmicro, mass=mass, chem=chem, geo=geo)
+        marcs_model_interpolated = interpolate_marcs_model(teff, logg, m_h, vmicro=vmicro, mass=mass, chem=chem, geo=geo, vmicro_mode=vmicro_mode)
         marcs2moog(marcs_model_interpolated, save_name, abun_change=abun_change, molecules_include=molecules_include)
-
-    pass
+        return marcs_model_interpolated['vmicro_model']

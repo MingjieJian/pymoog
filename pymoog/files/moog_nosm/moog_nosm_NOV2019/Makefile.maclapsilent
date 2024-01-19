@@ -27,7 +27,7 @@ COMMON =  Atmos.com Dummy.com Equivs.com Factor.com Kappa.com Linex.com \
         Mol.com Multistar.com Obspars.com Pstuff.com \
         Quants.com Multimod.com Dampdat.com
 
-FC = gfortran -std=legacy  -w -ffixed-line-length-none
+FC = gfortran -std=legacy  -Wno-conversion -Wno-argument-mismatch -ffixed-line-length-none
 
 # the following lines point to some needed libraries
 X11LIB = /usr/X11R6/lib
