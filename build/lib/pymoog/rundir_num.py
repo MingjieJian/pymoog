@@ -7,42 +7,14 @@ class rundir_num(object):
         '''
 
         '''
-        # rundir_max_num = 10
         self.pymoog_path = pymoog_path
-        # file_list = private.subprocess.run(['ls', pymoog_path], stdout=private.subprocess.PIPE)
-        # file_list = str(file_list.stdout, encoding = "utf-8").split('\n')
-        # file_list = [i for i in file_list if '.lock' in i]
+
         if prefix == '':
             self.rundir_path = '{}/{}-{}-{}/'.format(self.pymoog_path, run_type, private.datetime.now().strftime("%H:%M:%S.%f"), ''.join(private.secrets.choice(private.string.ascii_uppercase + private.string.ascii_lowercase) for i in range(9)))
         else:
             self.rundir_path = '{}/{}-{}-{}-{}/'.format(self.pymoog_path, prefix, run_type, private.datetime.now().strftime("%H:%M:%S.%f"), ''.join(private.secrets.choice(private.string.ascii_uppercase + private.string.ascii_lowercase) for i in range(9)))
 
         private.subprocess.run(['mkdir', '-p', self.rundir_path])
-                  
-        # dir_exist = [int(private.re.search('rundir(.+)\.lock', i).group(1)) for i in file_list]
-
-        # rundir_list = list(range(1, rundir_max_num+1))
-        # for ele in dir_exist:
-        #     try:
-        #         rundir_list.remove(ele)
-        #     except ValueError:
-        #         continue
-
-        # if len(rundir_list) == 0:
-        #     raise ValueError('No available rundir; please delete the available rundir lock or raise maximum number of rundir.')
-        # rundir_num = min(rundir_list)
-        # self.rundir_path = '{}/rundir{}/'.format(self.pymoog_path, self.rundir_num)
-        
-    # def lock(self):
-    #     private.subprocess.run(['touch', '{}/rundir{}.lock'.format(self.pymoog_path, self.rundir_num)])
-    #     # Create rundir folder
-    #     
         
     def remove(self):
         private.subprocess.run(['rm', '-r', self.rundir_path])
-        
-    # def clear_lock(self, num):
-    #     if num != 'all':
-    #         private.subprocess.run(['rm', '{}/rundir{}.lock'.format(self.pymoog_path, num)])
-    #     elif num == 'all':
-    #         private.subprocess.run(['rm', '{}/rundir*.lock'.format(self.pymoog_path)])

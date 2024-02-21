@@ -77,7 +77,7 @@ c****end the computations
 
 
 c*****format statements
-1001  format (1p2d12.4,0p2f10.4)
+1001  format (1p2e14.6,0p2f12.6)
 1002  format ('  kaplam from 1 to ntau at wavelength',f11.3/
      1        (6(1pd12.4)))
 1003  format ('AT WAVELENGTH/FREQUENCY =',f11.7,

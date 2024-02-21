@@ -9,9 +9,12 @@ pymoog/blends.py
 pymoog/cog.py
 pymoog/contri_func.py
 pymoog/deprecated.py
+pymoog/doflux.py
 pymoog/internal.py
+pymoog/line_analysis.py
 pymoog/line_data.py
 pymoog/model.py
+pymoog/moog_structure.py
 pymoog/mpfit.py
 pymoog/private.py
 pymoog/rundir_num.py
