@@ -28,7 +28,7 @@ class synth(moog_structure.moog_structure):
             The microturbulance velocity of the model. 
         mass : float, default 1
             The stellar mass of the input model. Only used when the model type is MARCS spherical.
-        del_wav : float, default 0.02
+        del_wav : float, default 0
             The wavelength step of the synthetic spectra. 
         line_list : str or pd.DataFrame
             The name of the linelist file. If not specified will use built-in VALD linelist (vald_3000_24000).
@@ -70,13 +70,13 @@ class synth(moog_structure.moog_structure):
             self.line_list = w.keep_list
 
 
-        if doflux_cont:
-            # Synthesize the flux.
-            d = doflux.doflux(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, self.resolution, vmicro=self.vmicro, mass=self.mass, del_wav=self.del_wav, prefix=self.prefix, vmicro_mode=self.vmicro_mode)
-            d.prepare_file(del_wav=0.02)
-            d.run_moog()
-            d.read_spectra()
-            self.flux_cont = d.flux_cont
+    def doflux_cont(self):
+        # Synthesize the flux.
+        d = doflux.doflux(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, self.resolution, vmicro=self.vmicro, mass=self.mass, prefix=self.prefix, vmicro_mode=self.vmicro_mode)
+        d.prepare_file()
+        d.run_moog()
+        d.read_spectra()
+        self.flux_cont = d.flux_cont
 
     def read_spectra(self, spec_type='smooth', remove=True):
         '''

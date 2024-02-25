@@ -104,14 +104,16 @@ class moog_structure(object):
             else:
                 raise ValueError("The input model_type is not supported. Have to be either 'moog', 'kurucz' or 'marcs.")
 
-    def create_lise_list(self, **args):
+    def create_line_list(self, **args):
         # General line list routine for other drivers.
         # For drivers synthy, binary
 
         if 'del_wav' not in args.keys():
             args['del_wav'] = 0.02
+            self.del_wav = args['del_wav']
         if 'del_wav_opac' not in args.keys():
             args['del_wav_opac'] = 1.0
+            self.del_wav_opac = args['del_wav']
         if args['del_wav'] < 0.001:
             raise ValueError('del_wav cannot be smaller than 0.001; the calculation and I/O precision is not enough.')
         smooth_width = np.mean([self.start_wav / self.resolution, self.end_wav / self.resolution])
@@ -246,8 +248,10 @@ class moog_structure(object):
             if self.run_type in ['synth', 'doflux']:
                 if 'del_wav' not in args.keys():
                     args['del_wav'] = 0.02
+                    self.del_wav = args['del_wav']
                 if 'del_wav_opac' not in args.keys():
                     args['del_wav_opac'] = 1.0
+                    self.del_wav_opac = args['del_wav_opac']
                 if args['del_wav'] < 0.001:
                     raise ValueError('del_wav cannot be smaller than 0.001; the calculation and I/O precision is not enough.')
                 smooth_width = np.mean([self.start_wav / self.resolution, self.end_wav / self.resolution])
@@ -277,6 +281,10 @@ class moog_structure(object):
         if self.run_type == 'cog':
             args['coglimits'] = [self.cog_low, self.cog_up, self.cog_step, self.lp_step]
         self.create_para_file(args=args)
+
+        # Misc for some drivers
+        if self.run_type == 'synth' and self.doflux_cont:
+            self.doflux_cont()
         
     def create_para_file(self, args=None):
         '''
@@ -379,7 +387,7 @@ class moog_structure(object):
                 temp = ansi_escape.sub('', temp)
                 ansi_escape = re.compile(r'\x1b\[2J')
                 MOOG_output.append(ansi_escape.sub('', temp))
-                
+
         if output:
             for i in MOOG_output:
                 print(i)
