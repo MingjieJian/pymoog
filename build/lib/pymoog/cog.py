@@ -106,7 +106,7 @@ class cog(moog_structure.moog_structure):
         
         # Check whether input_loggf is specified. If not then use line loggf
         if private.np.isnan(input_loggf):
-            input_loggf = self.line_df['loggf'].values[0]
+            input_loggf = self.line_list['loggf'].values[0]
         
         logrw_poly = private.np.polyfit(self.loggf,self.logrw, 20)
         if private.np.any(private.np.abs(self.logrw - private.np.polyval(logrw_poly, self.loggf)) > 0.05):

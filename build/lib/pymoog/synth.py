@@ -48,7 +48,7 @@ class synth(moog_structure.moog_structure):
         self.start_wav = start_wav
         self.end_wav = end_wav
         self.resolution = resolution
-        self.line_list = line_list
+        self.line_list_in = line_list
         self.weedout = weedout
         self.prefix = prefix
         self.vmicro_mode = vmicro_mode
@@ -61,9 +61,9 @@ class synth(moog_structure.moog_structure):
         # Weedout the line list 
         if self.weedout == True:
             if self.weedout == True:
-                w = weedout.weedout(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, line_list=self.rundir_path+self.line_list, prefix=self.prefix)
+                w = weedout.weedout(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, line_list=self.rundir_path+self.line_list_in, prefix=self.prefix)
             else:
-                w = weedout.weedout(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, kappa_ratio=self.weedout, line_list=self.rundir_path+self.line_list, prefix=self.prefix)
+                w = weedout.weedout(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, kappa_ratio=self.weedout, line_list=self.rundir_path+self.line_list_in, prefix=self.prefix)
             w.prepare_file()
             w.run_moog()
             w.read_linelist()

@@ -28,6 +28,8 @@ batch_pars_default = {
     'lumratio':1,
     'plot':3,
     'terminal':'x11',
+    'bin_raw_out':'bin_raw.out',
+    'bin_smo_out':'bin_smo.out',
     'binary:RUN1':["RUN                1",
                    "standard_out       'MOOG1.out1'",
                    "summary_out        'MOOG1.out2'",
@@ -53,6 +55,8 @@ batch_pars_format = {
     'plotpars':'plotpars',
     'blenlimits':'blenlimits',
     'coglimits':'coglimits',
+    'bin_raw_out':'str', 'bin_smo_out':'str',
+    'deltaradvel':'float', 'lumratio':'float',
     'binary:RUN1':'binary:RUN1', 
     'binary:RUN2':'binary:RUN2'
 }
@@ -60,10 +64,13 @@ batch_pars_format = {
 para_format = {
             'str':"{:19s}'{}'\n",
             'int':"{:19s}{}\n",
+            'float':"{:19s}{:7.2f}\n",
             'synlimits':"{}\n  {:.2f}  {:.2f}  {}  {:.2f}\n",
             'plotpars':"{}    1\n  0.0  0.0  0.0  0.0 \n  0.0  0.0  0.0  0.0 \n  {}  {:.3f}  {:.3f}  {:.3f}  {:.3f}  {:.3f}\n",
             'blenlimits':"{}\n    {}  {}  {:.1f}",
-            'coglimits':"{}\n  {}  {}  {}  {}  0\n"
+            'coglimits':"{}\n  {}  {}  {}  {}  0\n",
+            'binary:RUN1':'{}\n'*6,
+            'binary:RUN2':'{}\n'*6
         }
 
 class moog_structure(object):
@@ -119,20 +126,22 @@ class moog_structure(object):
         smooth_width = np.mean([self.start_wav / self.resolution, self.end_wav / self.resolution])
         smooth_width_num = int(np.ceil(smooth_width / args['del_wav']))
 
-        if isinstance(self.line_list, str):
-            if self.line_list[-5:] != '.list':
+        if isinstance(self.line_list_in, str):
+            if self.line_list_in[-5:] != '.list':
                 # Linelist file is not specified, use internal line list;
-                line_list = line_data.read_linelist(self.line_list, loggf_cut=args['loggf_cut'])
+                line_list = line_data.read_linelist(self.line_list_in, loggf_cut=args['loggf_cut'])
                 line_data.save_linelist(line_list, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
-                self.line_list = 'line.list'
+                self.line_list_name = 'line.list'
+                self.line_list = line_list
             elif self.line_list[-5:] == '.list':
                 # Linelist file is specified; record linelist file name and copy to working directory.
-                subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
-                self.line_list = self.line_list.split('/')[-1]
-                args['lines_in'] = self.line_list
-        elif isinstance(self.line_list, private.pd.DataFrame):
-            line_data.save_linelist(self.line_list, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
-            self.line_list = 'line.list'
+                subprocess.run(['cp', self.line_list_in, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
+                self.line_list_name = self.line_list_in.split('/')[-1]
+                args['lines_in'] = self.line_list_name
+        elif isinstance(self.line_list_in, private.pd.DataFrame):
+            line_data.save_linelist(self.line_list_in, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
+            self.line_list_name = 'line.list'
+            self.line_list = self.line_list_in
         else:
             raise TypeError('Type of input linelist have to be either str or pandas.DataFrame.')
 
@@ -171,7 +180,7 @@ class moog_structure(object):
         '''
 
         # Use defaule smooth parameter if not specified. 
-        if 'smooth_para' not in args.keys() and self.run_type == 'synth':
+        if 'smooth_para' not in args.keys() and self.run_type in ['synth', 'binary']:
             args['smooth_para'] = ['g', 0.0, 0.0, 0.0, 0.0, 0.0]
 
         # Create model file.
@@ -197,19 +206,20 @@ class moog_structure(object):
 
         # Create line list.
         if self.run_type == 'abfind':
-            if isinstance(self.line_list, str):
+            if isinstance(self.line_list_in, str):
                 # Linelist file have to be specified; record linelist file name and copy to working directory.
-                subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
-                self.line_list = self.line_list.split('/')[-1]
-            elif isinstance(self.line_list, private.pd.DataFrame):
-                line_data.save_linelist(self.line_list.sort_values('id'), self.rundir_path + 'line.list')
-                self.line_list = 'line.list'
+                subprocess.run(['cp', self.line_list_in, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
+                self.line_list_name = self.line_list_in.split('/')[-1]
+            elif isinstance(self.line_list_in, private.pd.DataFrame):
+                line_data.save_linelist(self.line_list_in.sort_values('id'), self.rundir_path + 'line.list')
+                self.line_list_name = 'line.list'
+                self.line_list = self.line_list_in
             else:
                 raise TypeError('Type of input linelist have to be either str or pandas.DataFrame.')
         elif self.run_type == 'blends':
-            if self.line_list[-5:] != '.list':
+            if self.line_list_in[-5:] != '.list':
                 # Linelist file is not specified, use internal line list;
-                line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut, mode='npy')
+                line_list = line_data.read_linelist(self.line_list_in, loggf_cut=loggf_cut, mode='npy')
                 
                 # Input EW into the linelist
                 line_list = line_list[(line_list['wavelength'] >= self.start_wav) & (line_list['wavelength'] <= self.end_wav)].reset_index(drop=True)
@@ -218,34 +228,37 @@ class moog_structure(object):
                 line_list.loc[0, 'EW'] = self.EW
                 
                 line_data.save_linelist(line_list, self.rundir_path + 'line.list', negative=True)
-                self.line_list = 'line.list'
+                self.line_list_name = 'line.list'
+                self.line_list = line_list
             elif self.line_list[-5:] == '.list':
                 # Linelist file is specified; record linelist file name and copy to working directory.
-                private.subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=private.subprocess.PIPE)
-                self.line_list = self.line_list.split('/')[-1]
+                private.subprocess.run(['cp', self.line_list_in, self.rundir_path], encoding='UTF-8', stdout=private.subprocess.PIPE)
+                self.line_list_name = self.line_list_in.split('/')[-1]
                 # Input EW into the linelist
-                line_list = line_data.read_linelist(self.rundir_path + self.line_list)
+                line_list = line_data.read_linelist(self.rundir_path + self.line_list_in)
                 line_list.loc[1:, 'wavelength'] = -line_list.loc[1:, 'wavelength']
                 line_list['EW'] = private.np.nan
                 line_list.loc[0, 'EW'] = self.EW
                 line_data.save_linelist(line_list, self.rundir_path + 'line.list', negative=True)
+                self.line_list_name = 'line.list'
+                self.line_list = line_list
         elif self.run_type == 'cog':
             # Linelist file must be specified; record linelist file name and copy to working directory.
-            if isinstance(self.line_list, str):
-                private.subprocess.run(['cp', self.line_list, self.rundir_path+'/line.list'], encoding='UTF-8', stdout=private.subprocess.PIPE)
+            if isinstance(self.line_list_in, str):
+                private.subprocess.run(['cp', self.line_list_in, self.rundir_path+'/line.list'], encoding='UTF-8', stdout=private.subprocess.PIPE)
                 self.line_list_name = 'line.list'
-                self.line_df = line_data.read_linelist(self.line_list)
-            elif isinstance(self.line_list, private.pd.DataFrame):
-                line_data.save_linelist(self.line_list, self.rundir_path + 'line.list')
+                self.line_list = line_data.read_linelist(self.line_list_in)
+            elif isinstance(self.line_list_in, private.pd.DataFrame):
+                line_data.save_linelist(self.line_list_in, self.rundir_path + 'line.list')
                 self.line_list_name = 'line.list'
-                self.line_df = self.line_list
+                self.line_list = self.line_list_in
             else:
                 raise TypeError('Type of input linelist have to be either str or pandas.DataFrame.')
         elif self.run_type == 'doflux':
             pass
         else:
             # General line list routine for other drivers.
-            if self.run_type in ['synth', 'doflux']:
+            if self.run_type in ['synth', 'doflux', 'binary']:
                 if 'del_wav' not in args.keys():
                     args['del_wav'] = 0.02
                     self.del_wav = args['del_wav']
@@ -258,20 +271,21 @@ class moog_structure(object):
                 smooth_width_num = int(np.ceil(smooth_width / args['del_wav']))
             else:
                 smooth_width = 0 
-            if isinstance(self.line_list, str):
-                if self.line_list[-5:] != '.list':
+            if isinstance(self.line_list_in, str):
+                if self.line_list_in[-5:] != '.list':
                     # Linelist file is not specified, use internal line list;
-                    line_list = line_data.read_linelist(self.line_list, loggf_cut=loggf_cut)
-                    line_data.save_linelist(line_list, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
-                    self.line_list = 'line.list'
-                elif self.line_list[-5:] == '.list':
+                    self.line_list = line_data.read_linelist(self.line_list_in, loggf_cut=loggf_cut)
+                    line_data.save_linelist(self.line_list, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
+                    self.line_list_name = 'line.list'
+                elif self.line_list_in[-5:] == '.list':
                     # Linelist file is specified; record linelist file name and copy to working directory.
-                    subprocess.run(['cp', self.line_list, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
-                    self.line_list = self.line_list.split('/')[-1]
-                    args['lines_in'] = self.line_list
-            elif isinstance(self.line_list, private.pd.DataFrame):
-                line_data.save_linelist(self.line_list, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
-                self.line_list = 'line.list'
+                    subprocess.run(['cp', self.line_list_in, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
+                    self.line_list_name = self.line_list.split('/')[-1]
+                    args['lines_in'] = self.line_list_name
+                    self.line_list = None
+            elif isinstance(self.line_list_in, private.pd.DataFrame):
+                line_data.save_linelist(self.line_list_in, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
+                self.line_list_name = 'line.list'
             else:
                 raise TypeError('Type of input linelist have to be either str or pandas.DataFrame.')
                 
@@ -306,7 +320,7 @@ class moog_structure(object):
             The molecules value described in MOOG documention, section III.
         '''
 
-        if self.run_type == 'synth':
+        if self.run_type in ['synth', 'binary']:
             if 'del_wav' not in args.keys():
                 args['del_wav'] = 0.02
             if 'del_wav_opac' not in args.keys():
@@ -343,8 +357,12 @@ class moog_structure(object):
             else:
                 raise ValueError('Please provide {} as a argument in prepare_file().'.format(ele))
             
-            if type(content) not in [str, int]:
-                MOOG_contant.append(para_format[batch_pars_format[ele]].format(ele, *content))
+            if type(content) not in [str, int, float]:
+                if ':' in ele:
+                    # For the special paras whose name is defined in pymoog but not MOOG.
+                    MOOG_contant.append(para_format[batch_pars_format[ele]].format(*content))
+                else:
+                    MOOG_contant.append(para_format[batch_pars_format[ele]].format(ele, *content))
             else:
                 MOOG_contant.append(para_format[batch_pars_format[ele]].format(ele, content))
             

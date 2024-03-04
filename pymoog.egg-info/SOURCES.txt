@@ -18,6 +18,7 @@ pymoog/moog_structure.py
 pymoog/mpfit.py
 pymoog/private.py
 pymoog/rundir_num.py
+pymoog/synpop.py
 pymoog/synth.py
 pymoog/weedout.py
 pymoog.egg-info/PKG-INFO

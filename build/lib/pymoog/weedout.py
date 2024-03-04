@@ -45,7 +45,7 @@ class weedout(moog_structure.moog_structure):
         self.start_wav = start_wav
         self.end_wav = end_wav
         self.kappa_ratio = kappa_ratio
-        self.line_list = line_list
+        self.line_list_in = line_list
         self.keeplines = keeplines
         self.tosslines = tosslines
         self.vmicro_mode = vmicro_mode
