@@ -1,46 +1,13 @@
 #!/usr/bin/python
 import numpy as np
-from . import moog_structure, synth
+from . import moog_structure
 from . import private, model, line_data
 import subprocess
-
-'''example batch.par
-binary
-bin_raw_out        'bin_raw.out'
-bin_smo_out        'bin_smo.out'
-atmosphere         1
-lines              1
-molecules          1
-deltaradvel        300 # Basied on which one?
-lumratio           1 # How does it be used?
-terminal           'x11'
-plot               3
-plotpars    1
-  0.0  0.0  0.0  0.0 
-  0.0  0.0  0.0  0.0 
-  g  0.212  0.000  0.000  0.000  0.000
-RUN                1
-standard_out       'MOOG1.out1'
-summary_out        'MOOG1.out2'
-smoothed_out       'MOOG1.out3'
-model_in           'model1.mod'
-lines_in           'line.list'
-synlimits
-  10539.56  10620.44  0.02  1.00
-RUN                 2
-standard_out       'MOOG2.out1'
-summary_out        'MOOG2.out2'
-smoothed_out       'MOOG2.out3'
-model_in           'model2.mod'
-lines_in           'line.list'
-synlimits
-  10539.56  10620.44  0.02  1.00
-'''
 
 class binary(moog_structure.moog_structure):
     def __init__(self, stellar_paras_list, start_wav, end_wav, resolution, vmicro=2, mass=1, line_list='vald_3000_24000', weedout=False, prefix='', vmicro_mode='flexible'):
         '''
-        Initiate a synth Instance and read the parameters.
+        Initiate a binary instance and read the parameters.
         
         Parameters
         ----------

@@ -15,8 +15,9 @@ valid_batch_pars = {
     'blends': ['standard_out', 'summary_out', 'model_in', 'lines_in', 'atmosphere', 'lines', 'molecules', 'terminal', 'blenlimits'],
     'cog': ['standard_out', 'summary_out', 'model_in', 'lines_in', 'atmosphere', 'lines', 'molecules', 'terminal', 'coglimits'],
     'doflux': ['standard_out', 'summary_out', 'model_in', 'lines_in', 'atmosphere', 'lines', 'molecules', 'terminal', 'synlimits'],
-    'synth': ['standard_out', 'summary_out', 'smoothed_out', 'model_in', 'lines_in', 'atmosphere', 'lines', 'molecules', 'terminal', 'synlimits', 'plot', 'plotpars'],
-    'weedout':['standard_out', 'model_in', 'lines_in', 'keeplines_out', 'tosslines_out', 'atmosphere', 'lines', 'molecules', 'terminal']
+    'synth': ['standard_out', 'summary_out', 'smoothed_out', 'model_in', 'lines_in', 'atmosphere', 'lines', 'molecules', 'terminal', 'isotopes', 'synlimits', 'plot', 'plotpars'],
+    'weedout':['standard_out', 'model_in', 'lines_in', 'keeplines_out', 'tosslines_out', 'atmosphere', 'lines', 'molecules', 'terminal'],
+    'synpop': ['standard_out', 'summary_out', 'smoothed_out', 'table_in', 'table_out', 'lines_in', 'popsyn_out', 'atmosphere', 'lines', 'molecules', 'isotopes', 'terminal', 'synlimits', 'plot', 'plotpars']
 }
 
 batch_pars_default = {
@@ -28,6 +29,7 @@ batch_pars_default = {
     'lumratio':1,
     'plot':3,
     'terminal':'x11',
+    'isotopes':'     0     0', 
     'bin_raw_out':'bin_raw.out',
     'bin_smo_out':'bin_smo.out',
     'binary:RUN1':["RUN                1",
@@ -42,6 +44,7 @@ batch_pars_default = {
                    "smoothed_out       'MOOG2.out3'",
                    "model_in           'model2.mod'",
                    "lines_in           'line.list'"],
+    'popsyn_out':'rawpop'
 }
 
 batch_pars_format = {
@@ -55,6 +58,7 @@ batch_pars_format = {
     'plotpars':'plotpars',
     'blenlimits':'blenlimits',
     'coglimits':'coglimits',
+    'isotopes':'isotopes',
     'bin_raw_out':'str', 'bin_smo_out':'str',
     'deltaradvel':'float', 'lumratio':'float',
     'binary:RUN1':'binary:RUN1', 
@@ -67,6 +71,7 @@ para_format = {
             'float':"{:19s}{:7.2f}\n",
             'synlimits':"{}\n  {:.2f}  {:.2f}  {}  {:.2f}\n",
             'plotpars':"{}    1\n  0.0  0.0  0.0  0.0 \n  0.0  0.0  0.0  0.0 \n  {}  {:.3f}  {:.3f}  {:.3f}  {:.3f}  {:.3f}\n",
+            'isotopes':'{} {}\n', 
             'blenlimits':"{}\n    {}  {}  {:.1f}",
             'coglimits':"{}\n  {}  {}  {}  {}  0\n",
             'binary:RUN1':'{}\n'*6,
@@ -161,6 +166,8 @@ class moog_structure(object):
             The cut in loggf; if specified will only include the lines with loggf >= loggf_cut.
         abun_change : dict of pairs {int:float, ...}
             Abundance change, have to be a dict of pairs of atomic number and [X/Fe] values.
+        isotopes : dict of pairs {int:float, ...}
+            Isotope ratios, have to be a dict of pairs of isotope number and ratio values.
         atmosphere : int, default 1
             The atmosphere value described in MOOG documention, section III.
         lines : int, default 1
@@ -180,7 +187,7 @@ class moog_structure(object):
         '''
 
         # Use defaule smooth parameter if not specified. 
-        if 'smooth_para' not in args.keys() and self.run_type in ['synth', 'binary']:
+        if ('smooth_para' not in args.keys() or args['smooth_para'] is None) and self.run_type in ['synth', 'binary', 'synpop']:
             args['smooth_para'] = ['g', 0.0, 0.0, 0.0, 0.0, 0.0]
 
         # Create model file.
@@ -327,7 +334,6 @@ class moog_structure(object):
                 args['del_wav_opac'] = 1.0
             smooth_width = np.mean([self.start_wav / self.resolution, self.end_wav / self.resolution])
             smooth_width_num = int(np.ceil(smooth_width / args['del_wav']))
-
             if args['smooth_para'][1] == 0:
                 args['smooth_para'][1] = smooth_width
             
@@ -348,6 +354,14 @@ class moog_structure(object):
 
         MOOG_contant = ["{}\n".format(self.run_type)]
 
+        # Convert the isotope to the list
+        if 'isotopes' in args.keys():
+            assert np.all([not(hasattr(ele, '__len__')) for ele in args['isotopes'].values()])
+            isotopes_sub_content = []
+            isotopes_sub_content += ['     {:2.0f}     1'.format(len(args['isotopes']))]
+            isotopes_sub_content += [f'  {ele:9.5f}    {args["isotopes"][ele]}' if ele > 100 else f'  {ele:9.3f}    {args["isotopes"][ele]}' for ele in args['isotopes'].keys()]
+            args['isotopes'] = '\n'.join(isotopes_sub_content)
+
         # Constract the parameter dict.
         for ele in valid_batch_pars[self.run_type]:
             if ele in args.keys():
@@ -356,12 +370,13 @@ class moog_structure(object):
                 content = batch_pars_default[ele]
             else:
                 raise ValueError('Please provide {} as a argument in prepare_file().'.format(ele))
-            
+
             if type(content) not in [str, int, float]:
                 if ':' in ele:
                     # For the special paras whose name is defined in pymoog but not MOOG.
                     MOOG_contant.append(para_format[batch_pars_format[ele]].format(*content))
                 else:
+                    
                     MOOG_contant.append(para_format[batch_pars_format[ele]].format(ele, *content))
             else:
                 MOOG_contant.append(para_format[batch_pars_format[ele]].format(ele, content))

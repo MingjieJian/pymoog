@@ -1,18 +1,32 @@
-#!/usr/bin/python
 import numpy as np
 from . import moog_structure
 from . import private, model, line_data
 import subprocess
 
-class binary(moog_structure.moog_structure):
+'''example batch.par
+synpop
+modprefix MODEL
+synprefix mod
+title 47Tuc models
+abundances 5
+     11 6 7 13 12
+isotopes 2
+     607.01214 607.01314
+models
+ 1 77.85 3 5.00 6.50 8.50 4.0 6.0 1.0 30.0
+ 2 70.45 2 5.00 6.50 8.50 4.0 6.0 1.0 30.0
+ 3 61.74 3 5.00 6.50 8.50 4.0 6.0 1.0 30.0
+'''
+
+class synpop(moog_structure.moog_structure):
     def __init__(self, stellar_paras_list, start_wav, end_wav, resolution, vmicro=2, mass=1, line_list='vald_3000_24000', weedout=False, prefix='', vmicro_mode='flexible'):
         '''
-        Initiate a binary instance and read the parameters.
+        Initiate a synpop instance and read the parameters.
         
         Parameters
         ----------
-        stellar_paras_list : list, [[teff1, logg1, m_h1], [teff2, logg2, m_h2]]
-            List of the stellar parameters of the binaries
+        stellar_paras_list : list, [[teff1, logg1, m_h1], [teff2, logg2, m_h2], ...]
+            List of the stellar parameters of the binaries, max length 99.
         start_wav : float
             The start wavelength of synthetic spectra
         end_wav : float
@@ -34,15 +48,17 @@ class binary(moog_structure.moog_structure):
         vmicro_mode : str, default 'fix'
             The mode of the vmicro in calculation. If 'fixed', will use the same vmicro in model interpolation and synthesis; if 'flexible', then will use the cloest vmicro in model interpolation if the given vmicro is outside the grid. 
         '''
-        super(binary, self).__init__('binary', prefix=prefix)
+        super(synpop, self).__init__('synpop', prefix=prefix)
+        N_box = len(stellar_paras_list)
         if type(vmicro) == int or float:
-            vmicro = [vmicro, vmicro]
+            vmicro = [vmicro] * N_box
         if type(mass) == int or float:
-            mass = [mass, mass]
+            mass = [mass] * N_box
 
         self.stellar_paras = stellar_paras_list
         self.vmicro = vmicro
         self.mass = mass
+        self.N_box = N_box
 
         self.start_wav = start_wav
         self.end_wav = end_wav
@@ -72,7 +88,7 @@ class binary(moog_structure.moog_structure):
 
     def prepare_file(self, model_file=None, model_format='moog', loggf_cut=None, abun_change=None, molecules_include=None, model_type='marcs', model_chem='st', model_geo='auto', **args):
         '''
-        Prepare the model, linelist and control files for binary driver.
+        Prepare the model, linelist and control files for synpop driver.
         Can either provide stellar parameters and wavelengths or provide file names.
         If fine name(s) provided, the files will be copied to working directory for calculation.  
         
@@ -114,11 +130,11 @@ class binary(moog_structure.moog_structure):
         # Create model file.
         self.model_file = []
         self.vmicro_model = []
-        for i in range(2):
+        for i in range(self.N_box):
             if model_file == None:
                 # Model file is not specified, will use builtin model according to stellar parameters.
-                self.model1 = model.interpolate_model(*self.stellar_paras[i], vmicro=self.vmicro[i], vmicro_mode=self.vmicro_mode, mass=self.mass[i], abun_change=self.abun_change[i], molecules_include=molecules_include, save_name=self.rundir_path + 'model{}.mod'.format(i+1), model_type=model_type, chem=model_chem, geo=model_geo)
-                self.model_file.append('model{}.mod'.format(i+1))
+                self.model1 = model.interpolate_model(*self.stellar_paras[i], vmicro=self.vmicro[i], vmicro_mode=self.vmicro_mode, mass=self.mass[i], abun_change=self.abun_change[i], molecules_include=molecules_include, save_name=self.rundir_path + 'model{}'.format(i+1), model_type=model_type, chem=model_chem, geo=model_geo)
+                self.model_file.append('model{}'.format(i+1))
                 self.vmicro_model.append(self.model1['vmicro_model'])
             else:
                 # Model file is specified; record model file name and copy to working directory.
@@ -128,12 +144,12 @@ class binary(moog_structure.moog_structure):
                     subprocess.run(['cp', model_file[i], self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
                     self.model_file.append(model_file.split('/')[-1])
                 elif model_format[:6] == 'kurucz':
-                    model.kurucz2moog(model_path=model_file[i], abun_change=self.abun_change[i], model_format=model_format[7:], molecules_include=molecules_include, converted_model_path=self.rundir_path + 'model{}.mod'.format(i+1))
-                    self.model_file.append('model{}.mod'.format(i+1))
+                    model.kurucz2moog(model_path=model_file[i], abun_change=self.abun_change[i], model_format=model_format[7:], molecules_include=molecules_include, converted_model_path=self.rundir_path + 'model{}'.format(i+1))
+                    self.model_file.append('model{}'.format(i+1))
                 elif model_format == 'marcs':
                     marcs_model = model.read_marcs_model(model_file[i])
-                    model.marcs2moog(marcs_model, self.rundir_path + 'model{}.mod'.format(i+1), abun_change=self.abun_change[i], molecules_include=molecules_include)
-                    self.model_file.append('model{}.mod'.format(i+1))
+                    model.marcs2moog(marcs_model, self.rundir_path + 'model{}'.format(i+1), abun_change=self.abun_change[i], molecules_include=molecules_include)
+                    self.model_file.append('model{}'.format(i+1))
                 else:
                     raise ValueError("The input model_type is not supported. Have to be either 'moog', 'kurucz' or 'marcs.")
 

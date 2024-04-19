@@ -171,6 +171,7 @@ c  in each RUN; they must be reset each time.
 4     neq = 0
       numpecatom = 0
       numatomsyn = 0
+      write(*,*) 'Init:', numatomsyn
       newnumpecatom = 0
       newnumatomsyn = 0
       ninetynineflag = 0
