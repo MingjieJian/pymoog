@@ -17,7 +17,7 @@ valid_batch_pars = {
     'doflux': ['standard_out', 'summary_out', 'model_in', 'lines_in', 'atmosphere', 'lines', 'molecules', 'terminal', 'synlimits'],
     'synth': ['standard_out', 'summary_out', 'smoothed_out', 'model_in', 'lines_in', 'atmosphere', 'lines', 'molecules', 'terminal', 'isotopes', 'synlimits', 'plot', 'plotpars'],
     'weedout':['standard_out', 'model_in', 'lines_in', 'keeplines_out', 'tosslines_out', 'atmosphere', 'lines', 'molecules', 'terminal'],
-    'synpop': ['standard_out', 'summary_out', 'smoothed_out', 'table_in', 'table_out', 'lines_in', 'popsyn_out', 'atmosphere', 'lines', 'molecules', 'isotopes', 'terminal', 'synlimits', 'plot', 'plotpars']
+    'synpop': ['standard_out', 'summary_out', 'smoothed_out', 'table_in', 'table_out', 'lines_in', 'popsyn_out', 'atmosphere', 'lines', 'molecules', 'isotopes', 'abundances', 'terminal', 'synlimits', 'plot', 'plotpars']
 }
 
 batch_pars_default = {
@@ -44,7 +44,8 @@ batch_pars_default = {
                    "smoothed_out       'MOOG2.out3'",
                    "model_in           'model2.mod'",
                    "lines_in           'line.list'"],
-    'popsyn_out':'rawpop'
+    'popsyn_out':'rawpop',
+    'table_in':'tabinput', 'table_out':'taboutput', 'popsyn_out':'rawpop'
 }
 
 batch_pars_format = {
@@ -59,10 +60,12 @@ batch_pars_format = {
     'blenlimits':'blenlimits',
     'coglimits':'coglimits',
     'isotopes':'isotopes',
+    'abundances':'abundances',
     'bin_raw_out':'str', 'bin_smo_out':'str',
     'deltaradvel':'float', 'lumratio':'float',
     'binary:RUN1':'binary:RUN1', 
-    'binary:RUN2':'binary:RUN2'
+    'binary:RUN2':'binary:RUN2',
+    'table_in':'str', 'table_out':'str', 'popsyn_out':'str'
 }
 
 para_format = {
@@ -72,6 +75,7 @@ para_format = {
             'synlimits':"{}\n  {:.2f}  {:.2f}  {}  {:.2f}\n",
             'plotpars':"{}    1\n  0.0  0.0  0.0  0.0 \n  0.0  0.0  0.0  0.0 \n  {}  {:.3f}  {:.3f}  {:.3f}  {:.3f}  {:.3f}\n",
             'isotopes':'{} {}\n', 
+            'abundances':'{} {}\n', 
             'blenlimits':"{}\n    {}  {}  {:.1f}",
             'coglimits':"{}\n  {}  {}  {}  {}  0\n",
             'binary:RUN1':'{}\n'*6,
@@ -327,7 +331,7 @@ class moog_structure(object):
             The molecules value described in MOOG documention, section III.
         '''
 
-        if self.run_type in ['synth', 'binary']:
+        if self.run_type in ['synth', 'binary', 'synpop']:
             if 'del_wav' not in args.keys():
                 args['del_wav'] = 0.02
             if 'del_wav_opac' not in args.keys():
@@ -350,6 +354,13 @@ class moog_structure(object):
             
             args['synlimits'] = [self.start_wav - smooth_width_num*2*args['del_wav'], self.end_wav + smooth_width_num*2*args['del_wav'], args['del_wav'], args['del_wav_opac']]
 
+        # Set dummy isotopes and abundances, to avoid error in synpop
+        if self.run_type in ['synpop']:
+            if 'isotopes' not in args.keys():
+                args['isotopes'] = {102.00102:0}
+            if 'abundances' not in args.keys():
+                args['abundances'] = '      1       1\n  2       0.0'
+
         MOOG_para_file = open(self.rundir_path + '/batch.par', 'w')
 
         MOOG_contant = ["{}\n".format(self.run_type)]
@@ -368,6 +379,7 @@ class moog_structure(object):
                 content = args[ele]
             elif ele in batch_pars_default.keys():
                 content = batch_pars_default[ele]
+                args[ele] = content
             else:
                 raise ValueError('Please provide {} as a argument in prepare_file().'.format(ele))
 
@@ -376,7 +388,6 @@ class moog_structure(object):
                     # For the special paras whose name is defined in pymoog but not MOOG.
                     MOOG_contant.append(para_format[batch_pars_format[ele]].format(*content))
                 else:
-                    
                     MOOG_contant.append(para_format[batch_pars_format[ele]].format(ele, *content))
             else:
                 MOOG_contant.append(para_format[batch_pars_format[ele]].format(ele, content))
@@ -384,6 +395,41 @@ class moog_structure(object):
 
         MOOG_para_file.writelines(MOOG_contant)
         MOOG_para_file.close()
+
+        # For synpop:
+        if self.run_type in ['synpop']:
+            # Create the tabinput file
+
+            # Sanity check
+            assert np.all([len(self.model_RM[0]) == len(ele) for ele in self.model_RM]) # Elements in models should have same length
+            assert np.all([len(self.model_RM[0]) == len(ele) for ele in self.model_abundances.values() if hasattr(ele, '__len__')])
+            assert np.all([len(self.model_RM[0]) == len(ele) for ele in self.model_isotopes.values() if hasattr(ele, '__len__')])
+
+            tabinput_file_content = ['synpop', 'modprefix model', 'synprefix mod_syn', 'title default']
+
+            # Deal with abundances_model and isotopes
+            tabinput_file_content += [f'abundances {len(self.model_abundances):2.0f}']
+            if len(self.model_abundances) > 0:
+                tabinput_file_content += [''.join(['     '] + [f'{ele:3.0f}' for ele in self.model_abundances.keys()])]
+
+            tabinput_file_content += [f'isotopes {len(self.model_isotopes):2.0f}']
+            if len(self.model_isotopes) > 0:
+                tabinput_file_content += [''.join(['     '] + [f'{ele:10.5f}' for ele in self.model_isotopes.keys()])]
+
+            # Add the models
+            tabinput_file_content += ['models']
+            for i in range(self.N_box):
+                models_str = f'{i+1:.0f} {self.model_RM[i][0]:10.5f} {self.model_RM[i][1]:7.1f}'
+                if len(self.model_abundances) > 0:
+                    models_str += ''.join([f'{ele[i]:5.2f}' if hasattr(ele, '__len__') else f'{ele:5.2f}' for ele in self.model_abundances.values()])
+                if len(self.model_isotopes) > 0:
+                    models_str += ''.join([f'{ele[i]:7.2f}' if hasattr(ele, '__len__') else f'{ele:7.2f}' for ele in self.model_isotopes.values()])
+
+                tabinput_file_content += [models_str]
+
+            tabinput_file = open(self.rundir_path + '/' + args['table_in'], 'w')
+            tabinput_file.writelines('\n'.join(tabinput_file_content))
+            tabinput_file.close()
     
     def run_moog(self, output=False):
         '''

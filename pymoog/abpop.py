@@ -3,6 +3,21 @@ from . import moog_structure
 from . import private, model, line_data
 import subprocess
 
+'''example batch.par
+synpop
+modprefix MODEL
+synprefix mod
+title 47Tuc models
+abundances 5
+     11 6 7 13 12
+isotopes 2
+     607.01214 607.01314
+models
+ 1 77.85 3 5.00 6.50 8.50 4.0 6.0 1.0 30.0
+ 2 70.45 2 5.00 6.50 8.50 4.0 6.0 1.0 30.0
+ 3 61.74 3 5.00 6.50 8.50 4.0 6.0 1.0 30.0
+'''
+
 class synpop(moog_structure.moog_structure):
     def __init__(self, stellar_paras_list, model_RM, start_wav, end_wav, resolution, vmicro=2, mass=1, line_list='vald_3000_24000', weedout=False, prefix='', vmicro_mode='flexible', model_abundances={}, model_isotopes={}):
         '''

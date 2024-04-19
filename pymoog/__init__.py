@@ -10,5 +10,6 @@ from . import cog
 from . import binary
 from . import internal
 from . import mpfit
+from . import synpop
 
 __version__ = '0.1.3'

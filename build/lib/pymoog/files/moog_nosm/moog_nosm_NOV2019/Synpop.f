@@ -213,8 +213,7 @@ c*****read back the syntheses, compute the weighted average
 
 c     write the average spectrum back to disk.
       line(1:7) = 'MODEL: '
-      line(8:80) = popitle(1:73)
-      write(*,*) 'Break point:', numatomsyn
+      line(8:80) = popitle(1:73) 
       do j=1,numatomsyn
          holdline(j,lincount-1) = line
          write (nf9out,1001) (holdline(j,l),l=1,lincount)
