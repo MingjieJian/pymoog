@@ -3,25 +3,11 @@ from . import moog_structure
 from . import private, model, line_data
 import subprocess
 
-'''example batch.par
-synpop
-modprefix MODEL
-synprefix mod
-title 47Tuc models
-abundances 5
-     11 6 7 13 12
-isotopes 2
-     607.01214 607.01314
-models
- 1 77.85 3 5.00 6.50 8.50 4.0 6.0 1.0 30.0
- 2 70.45 2 5.00 6.50 8.50 4.0 6.0 1.0 30.0
- 3 61.74 3 5.00 6.50 8.50 4.0 6.0 1.0 30.0
-'''
 
-class synpop(moog_structure.moog_structure):
+class abpop(moog_structure.moog_structure):
     def __init__(self, stellar_paras_list, model_RM, start_wav, end_wav, resolution, vmicro=2, mass=1, line_list='vald_3000_24000', weedout=False, prefix='', vmicro_mode='flexible', model_abundances={}, model_isotopes={}):
         '''
-        Initiate a synpop instance and read the parameters.
+        Initiate a abpop instance and read the parameters.
         
         Parameters
         ----------
@@ -48,7 +34,7 @@ class synpop(moog_structure.moog_structure):
         vmicro_mode : str, default 'fix'
             The mode of the vmicro in calculation. If 'fixed', will use the same vmicro in model interpolation and synthesis; if 'flexible', then will use the cloest vmicro in model interpolation if the given vmicro is outside the grid. 
         '''
-        super(synpop, self).__init__('synpop', prefix=prefix)
+        super(abpop, self).__init__('abpop', prefix=prefix)
         N_box = len(stellar_paras_list)
         if not hasattr(vmicro, '__len__'):
             vmicro = [vmicro] * N_box
@@ -92,7 +78,7 @@ class synpop(moog_structure.moog_structure):
 
     def prepare_file(self, model_file=None, model_format='moog', loggf_cut=None, abun_change=None, molecules_include=None, model_type='marcs', model_chem='st', model_geo='auto', **args):
         '''
-        Prepare the model, linelist and control files for synpop driver.
+        Prepare the model, linelist and control files for abpop driver.
         Can either provide stellar parameters and wavelengths or provide file names.
         If fine name(s) provided, the files will be copied to working directory for calculation.  
         
@@ -191,7 +177,7 @@ class synpop(moog_structure.moog_structure):
         # Create parameter file.
         self.create_para_file(args=args)
 
-    def read_spectra(self, spec_type='smooth', remove=True):
+    def read_output(self, remove=True):
         '''
         Read the output spectra of MOOG.
 
@@ -209,35 +195,26 @@ class synpop(moog_structure.moog_structure):
         flux : a numpy array
             An array of flux
         '''
-        if spec_type == 'standard':
-            models_file = open(self.rundir_path+'bin_raw.out')
-            models = models_file.readline()
-            models = models_file.readline()
-            models = models_file.read().split()
-            models = [float(i) for i in models]
-            x = range(round((models[1]-models[0])/models[2])+1)
-            model_wav = []
-            for i in x:
-                model_wav.append(models[0] + models[2]*i)
-            model_flux = np.array(models[4:])
-            self.wav, self.flux = np.array(model_wav), np.array(model_flux)
-        elif spec_type == 'smooth':
-            models_file = open(self.rundir_path+'MOOG.out3')
-            models = models_file.readline()
-            models = models_file.readline()
-            models = models_file.readlines()
-            wavelength = []
-            depth = []
-            for i in models:
-                temp = i.split()
-                wavelength.append(float(temp[0]))
-                depth.append(float(temp[1]))
-            self.wav, self.flux =  np.array(wavelength), np.array(depth)
+        with open(self.rundir_path + '/taboutput', 'r') as file:
+            abpop_res_content = file.readlines()
+        abpop_res_content = abpop_res_content[4:]
+
+        result = [item.split('\n') for item in ''.join(abpop_res_content).split('\n\n') if item.strip()]
+
+        EW_syn = []
+        abundout = []
+        abundout_df_list = []
+        for ele in result:
+            ele = [i for i in ele if i != '']
+            data = [line.split() for line in ele[2:-1]]
+            df = private.pd.DataFrame(data, columns=['MODFILE', 'COGOUT', 'RADIUS', 'COUNT', 'FLUX', 'WEIGHT', 'EW', 'EWWEIGHT'])
+            abundout_df_list.append(df)
+            EW_syn.append(float(ele[-1].split()[-2]))
+            abundout.append(float(ele[-1].split()[-1]))
             
-        # Crop the spectra to fit the synthetic wavelength.
-        indices = (self.wav >= self.start_wav) & (self.wav <= self.end_wav) 
-        self.wav = self.wav[indices]
-        self.flux = self.flux[indices]    
+        self.line_list_in['EW_syn'] = EW_syn
+        self.line_list_in['abundout'] = abundout
+        self.abundout_df = abundout_df_list
             
         if remove:
             self.remove_rundir()

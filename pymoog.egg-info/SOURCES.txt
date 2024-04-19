@@ -4,6 +4,7 @@ README.md
 setup.py
 pymoog/__init__.py
 pymoog/abfind.py
+pymoog/abpop.py
 pymoog/binary.py
 pymoog/blends.py
 pymoog/cog.py

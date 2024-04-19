@@ -17,7 +17,8 @@ valid_batch_pars = {
     'doflux': ['standard_out', 'summary_out', 'model_in', 'lines_in', 'atmosphere', 'lines', 'molecules', 'terminal', 'synlimits'],
     'synth': ['standard_out', 'summary_out', 'smoothed_out', 'model_in', 'lines_in', 'atmosphere', 'lines', 'molecules', 'terminal', 'isotopes', 'synlimits', 'plot', 'plotpars'],
     'weedout':['standard_out', 'model_in', 'lines_in', 'keeplines_out', 'tosslines_out', 'atmosphere', 'lines', 'molecules', 'terminal'],
-    'synpop': ['standard_out', 'summary_out', 'smoothed_out', 'table_in', 'table_out', 'lines_in', 'popsyn_out', 'atmosphere', 'lines', 'molecules', 'isotopes', 'abundances', 'terminal', 'synlimits', 'plot', 'plotpars']
+    'synpop': ['standard_out', 'summary_out', 'smoothed_out', 'table_in', 'table_out', 'lines_in', 'popsyn_out', 'atmosphere', 'lines', 'molecules', 'isotopes', 'abundances', 'terminal', 'synlimits', 'plot', 'plotpars'],
+    'abpop': ['standard_out', 'summary_out', 'smoothed_out', 'table_in', 'table_out', 'lines_in', 'atmosphere', 'lines', 'molecules', 'isotopes', 'abundances', 'terminal', 'plot']
 }
 
 batch_pars_default = {
@@ -347,7 +348,7 @@ class moog_structure(object):
         elif self.run_type == 'doflux':
             if 'del_wav' not in args.keys():
                 args['del_wav'] = 0.02
-            if 'ddel_wav_opacel_wav' not in args.keys():
+            if 'del_wav_opacel_wav' not in args.keys():
                 args['del_wav_opac'] = 1.0
             smooth_width = np.mean([self.start_wav / self.resolution, self.end_wav / self.resolution])
             smooth_width_num = int(np.ceil(smooth_width / args['del_wav']))
@@ -355,7 +356,7 @@ class moog_structure(object):
             args['synlimits'] = [self.start_wav - smooth_width_num*2*args['del_wav'], self.end_wav + smooth_width_num*2*args['del_wav'], args['del_wav'], args['del_wav_opac']]
 
         # Set dummy isotopes and abundances, to avoid error in synpop
-        if self.run_type in ['synpop']:
+        if self.run_type in ['synpop', 'abpop']:
             if 'isotopes' not in args.keys():
                 args['isotopes'] = {102.00102:0}
             if 'abundances' not in args.keys():
@@ -397,7 +398,7 @@ class moog_structure(object):
         MOOG_para_file.close()
 
         # For synpop:
-        if self.run_type in ['synpop']:
+        if self.run_type in ['synpop', 'abpop']:
             # Create the tabinput file
 
             # Sanity check
@@ -405,7 +406,7 @@ class moog_structure(object):
             assert np.all([len(self.model_RM[0]) == len(ele) for ele in self.model_abundances.values() if hasattr(ele, '__len__')])
             assert np.all([len(self.model_RM[0]) == len(ele) for ele in self.model_isotopes.values() if hasattr(ele, '__len__')])
 
-            tabinput_file_content = ['synpop', 'modprefix model', 'synprefix mod_syn', 'title default']
+            tabinput_file_content = [self.run_type, 'modprefix model', 'synprefix mod_syn', 'title default']
 
             # Deal with abundances_model and isotopes
             tabinput_file_content += [f'abundances {len(self.model_abundances):2.0f}']

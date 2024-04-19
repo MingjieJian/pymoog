@@ -11,5 +11,6 @@ from . import binary
 from . import internal
 from . import mpfit
 from . import synpop
+from . import abpop
 
 __version__ = '0.1.3'

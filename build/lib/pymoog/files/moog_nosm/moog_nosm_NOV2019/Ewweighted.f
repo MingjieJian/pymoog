@@ -66,7 +66,7 @@ c*****format statements
      .        5x, 'FLUX', 3x, 'WEIGHT', 5x, 'EW', ' EWWEIGHT')
 1005  format (2a12, 1pe9.2, e9.2, e9.2, e9.2, 0pf7.1, 1pe9.2)
 c1006  format ('EWmean, Abundance =', f8.1, f8.2)
-1006  format ('Final: ', f5.1, 3x, f8.3, 3x, f6.3, 3x,f7.3,1x,f8.1,
+1006  format ('Final: ', f5.1, 3x, f9.3, 3x, f6.3, 3x,f7.3,1x,f8.1,
      .        1x,f8.2)
 
 
