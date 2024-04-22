@@ -7,3 +7,4 @@ scipy >= 1.4.0
 myst-parser >= 0.9.0
 sphinx >=2
 PyAstronomy
+recommonmark
