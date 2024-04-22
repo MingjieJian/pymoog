@@ -12,7 +12,7 @@ MOOG_file_path = '{}/.pymoog/files/'.format(os.environ['HOME'])
 
 ## Convert the element column to element specics
 
-def save_linelist(linelist_all, sub_ll_name, wav_start=None, wav_end=None, header=None, negative=False):
+def save_linelist(linelist_all, sub_ll_name, wav_start=None, wav_end=None, header=None, negative=False, df_return=False):
     '''
     Save the linelist in MOOG format into specified position.
     
@@ -30,6 +30,8 @@ def save_linelist(linelist_all, sub_ll_name, wav_start=None, wav_end=None, heade
         Type of the line list. Now only 'vald' is supported.
     negative : bool
         Switch to permit negative wavelength. 
+    df_return : bool
+        If True then return the saved line list.
     '''
     
     # Crop the line list according to wavelength, if needed.
@@ -77,6 +79,9 @@ def save_linelist(linelist_all, sub_ll_name, wav_start=None, wav_end=None, heade
     else:
         # Same as linux
         run_status = private.subprocess.run(['sed', '-i', '1 i\{}'.format(header), sub_ll_name], capture_output=True)
+
+    if df_return:
+        return sub_linelist
 
 def read_linelist(linelist_name, loggf_cut=None, mode='default'):
     '''

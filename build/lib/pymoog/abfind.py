@@ -30,7 +30,7 @@ class abfind(moog_structure.moog_structure):
         self.m_h = m_h
         self.vmicro = vmicro
         self.mass = mass
-        self.line_list = line_list
+        self.line_list_in = line_list
         self.vmicro_mode = vmicro_mode
     
     def run_moog(self, output=False):
@@ -48,9 +48,6 @@ class abfind(moog_structure.moog_structure):
         '''
         
         MOOG_run = private.subprocess.run([MOOG_path + '/MOOGSILENT'], stdout=private.subprocess.PIPE, cwd=self.rundir_path)
-
-        # if unlock:
-        #     self.unlock()
         
         MOOG_run = str(MOOG_run.stdout, encoding = "utf-8").split('\n')
         MOOG_output = []

@@ -47,7 +47,7 @@ class cog(moog_structure.moog_structure):
         self.teff = teff
         self.logg = logg
         self.m_h = m_h
-        self.line_list = line_list
+        self.line_list_in = line_list
         self.cog_low = cog_low
         self.cog_up = cog_up
         self.cog_step = cog_step

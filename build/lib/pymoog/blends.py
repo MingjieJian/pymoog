@@ -49,7 +49,7 @@ class blends(moog_structure.moog_structure):
         self.end_wav = end_wav
         self.EW = EW
         self.ele = ele
-        self.line_list = line_list
+        self.line_list_in = line_list
         self.vmicro_mode = vmicro_mode
         self.edge_width = edge_width
         self.step = step

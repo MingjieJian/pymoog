@@ -189,6 +189,8 @@ class moog_structure(object):
             The chemical composition of marcs model. Only valid when model_type is marcs. 
         model_geo : str, default auto
             The geometry of MARCS model, either 's' for spherical, 'p' for plane-parallel or 'auto'.
+        del_wav : float, default 0
+            The wavelength step of the synthetic spectra. 
         '''
 
         self.model_type = model_type
@@ -295,15 +297,29 @@ class moog_structure(object):
                     if hasattr(self, 'weedout') and self.run_type == 'synth':
                         if self.weedout != False:
                             self.synth_weedout(self.start_wav-smooth_width_num*2*args['del_wav'], self.end_wav+smooth_width_num*2*args['del_wav'], model_file=model_file, model_format=model_format, loggf_cut=loggf_cut, abun_change=abun_change, molecules_include=molecules_include, model_type=model_type, model_chem=model_chem, model_geo=model_geo, **args)
-                    line_data.save_linelist(self.line_list, self.rundir_path + 'line.list', 
-                                            wav_start=self.start_wav - smooth_width_num*2*args['del_wav'], wav_end=self.end_wav + smooth_width_num*2*args['del_wav'])
+                    self.line_list = line_data.save_linelist(self.line_list, self.rundir_path + 'line.list',
+                                                             wav_start=self.start_wav - smooth_width_num*2*args['del_wav'], wav_end=self.end_wav + smooth_width_num*2*args['del_wav'],
+                                                             df_return=True)
                     self.line_list_name = 'line.list'
                 elif self.line_list_in[-5:] == '.list':
                     # Linelist file is specified; record linelist file name and copy to working directory.
-                    subprocess.run(['cp', self.line_list_in, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
-                    self.line_list_name = self.line_list.split('/')[-1]
-                    args['lines_in'] = self.line_list_name
-                    self.line_list = None
+                    if hasattr(self, 'weedout') and self.run_type == 'synth':
+                        self.line_list_in = line_data.read_linelist(self.line_list_in)
+                        if self.weedout != False:
+                            self.synth_weedout(self.start_wav-smooth_width_num*2*args['del_wav'], self.end_wav+smooth_width_num*2*args['del_wav'], model_file=model_file, model_format=model_format, loggf_cut=loggf_cut, abun_change=abun_change, molecules_include=molecules_include, model_type=model_type, model_chem=model_chem, model_geo=model_geo, **args)
+                            args['lines_in'] = self.line_list_name
+                            line_data.save_linelist(self.line_list, self.rundir_path + self.line_list.split('/')[-1], 
+                                            wav_start=self.start_wav - smooth_width_num*2*args['del_wav'], wav_end=self.end_wav + smooth_width_num*2*args['del_wav'])
+                        else:
+                            subprocess.run(['cp', self.line_list_in, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
+                            self.line_list_name = self.line_list.split('/')[-1]
+                            args['lines_in'] = self.line_list_name
+                            self.line_list = line_data.read_linelist(self.line_list_in)
+                    else:
+                        subprocess.run(['cp', self.line_list_in, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
+                        self.line_list_name = self.line_list.split('/')[-1]
+                        args['lines_in'] = self.line_list_name
+                        self.line_list = line_data.read_linelist(self.line_list_in)
             elif isinstance(self.line_list_in, private.pd.DataFrame):
                 self.line_list = self.line_list_in
                 if hasattr(self, 'weedout') and self.run_type == 'synth':

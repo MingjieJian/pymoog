@@ -25,8 +25,6 @@ class synth(moog_structure.moog_structure):
             The microturbulance velocity of the model. 
         mass : float, default 1
             The stellar mass of the input model. Only used when the model type is MARCS spherical.
-        del_wav : float, default 0
-            The wavelength step of the synthetic spectra. 
         line_list : str or pd.DataFrame
             The name of the linelist file. If not specified will use built-in VALD linelist (vald_3000_24000).
         weedout : bool or float, default False

@@ -50,7 +50,7 @@ class weedout(moog_structure.moog_structure):
         self.tosslines = tosslines
         self.vmicro_mode = vmicro_mode
 
-    def read_linelist(self, tosslines=False, remove=True):
+    def read_linelist(self, tosslines=True, remove=True):
         '''
         Read the keep (and toss) linelist of weedout driver.
 
@@ -100,12 +100,12 @@ class weedout(moog_structure.moog_structure):
         '''
         
         # run synth to get the spectra
-        s_all = synth.synth(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, resolution, line_list=self.rundir_path + 'line.list')
+        s_all = synth.synth(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, resolution, line_list=self.line_list)
         s_all.prepare_file()
         s_all.run_moog(output=output)
         s_all.read_spectra()
         
-        s_keep = synth.synth(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, resolution, line_list=self.rundir_path + 'keep.list')
+        s_keep = synth.synth(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, resolution, line_list=self.keep_list)
         s_keep.prepare_file()
         s_keep.run_moog(output=output)
         s_keep.read_spectra()

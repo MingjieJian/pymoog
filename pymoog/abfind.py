@@ -30,7 +30,7 @@ class abfind(moog_structure.moog_structure):
         self.m_h = m_h
         self.vmicro = vmicro
         self.mass = mass
-        self.line_list = line_list
+        self.line_list_in = line_list
         self.vmicro_mode = vmicro_mode
     
     def run_moog(self, output=False):

@@ -25,7 +25,7 @@ source_suffix = {
 # -- Project information -----------------------------------------------------
 
 project = 'pymoog'
-copyright = '2023, Mingjie Jian'
+copyright = '2024, Mingjie Jian'
 author = 'Mingjie Jian'
 master_doc = 'index'
 
@@ -38,7 +38,7 @@ release = '0.0.1'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'myst_parser', 'sphinx.ext.mathjax']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'myst_parser', 'sphinx.ext.mathjax', 'sphinx_math_dollar']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
