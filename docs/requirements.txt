@@ -9,3 +9,4 @@ sphinx >=2
 PyAstronomy
 recommonmark
 sphinx_math_dollar
+sphinx_rtd_theme
