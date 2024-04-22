@@ -48,9 +48,6 @@ class abfind(moog_structure.moog_structure):
         '''
         
         MOOG_run = private.subprocess.run([MOOG_path + '/MOOGSILENT'], stdout=private.subprocess.PIPE, cwd=self.rundir_path)
-
-        # if unlock:
-        #     self.unlock()
         
         MOOG_run = str(MOOG_run.stdout, encoding = "utf-8").split('\n')
         MOOG_output = []

@@ -1,9 +1,6 @@
 #!/usr/bin/python
 import numpy as np
-from . import private, moog_structure, doflux
-
-MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ['HOME'])
-MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
+from . import private, moog_structure, doflux, weedout
 
 class synth(moog_structure.moog_structure):
     def __init__(self, teff, logg, m_h, start_wav, end_wav, resolution, vmicro=2, mass=1, line_list='vald_3000_24000', weedout=False, prefix='', vmicro_mode='flexible', doflux_cont=True):
@@ -58,22 +55,25 @@ class synth(moog_structure.moog_structure):
         if end_wav - start_wav >= 2000:
             raise ValueError('MOOG may provide incorrect spectra when the synthetic length is longer than 2000A. Please split the task into tasks with length <2000 and combine them later on.')        
         
-        # Weedout the line list 
+    def synth_weedout(self, start_wav, end_wav, model_file=None, model_format='moog', loggf_cut=None, abun_change=None, molecules_include=None, model_type='marcs', model_chem='st', model_geo='auto', **args):
+        if self.line_list_in[-5:] != '.list':
+            weedout_list_in = self.line_list_in
+        else:
+            weedout_list_in = self.rundir_path+self.line_list_in
         if self.weedout == True:
-            if self.weedout == True:
-                w = weedout.weedout(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, line_list=self.rundir_path+self.line_list_in, prefix=self.prefix)
-            else:
-                w = weedout.weedout(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, kappa_ratio=self.weedout, line_list=self.rundir_path+self.line_list_in, prefix=self.prefix)
-            w.prepare_file()
-            w.run_moog()
-            w.read_linelist()
-            self.line_list = w.keep_list
+            w = weedout.weedout(self.teff, self.logg, self.m_h, start_wav, end_wav, line_list=weedout_list_in, prefix=self.prefix)
+        else:
+            w = weedout.weedout(self.teff, self.logg, self.m_h, start_wav, end_wav, kappa_ratio=self.weedout, line_list=weedout_list_in, prefix=self.prefix)
+        w.prepare_file(model_file=model_file, model_format=model_format, loggf_cut=loggf_cut, abun_change=abun_change, molecules_include=molecules_include, model_type=model_type, model_chem=model_chem, model_geo=model_geo, **args)
+        w.run_moog()
+        w.read_linelist()
+        self.line_list = w.keep_list
 
 
-    def doflux_cont(self):
+    def doflux_cont(self, model_file=None, model_format='moog', loggf_cut=None, abun_change=None, molecules_include=None, model_type='marcs', model_chem='st', model_geo='auto', **args):
         # Synthesize the flux.
         d = doflux.doflux(self.teff, self.logg, self.m_h, self.start_wav, self.end_wav, self.resolution, vmicro=self.vmicro, mass=self.mass, prefix=self.prefix, vmicro_mode=self.vmicro_mode)
-        d.prepare_file()
+        d.prepare_file(model_file=model_file, model_format=model_format, loggf_cut=loggf_cut, abun_change=abun_change, molecules_include=molecules_include, model_type=model_type, model_chem=model_chem, model_geo=model_geo, **args)
         d.run_moog()
         d.read_spectra()
         self.flux_cont = d.flux_cont
@@ -128,38 +128,3 @@ class synth(moog_structure.moog_structure):
             
         if remove:
             self.remove_rundir()
-            
-    # def read_model(self, remove=True):
-    #     '''
-    #     Read the output model of MOOG. This model have tauref calculated from MOOG.
-
-    #     Parameters
-    #     ----------
-    #     remove : bool, default True
-    #         Whether remove the working folder after this function.
-
-    #     Returns
-    #     ---------
-    #     model_df : pandas DataFrame
-    #         An DataFrame containing the model
-    #     '''
-        
-    #     with open(self.rundir_path+'MOOG.out1') as file:
-    #         content = file.readlines()
-    #     i_list = []
-    #     for i in range(len(content)):
-    #         if 'INPUT ATMOSPHERE QUANTITIES' in content[i] or 'INPUT ABUNDANCES:' in content[i]:
-    #             i_list.append(i)
-
-    #     i_list[0] += 1
-    #     i_list[1] = len(content) - i_list[1]
-
-    #     self.model = private.pd.read_csv(self.rundir_path+'MOOG.out1', skiprows=i_list[0], skipfooter=i_list[1], sep=' +', engine='python')
-        
-    #     for column in ['tauref', 'Pgas', 'Ne', 'Vturb']:
-    #         self.model[column] = self.model[column].map(private.D2E)
-            
-    #     self.model = self.model.astype(np.float64)
-        
-    #     if remove:
-    #         self.remove()

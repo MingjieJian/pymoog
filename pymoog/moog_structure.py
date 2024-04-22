@@ -191,6 +191,8 @@ class moog_structure(object):
             The geometry of MARCS model, either 's' for spherical, 'p' for plane-parallel or 'auto'.
         '''
 
+        self.model_type = model_type
+
         # Use defaule smooth parameter if not specified. 
         if ('smooth_para' not in args.keys() or args['smooth_para'] is None) and self.run_type in ['synth', 'binary', 'synpop']:
             args['smooth_para'] = ['g', 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -278,16 +280,23 @@ class moog_structure(object):
                     args['del_wav_opac'] = 1.0
                     self.del_wav_opac = args['del_wav_opac']
                 if args['del_wav'] < 0.001:
-                    raise ValueError('del_wav cannot be smaller than 0.001; the calculation and I/O precision is not enough.')
+                    raise ValueError('del_wav cannot be smaller than 0.001; the calculation and I/O precision is not high enough in this situation.')
                 smooth_width = np.mean([self.start_wav / self.resolution, self.end_wav / self.resolution])
                 smooth_width_num = int(np.ceil(smooth_width / args['del_wav']))
             else:
+                args['del_wav'] = 0
                 smooth_width = 0 
+                smooth_width_num = 0
+
             if isinstance(self.line_list_in, str):
                 if self.line_list_in[-5:] != '.list':
                     # Linelist file is not specified, use internal line list;
                     self.line_list = line_data.read_linelist(self.line_list_in, loggf_cut=loggf_cut)
-                    line_data.save_linelist(self.line_list, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
+                    if hasattr(self, 'weedout') and self.run_type == 'synth':
+                        if self.weedout != False:
+                            self.synth_weedout(self.start_wav-smooth_width_num*2*args['del_wav'], self.end_wav+smooth_width_num*2*args['del_wav'], model_file=model_file, model_format=model_format, loggf_cut=loggf_cut, abun_change=abun_change, molecules_include=molecules_include, model_type=model_type, model_chem=model_chem, model_geo=model_geo, **args)
+                    line_data.save_linelist(self.line_list, self.rundir_path + 'line.list', 
+                                            wav_start=self.start_wav - smooth_width_num*2*args['del_wav'], wav_end=self.end_wav + smooth_width_num*2*args['del_wav'])
                     self.line_list_name = 'line.list'
                 elif self.line_list_in[-5:] == '.list':
                     # Linelist file is specified; record linelist file name and copy to working directory.
@@ -296,10 +305,17 @@ class moog_structure(object):
                     args['lines_in'] = self.line_list_name
                     self.line_list = None
             elif isinstance(self.line_list_in, private.pd.DataFrame):
-                line_data.save_linelist(self.line_list_in, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
+                self.line_list = self.line_list_in
+                if hasattr(self, 'weedout') and self.run_type == 'synth':
+                    if self.weedout != False:
+                        self.synth_weedout(self.start_wav-smooth_width_num*2*args['del_wav'], self.end_wav+smooth_width_num*2*args['del_wav'], model_file=model_file, model_format=model_format, loggf_cut=loggf_cut, abun_change=abun_change, molecules_include=molecules_include, model_type=model_type, model_chem=model_chem, model_geo=model_geo, **args)
+                line_data.save_linelist(self.line_list, self.rundir_path + 'line.list', 
+                                            wav_start=self.start_wav - smooth_width_num*2*args['del_wav'], wav_end=self.end_wav + smooth_width_num*2*args['del_wav'])
                 self.line_list_name = 'line.list'
             else:
                 raise TypeError('Type of input linelist have to be either str or pandas.DataFrame.')
+
+        
                 
         # Create parameter file.
         if self.run_type == 'blends':
@@ -310,7 +326,7 @@ class moog_structure(object):
 
         # Misc for some drivers
         if self.run_type == 'synth' and self.doflux_cont:
-            self.doflux_cont()
+            self.doflux_cont(model_file=model_file, model_format=model_format, loggf_cut=loggf_cut, abun_change=abun_change, molecules_include=molecules_include, model_type=model_type, model_chem=model_chem, model_geo=model_geo, **args)
         
     def create_para_file(self, args=None):
         '''
@@ -368,11 +384,12 @@ class moog_structure(object):
 
         # Convert the isotope to the list
         if 'isotopes' in args.keys():
-            assert np.all([not(hasattr(ele, '__len__')) for ele in args['isotopes'].values()])
-            isotopes_sub_content = []
-            isotopes_sub_content += ['     {:2.0f}     1'.format(len(args['isotopes']))]
-            isotopes_sub_content += [f'  {ele:9.5f}    {args["isotopes"][ele]}' if ele > 100 else f'  {ele:9.3f}    {args["isotopes"][ele]}' for ele in args['isotopes'].keys()]
-            args['isotopes'] = '\n'.join(isotopes_sub_content)
+            if args['isotopes'] != '     0     0':
+                assert np.all([not(hasattr(ele, '__len__')) for ele in args['isotopes'].values()])
+                isotopes_sub_content = []
+                isotopes_sub_content += ['     {:2.0f}     1'.format(len(args['isotopes']))]
+                isotopes_sub_content += [f'  {ele:9.5f}    {args["isotopes"][ele]}' if ele > 100 else f'  {ele:9.3f}    {args["isotopes"][ele]}' for ele in args['isotopes'].keys()]
+                args['isotopes'] = '\n'.join(isotopes_sub_content)
 
         # Constract the parameter dict.
         for ele in valid_batch_pars[self.run_type]:
