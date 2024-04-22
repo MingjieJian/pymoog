@@ -242,7 +242,7 @@ c     options concerning what is seen on the plot
 
 c*****format statements
 1001  format (a80)
-1003  format (/'species=',f5.1, 3x, 'lambda=', f8.3, 3x, 'EP=', f6.3,
+1003  format (/'species=',f5.1, 3x, 'lambda=', f9.3, 3x, 'EP=', f6.3,
      .        3x, 'log(gf)=', f7.3)
 1004  format ('NO ABUNDANCE CONVERGENCE IN 30 TRIES; I QUIT!')
 1005  format ('MORE THAN 1000 LINES FED TO ABPOP; I QUIT')

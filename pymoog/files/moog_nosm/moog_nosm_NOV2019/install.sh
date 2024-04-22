@@ -12,8 +12,8 @@
 path=`pwd`'/'
 replacement_string="     .  '${path}'"
 
-sed -i "22s#.*#$replacement_string#" Moog.f
-sed -i "22s#.*#$replacement_string#" Moogsilent.f
+sed -i.tmp "22s#.*#$replacement_string#" Moog.f
+sed -i.tmp "22s#.*#$replacement_string#" Moogsilent.f
 
 # Change the machine to user specified type.
 machine='None'
@@ -33,8 +33,8 @@ do
 	fi
 done
 
-sed -i "29s/'.*'/'$machine'/" Moog.f
-sed -i "29s/'.*'/'$machine'/" Moogsilent.f
+sed -i.tmp "29s/'.*'/'$machine'/" Moog.f
+sed -i.tmp "29s/'.*'/'$machine'/" Moogsilent.f
 
 # Install MOOG and MOOGSILENT
 

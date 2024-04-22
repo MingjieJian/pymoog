@@ -229,6 +229,7 @@ def interpolate_kurucz_model(teff, logg, m_h, vmicro=2, abun_change=None, molecu
                 kurucz2moog(model_path=to_path, vmicro=vmicro, abun_change=abun_change, molecules_include=molecules_include, m_h_model=m_h, converted_model_path=to_path)
             else:
                 kurucz2moog(model_path=to_path, vmicro=vmicro, abun_change=abun_change, molecules_include=molecules_include, converted_model_path=to_path)
+    return {'model type':'kurucz', 'vmicro_model':2}
         
 def kurucz2moog(model_path=None, vmicro=2.0, abun_change=None, converted_model_path=None, model_format='atlas9', molecules_include=None, m_h_model=None):
     '''
@@ -700,6 +701,7 @@ def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='a
         marcs_model_interpolated = {}
         # Interpolation
         marcs_model_interpolated['model name'] = para2marcs_filename([chem, geo, teff, logg, mass, vmicro, m_h, a, 0, 0, o, 0, 0])
+        marcs_model_interpolated['model type'] = 'marcs'
         if geo == 's':
             marcs_model_interpolated['geometry'] = 'spherical'
         elif geo == 'p':
@@ -733,9 +735,11 @@ def interpolate_model(teff, logg, m_h, vmicro=2, mass=1, abun_change=None, molec
     '''
 
     if model_type == 'kurucz':
-        interpolate_kurucz_model(teff, logg, m_h, vmicro=vmicro, abun_change=abun_change, molecules_include=molecules_include, to_path=save_name)
-        return 2
+        kurucz_model_interpolated = interpolate_kurucz_model(teff, logg, m_h, vmicro=vmicro, abun_change=abun_change, molecules_include=molecules_include, to_path=save_name)
+        return kurucz_model_interpolated
     elif model_type == 'marcs':
         marcs_model_interpolated = interpolate_marcs_model(teff, logg, m_h, vmicro=vmicro, mass=mass, chem=chem, geo=geo, vmicro_mode=vmicro_mode)
         marcs2moog(marcs_model_interpolated, save_name, abun_change=abun_change, molecules_include=molecules_include)
-        return marcs_model_interpolated['vmicro_model']
+        return marcs_model_interpolated
+    else:
+        raise ValueError('Function interpolate_model only support model_type of "marcs" or "kurucz".')

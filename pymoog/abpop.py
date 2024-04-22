@@ -1,18 +1,18 @@
-#!/usr/bin/python
 import numpy as np
 from . import moog_structure
 from . import private, model, line_data
 import subprocess
 
-class binary(moog_structure.moog_structure):
-    def __init__(self, stellar_paras_list, start_wav, end_wav, resolution, vmicro=2, mass=1, line_list='vald_3000_24000', weedout=False, prefix='', vmicro_mode='flexible'):
+
+class abpop(moog_structure.moog_structure):
+    def __init__(self, stellar_paras_list, model_RM, start_wav, end_wav, resolution, vmicro=2, mass=1, line_list='vald_3000_24000', weedout=False, prefix='', vmicro_mode='flexible', model_abundances={}, model_isotopes={}):
         '''
-        Initiate a binary instance and read the parameters.
+        Initiate a abpop instance and read the parameters.
         
         Parameters
         ----------
-        stellar_paras_list : list, [[teff1, logg1, m_h1], [teff2, logg2, m_h2]]
-            List of the stellar parameters of the binaries
+        stellar_paras_list : list, [[teff1, logg1, m_h1], [teff2, logg2, m_h2], ...]
+            List of the stellar parameters of the binaries, max length 99.
         start_wav : float
             The start wavelength of synthetic spectra
         end_wav : float
@@ -34,15 +34,17 @@ class binary(moog_structure.moog_structure):
         vmicro_mode : str, default 'fix'
             The mode of the vmicro in calculation. If 'fixed', will use the same vmicro in model interpolation and synthesis; if 'flexible', then will use the cloest vmicro in model interpolation if the given vmicro is outside the grid. 
         '''
-        super(binary, self).__init__('binary', prefix=prefix)
-        if type(vmicro) == int or float:
-            vmicro = [vmicro, vmicro]
-        if type(mass) == int or float:
-            mass = [mass, mass]
+        super(abpop, self).__init__('abpop', prefix=prefix)
+        N_box = len(stellar_paras_list)
+        if not hasattr(vmicro, '__len__'):
+            vmicro = [vmicro] * N_box
+        if not hasattr(mass, '__len__'):
+            mass = [mass] * N_box
 
         self.stellar_paras = stellar_paras_list
         self.vmicro = vmicro
         self.mass = mass
+        self.N_box = N_box
 
         self.start_wav = start_wav
         self.end_wav = end_wav
@@ -51,6 +53,10 @@ class binary(moog_structure.moog_structure):
         self.weedout = weedout
         self.prefix = prefix
         self.vmicro_mode = vmicro_mode
+
+        self.model_RM = model_RM
+        self.model_abundances = model_abundances
+        self.model_isotopes = model_isotopes
 
         if start_wav >= end_wav:
             raise ValueError('start_wav has to be smaller than end_wav.')
@@ -72,7 +78,7 @@ class binary(moog_structure.moog_structure):
 
     def prepare_file(self, model_file=None, model_format='moog', loggf_cut=None, abun_change=None, molecules_include=None, model_type='marcs', model_chem='st', model_geo='auto', **args):
         '''
-        Prepare the model, linelist and control files for binary driver.
+        Prepare the model, linelist and control files for abpop driver.
         Can either provide stellar parameters and wavelengths or provide file names.
         If fine name(s) provided, the files will be copied to working directory for calculation.  
         
@@ -114,11 +120,11 @@ class binary(moog_structure.moog_structure):
         # Create model file.
         self.model_file = []
         self.vmicro_model = []
-        for i in range(2):
+        for i in range(self.N_box):
             if model_file == None:
                 # Model file is not specified, will use builtin model according to stellar parameters.
-                self.model1 = model.interpolate_model(*self.stellar_paras[i], vmicro=self.vmicro[i], vmicro_mode=self.vmicro_mode, mass=self.mass[i], abun_change=self.abun_change[i], molecules_include=molecules_include, save_name=self.rundir_path + 'model{}.mod'.format(i+1), model_type=model_type, chem=model_chem, geo=model_geo)
-                self.model_file.append('model{}.mod'.format(i+1))
+                self.model1 = model.interpolate_model(*self.stellar_paras[i], vmicro=self.vmicro[i], vmicro_mode=self.vmicro_mode, mass=self.mass[i], abun_change=self.abun_change[i], molecules_include=molecules_include, save_name=self.rundir_path + 'model{}'.format(i+1), model_type=model_type, chem=model_chem, geo=model_geo)
+                self.model_file.append('model{}'.format(i+1))
                 self.vmicro_model.append(self.model1['vmicro_model'])
             else:
                 # Model file is specified; record model file name and copy to working directory.
@@ -128,12 +134,12 @@ class binary(moog_structure.moog_structure):
                     subprocess.run(['cp', model_file[i], self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
                     self.model_file.append(model_file.split('/')[-1])
                 elif model_format[:6] == 'kurucz':
-                    model.kurucz2moog(model_path=model_file[i], abun_change=self.abun_change[i], model_format=model_format[7:], molecules_include=molecules_include, converted_model_path=self.rundir_path + 'model{}.mod'.format(i+1))
-                    self.model_file.append('model{}.mod'.format(i+1))
+                    model.kurucz2moog(model_path=model_file[i], abun_change=self.abun_change[i], model_format=model_format[7:], molecules_include=molecules_include, converted_model_path=self.rundir_path + 'model{}'.format(i+1))
+                    self.model_file.append('model{}'.format(i+1))
                 elif model_format == 'marcs':
                     marcs_model = model.read_marcs_model(model_file[i])
-                    model.marcs2moog(marcs_model, self.rundir_path + 'model{}.mod'.format(i+1), abun_change=self.abun_change[i], molecules_include=molecules_include)
-                    self.model_file.append('model{}.mod'.format(i+1))
+                    model.marcs2moog(marcs_model, self.rundir_path + 'model{}'.format(i+1), abun_change=self.abun_change[i], molecules_include=molecules_include)
+                    self.model_file.append('model{}'.format(i+1)) 
                 else:
                     raise ValueError("The input model_type is not supported. Have to be either 'moog', 'kurucz' or 'marcs.")
 
@@ -149,38 +155,29 @@ class binary(moog_structure.moog_structure):
         smooth_width = np.mean([self.start_wav / self.resolution, self.end_wav / self.resolution])
         smooth_width_num = int(np.ceil(smooth_width / args['del_wav']))
 
-        for i in range(2):
-            if isinstance(self.line_list_in, str):
-                if self.line_list_in[-5:] != '.list':
-                    # Linelist file is not specified, use internal line list;
-                    line_list = line_data.read_linelist(self.line_list_in, loggf_cut=loggf_cut)
-                    line_data.save_linelist(line_list, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
-                    self.line_list_name = 'line.list'
-                    self.line_list = line_list
-                elif self.line_list_in[-5:] == '.list':
-                    # Linelist file is specified; record linelist file name and copy to working directory.
-                    subprocess.run(['cp', self.line_list_in, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
-                    self.line_list_name = self.line_list.split('/')[-1]
-                    args['lines_in'] = self.line_list_name
-                    self.line_list = None
-            elif isinstance(self.line_list_in, private.pd.DataFrame):
-                line_data.save_linelist(self.line_list_in, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
-                self.line_list = 'line.list'
-            else:
-                raise TypeError('Type of input linelist have to be either str or pandas.DataFrame.')
+        if isinstance(self.line_list_in, str):
+            if self.line_list_in[-5:] != '.list':
+                # Linelist file is not specified, use internal line list;
+                line_list = line_data.read_linelist(self.line_list_in, loggf_cut=loggf_cut)
+                line_data.save_linelist(line_list, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
+                self.line_list_name = 'line.list'
+                self.line_list = line_list
+            elif self.line_list_in[-5:] == '.list':
+                # Linelist file is specified; record linelist file name and copy to working directory.
+                subprocess.run(['cp', self.line_list_in, self.rundir_path], encoding='UTF-8', stdout=subprocess.PIPE)
+                self.line_list_name = self.line_list.split('/')[-1]
+                args['lines_in'] = self.line_list_name
+                self.line_list = None
+        elif isinstance(self.line_list_in, private.pd.DataFrame):
+            line_data.save_linelist(self.line_list_in, self.rundir_path + 'line.list', wav_start=self.start_wav-smooth_width_num*2*args['del_wav'], wav_end=self.end_wav+smooth_width_num*2*args['del_wav'])
+            self.line_list = 'line.list'
+        else:
+            raise TypeError('Type of input linelist have to be either str or pandas.DataFrame.')
                 
         # Create parameter file.
-        if self.run_type == 'blends':
-            args['blenlimits'] = [self.edge_width, self.step, self.ele]
-        if self.run_type == 'cog':
-            args['coglimits'] = [self.cog_low, self.cog_up, self.cog_step, self.lp_step]
         self.create_para_file(args=args)
 
-        # Misc for some drivers
-        if self.run_type == 'synth' and self.doflux_cont:
-            self.doflux_cont()
-
-    def read_spectra(self, spec_type='smooth', remove=True):
+    def read_output(self, remove=True):
         '''
         Read the output spectra of MOOG.
 
@@ -198,35 +195,26 @@ class binary(moog_structure.moog_structure):
         flux : a numpy array
             An array of flux
         '''
-        if spec_type == 'standard':
-            models_file = open(self.rundir_path+'bin_raw.out')
-            models = models_file.readline()
-            models = models_file.readline()
-            models = models_file.read().split()
-            models = [float(i) for i in models]
-            x = range(round((models[1]-models[0])/models[2])+1)
-            model_wav = []
-            for i in x:
-                model_wav.append(models[0] + models[2]*i)
-            model_flux = np.array(models[4:])
-            self.wav, self.flux = np.array(model_wav), np.array(model_flux)
-        elif spec_type == 'smooth':
-            models_file = open(self.rundir_path+'bin_smo.out')
-            models = models_file.readline()
-            models = models_file.readline()
-            models = models_file.readlines()
-            wavelength = []
-            depth = []
-            for i in models:
-                temp = i.split()
-                wavelength.append(float(temp[0]))
-                depth.append(float(temp[1]))
-            self.wav, self.flux =  np.array(wavelength), np.array(depth)
+        with open(self.rundir_path + '/taboutput', 'r') as file:
+            abpop_res_content = file.readlines()
+        abpop_res_content = abpop_res_content[4:]
+
+        result = [item.split('\n') for item in ''.join(abpop_res_content).split('\n\n') if item.strip()]
+
+        EW_syn = []
+        abundout = []
+        abundout_df_list = []
+        for ele in result:
+            ele = [i for i in ele if i != '']
+            data = [line.split() for line in ele[2:-1]]
+            df = private.pd.DataFrame(data, columns=['MODFILE', 'COGOUT', 'RADIUS', 'COUNT', 'FLUX', 'WEIGHT', 'EW', 'EWWEIGHT'])
+            abundout_df_list.append(df)
+            EW_syn.append(float(ele[-1].split()[-2]))
+            abundout.append(float(ele[-1].split()[-1]))
             
-        # Crop the spectra to fit the synthetic wavelength.
-        indices = (self.wav >= self.start_wav) & (self.wav <= self.end_wav) 
-        self.wav = self.wav[indices]
-        self.flux = self.flux[indices]    
+        self.line_list_in['EW_syn'] = EW_syn
+        self.line_list_in['abundout'] = abundout
+        self.abundout_df = abundout_df_list
             
         if remove:
             self.remove_rundir()

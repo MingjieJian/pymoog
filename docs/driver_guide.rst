@@ -3,7 +3,7 @@ Guide for each driver
 
 Here we presents the useage of each drivers imported to pymoog in detail.
 
-MOOG provides 14 drivers used for various purpose, and 5 of them are imported in `pymoog`:
+MOOG provides 14 drivers used for various purpose, and 9 of them are imported in `pymoog`:
 
 +-----------------------+-----------------------+-----------------------+
 | driver                | explanation           | imported              |
@@ -31,9 +31,21 @@ MOOG provides 14 drivers used for various purpose, and 5 of them are imported in
 |                       | creation for          |                       |
 |                       | individual lines      |                       |
 +-----------------------+-----------------------+-----------------------+
-| binary                | spectrum synthesis of | no                    |
+| binary                | spectrum synthesis of | yes                   |
 |                       | a binary star         |                       |
 |                       | individual lines      |                       |
++-----------------------+-----------------------+-----------------------+
+| doflux                | plot the overall flux | yes                   |
+|                       | curve of the model    |                       |
+|                       | atmosphere            |                       |
++-----------------------+-----------------------+-----------------------+
+| synpop                | spectrum synthesis    | yes                   |
+|                       | for a stellar         |                       |
+|                       | population            |                       |
++-----------------------+-----------------------+-----------------------+
+| abpop                 | equivalent width      | yes                   |
+|                       | matching for a        |                       |
+|                       | stellar population    |                       |
 +-----------------------+-----------------------+-----------------------+
 | gridsyn               | mass production of    | no                    |
 |                       | synthetic spectra     |                       |
@@ -51,18 +63,6 @@ MOOG provides 14 drivers used for various purpose, and 5 of them are imported in
 |                       | equivalent tau5000    |                       |
 |                       | scale                 |                       |
 +-----------------------+-----------------------+-----------------------+
-| doflux                | plot the overall flux | no                    |
-|                       | curve of the model    |                       |
-|                       | atmosphere            |                       |
-+-----------------------+-----------------------+-----------------------+
-| synpop                | spectrum synthesis    | no                    |
-|                       | for a stellar         |                       |
-|                       | population            |                       |
-+-----------------------+-----------------------+-----------------------+
-| abpop                 | equivalent width      | no                    |
-|                       | matching for a        |                       |
-|                       | stellar population    |                       |
-+-----------------------+-----------------------+-----------------------+
 | plotit                | re-plotting of        | no                    |
 |                       | spectra that were     |                       |
 |                       | created in a prior    |                       |
@@ -72,7 +72,7 @@ MOOG provides 14 drivers used for various purpose, and 5 of them are imported in
 There are two more functions which are available in `pymoog`:
 
 - Contribution function: a function indicating where the lines are formed in the atmosphere
-- MPFIT: an algorithm for self-consistent multi-parameter fitting for spectra, by [Takeda (1995)](https://ui.adsabs.harvard.edu/abs/1995PASJ...47..287T).
+- MPFIT: an algorithm for self-consistent multi-parameter fitting for spectra, by `Takeda (1995) <https://ui.adsabs.harvard.edu/abs/1995PASJ...47..287T>`_ .
 
 The following links provide the usage of each driver and function listed above. 
 Only the keywords worth attention will be descripbed, and please refer to the help docstring for detail description of each keyword.

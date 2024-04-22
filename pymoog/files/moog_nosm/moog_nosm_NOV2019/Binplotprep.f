@@ -148,8 +148,8 @@ c     and dump to combined raw synthetic spectrum file
 
 
 c*****format statements
-1001  format ('INPUT DELTA VELOCITY = ', f8.3,
-     .        ';  DELTA WAVELENGTH = ', f8.3,
+1001  format ('INPUT DEL_V = ', f8.3, 
+     .        ';  DEL_WAVE = ', f8.3,
      .        ';  POINT SHIFT = ', i4)
 1002  format ('PRIMARY FLUX = ', 1pe10.3, 
      .        ';  SECONDARY FLUX = ', 1pe10.3)
