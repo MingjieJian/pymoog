@@ -2,6 +2,8 @@
 
 ## Kurucz model
 
+The current Kurucz model are downloaded from Kurucz's website: http://kurucz.harvard.edu/grids/grids[XXX], with no suffix indluced (i.e., A, ODFNEW, HE50 or NOVER not included).
+
 - The metallicity is from -5 to 1.0 with a step of 0.5, except in -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3.
 - logg grid is from 0 to 5 with a step of 0.5.
 - Teff grid is from 3500 to 50000 with a step of 250, 500, 1000 or 2500.
