@@ -4,10 +4,11 @@ import subprocess
 from . import model, line_data
 import re
 import numpy as np
+import os
 
-MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(private.os.environ['HOME'])
-MOOG_rundir_path = '{}/.pymoog/'.format(private.os.environ['HOME'])
-MOOG_file_path = '{}/.pymoog/files/'.format(private.os.environ['HOME'])
+MOOG_path = os.path.join(f'{os.environ['HOME']}', '.pymoog/moog_nosm/moog_nosm_NOV2019/')
+MOOG_rundir_path = os.path.join(os.environ['HOME'], '.pymoog/')
+MOOG_file_path = os.path.join(f'{os.environ['HOME']}', '.pymoog/files/')
 
 valid_batch_pars = {
     'abfind': ['standard_out', 'summary_out', 'model_in', 'lines_in', 'atmosphere', 'lines', 'molecules', 'terminal'],

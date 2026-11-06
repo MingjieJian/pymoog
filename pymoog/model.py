@@ -5,16 +5,16 @@ import subprocess
 import numpy as np
 import re
 import pandas as pd
-from pymoog import line_data
+#from pymoog import line_data
 from scipy.spatial import Delaunay
 import pickle
 
-MOOG_path = os.path.join(f'{os.environ['HOME']}', '/.pymoog/moog_nosm/moog_nosm_NOV2019/')
-MOOG_run_path = os.path.join(f'{os.environ['HOME']}', '/.pymoog/rundir/')
-MOOG_file_path = os.path.join(f'{os.environ['HOME']}', '/.pymoog/files/')
+MOOG_path = os.path.join(f'{os.environ['HOME']}', '.pymoog/moog_nosm/moog_nosm_NOV2019/')
+MOOG_run_path = os.path.join(f'{os.environ['HOME']}', '.pymoog/rundir/')
+MOOG_file_path = os.path.join(f'{os.environ['HOME']}', '.pymoog/files/')
 
 if os.environ.get('READTHEDOCS') != 'True':
-    grid_kurucz = pd.read_csv(os.path.join(MOOG_file_path, 'grid_points_kurucz.csv'))
+    grid_kurucz = pd.read_csv(MOOG_file_path + 'grid_points_kurucz.csv')
     grid_matrix = np.array(grid_kurucz[['Teff', 'logg', 'm_h']])
     tri = Delaunay(grid_matrix)
     
@@ -188,7 +188,7 @@ def interpolate_kurucz_model(teff, logg, m_h, vmicro=2, abun_change=None, molecu
 
     if len(grid_kurucz_use) == 1:
         # No interpolation
-        model_path = os.path.join(MOOG_file_path, '/pymoog_lf/model/kurucz/standard/single/teff{:.0f}logg{:.1f}m_h{:+.1f}.dat'.format(*np.array(grid_kurucz_use.loc[0])))
+        model_path = os.path.join(MOOG_file_path, 'pymoog_lf/model/kurucz/standard/single/teff{:.0f}logg{:.1f}m_h{:+.1f}.dat'.format(*np.array(grid_kurucz_use.loc[0])))
         subprocess.run(['cp', model_path, to_path])
         if not kurucz_format:
             kurucz2moog(model_path=to_path, vmicro=vmicro, abun_change=abun_change, converted_model_path=to_path)
@@ -197,7 +197,7 @@ def interpolate_kurucz_model(teff, logg, m_h, vmicro=2, abun_change=None, molecu
         short_64 = np.any(grid_kurucz_use['length'] == 64)
         column_7 = np.any(grid_kurucz_use['column'] == 7)
         for i in range(len(grid_kurucz_use)):
-            model_path = os.path.join(MOOG_file_path, '/pymoog_lf/model/kurucz/standard/single/teff{:.0f}logg{:.1f}m_h{:+.1f}.dat'.format(*np.array(grid_kurucz_use.loc[i])))
+            model_path = os.path.join(MOOG_file_path, 'pymoog_lf/model/kurucz/standard/single/teff{:.0f}logg{:.1f}m_h{:+.1f}.dat'.format(*np.array(grid_kurucz_use.loc[i])))
 
             abun_single, model_line_single, pradk_single = read_Kurucz_model(model_path)
 
@@ -639,7 +639,7 @@ def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='a
         p = np.array([teff, g, m_h, vmicro])
         
     marcs_grid = pd.read_csv(os.path.join(MOOG_file_path, 'pymoog_lf/model/marcs/{}/{}/grid_points.csv'.format(chem, geo)))
-    marcs_tri = pickle.load(open(os.path.join(MOOG_file_path, '/pymoog_lf/model/marcs/{}/{}/tri.pkl'.format(chem, geo), 'rb')))
+    marcs_tri = pickle.load(open(os.path.join(MOOG_file_path, 'pymoog_lf/model/marcs/{}/{}/tri.pkl'.format(chem, geo)), 'rb'))
 
     a, o = z2ao(p[2], out_type='other')
 
@@ -694,7 +694,7 @@ def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='a
 
     if len(marcs_grid_use) == 1:
         # No interpolation
-        marcs_model_interpolated = read_marcs_model(os.path.join(MOOG_file_path, '/pymoog_lf/model/marcs/{13}/{14}/{1}{2:.0f}_g{3:+4.1f}_m{4:3.1f}_t{5:02.0f}_{0:}_z{6:+5.2f}_a{7:+5.2f}_c{8:+5.2f}_n{9:+5.2f}_o{10:+5.2f}_r{11:+5.2f}_s{12:+5.2f}.mod'.format(*np.array(marcs_grid_use.loc[0, marcs_grid_use.columns[:-1]]), chem, geo)))
+        marcs_model_interpolated = read_marcs_model(os.path.join(MOOG_file_path, 'pymoog_lf/model/marcs/{13}/{14}/{1}{2:.0f}_g{3:+4.1f}_m{4:3.1f}_t{5:02.0f}_{0:}_z{6:+5.2f}_a{7:+5.2f}_c{8:+5.2f}_n{9:+5.2f}_o{10:+5.2f}_r{11:+5.2f}_s{12:+5.2f}.mod'.format(*np.array(marcs_grid_use.loc[0, marcs_grid_use.columns[:-1]]), chem, geo)))
         marcs_model_interpolated['vmicro_input'] = vmicro
     else:
         marcs_model_interpolated = {}
@@ -706,7 +706,7 @@ def interpolate_marcs_model(teff, logg, m_h, vmicro=2, mass=1, chem='st', geo='a
         elif geo == 'p':
             marcs_model_interpolated['geometry'] = 'plane-parallel'
         for i in range(len(marcs_grid_use)):
-            marcs_model_single = read_marcs_model(os.path.join(MOOG_file_path, '/pymoog_lf/model/marcs/{13}/{14}/{1}{2:.0f}_g{3:+4.1f}_m{4:3.1f}_t{5:02.0f}_{0:}_z{6:+5.2f}_a{7:+5.2f}_c{8:+5.2f}_n{9:+5.2f}_o{10:+5.2f}_r{11:+5.2f}_s{12:+5.2f}.mod'.format(*np.array(marcs_grid_use.loc[i, marcs_grid_use.columns[:-1]]), chem, geo)))
+            marcs_model_single = read_marcs_model(os.path.join(MOOG_file_path, 'pymoog_lf/model/marcs/{13}/{14}/{1}{2:.0f}_g{3:+4.1f}_m{4:3.1f}_t{5:02.0f}_{0:}_z{6:+5.2f}_a{7:+5.2f}_c{8:+5.2f}_n{9:+5.2f}_o{10:+5.2f}_r{11:+5.2f}_s{12:+5.2f}.mod'.format(*np.array(marcs_grid_use.loc[i, marcs_grid_use.columns[:-1]]), chem, geo)))
             if i == 0:
                 for name in ['teff', 'last iteration', 'flux', 'g', 'vmicro_model', 'mass', '[M/H]', '[alpha/Fe]', 'radius', 'luminosity', 
                              'conv:alpha', 'conv:nu', 'conv:y', 'conv:beta', 'X', 'Y', 'Z', '12C/13C',
