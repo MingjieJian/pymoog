@@ -9,9 +9,9 @@ from pymoog import line_data
 from scipy.spatial import Delaunay
 import pickle
 
-MOOG_path = '{}/.pymoog/moog_nosm/moog_nosm_NOV2019/'.format(os.environ['HOME'])
-MOOG_run_path = '{}/.pymoog/rundir/'.format(os.environ['HOME'])
-MOOG_file_path = '{}/.pymoog/files/'.format(os.environ['HOME'])
+MOOG_path = os.path.join(f'{os.environ['HOME']}', '/.pymoog/moog_nosm/moog_nosm_NOV2019/')
+MOOG_run_path = os.path.join(f'{os.environ['HOME']}', '/.pymoog/rundir/')
+MOOG_file_path = os.path.join(f'{os.environ['HOME']}', '/.pymoog/files/')
 
 if os.environ.get('READTHEDOCS') != 'True':
     #directory_path = os.path.dirname(os.path.abspath(__file__))
